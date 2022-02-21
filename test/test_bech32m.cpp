@@ -2,41 +2,76 @@
 #include "../src/bech32m_exception.h"
 #include <iostream>
 
+// counter for failed errors
 static long errors_count = 0;
 
 /**
  * @brief A simple assert macro for testing.
- * In case of an error, the @param errors_count increments.
+ * In case of an error, the @param errors_count is incremented.
  */
-#define ASSERT_EQUALS(EXPRESSION, TARGET)                                                                              \
-    {                                                                                                                  \
-        if ((EXPRESSION) != (TARGET)) {                                                                                \
-            std::cout << __TIME__ << ": ERROR on line " << __LINE__ << ": " << #EXPRESSION << " != \"" << TARGET       \
-                      << "\"." << std::endl;                                                                           \
-            ++errors_count;                                                                                            \
-        }                                                                                                              \
+#define ASSERT_EQUALS(EXPRESSION, TARGET)                                                                                                  \
+    {                                                                                                                                      \
+        try {                                                                                                                              \
+            if ((EXPRESSION) != (TARGET)) {                                                                                                \
+                std::cout << __TIME__ << ": ERROR on line " << __LINE__ << ": " << #EXPRESSION << " != \"" << (TARGET) << "\"."            \
+                          << std::endl;                                                                                                    \
+                ++errors_count;                                                                                                            \
+            }                                                                                                                              \
+        } catch (std::exception & e) {                                                                                                     \
+            std::cout << __TIME__ << ": ERROR on line " << __LINE__ << ": " << #EXPRESSION << " threw an exception: " << e.what()          \
+                      << std::endl;                                                                                                        \
+            ++errors_count;                                                                                                                \
+        }                                                                                                                                  \
     }
 
-#define ASSERT_THROWS(EXPRESSION, EXCEPTION_CLASS)                                                                     \
-    {                                                                                                                  \
-        try {                                                                                                          \
-            (EXPRESSION);                                                                                              \
-            std::cout << __TIME__ << ": ERROR on line " << __LINE__ << ": " << #EXPRESSION                             \
-                      << " did not throw, an instance of " << #EXCEPTION_CLASS << " expected." << std::endl;           \
-        } catch (EXCEPTION_CLASS & _) {                                                                                \
-        }                                                                                                              \
+/**
+ * Tests if the @param EXPRESSION throws @param EXCEPTION_CLASS
+ */
+#define ASSERT_THROWS(EXPRESSION, EXCEPTION_CLASS)                                                                                         \
+    {                                                                                                                                      \
+        try {                                                                                                                              \
+            (EXPRESSION);                                                                                                                  \
+            std::cout << __TIME__ << ": ERROR on line " << __LINE__ << ": " << #EXPRESSION << " did not throw, an instance of "            \
+                      << #EXCEPTION_CLASS << " expected." << std::endl;                                                                    \
+            ++errors_count;                                                                                                                \
+        } catch (EXCEPTION_CLASS & _) {                                                                                                    \
+        } catch (std::exception & e) {                                                                                                     \
+            std::cout << __TIME__ << ": ERROR on line " << __LINE__ << ": " << #EXPRESSION                                                 \
+                      << " threw an unexpected exception: " << typeid(e).name() << ":" << e.what() << ", " << #EXCEPTION_CLASS             \
+                      << " expected." << std::endl;                                                                                        \
+            ++errors_count;                                                                                                                \
+        }                                                                                                                                  \
     }
 
+/**
+ * A macro that tests the provided expression does not throw any exceptions
+ */
+#define ASSERT_DOES_NOT_THROW(EXPRESSION)                                                                                                  \
+    {                                                                                                                                      \
+        try {                                                                                                                              \
+            (EXPRESSION);                                                                                                                   \
+        } catch (std::exception & e) {                                                                                                     \
+            std::cout << __TIME__ << ": ERROR on line " << __LINE__ << ": " << #EXPRESSION                                                 \
+                      << " threw an unexpected exception: " << typeid(e).name() << ":" << e.what() << std::endl;                           \
+            ++errors_count;                                                                                                                \
+        }                                                                                                                                  \
+    }
+/**
+ * Some basic inputs, test they are identified as valid Bech32m codes
+ */
 void test_basic() {
-    decode("A1LQFN3A");
-    decode("a1lqfn3a");
-    decode("an83characterlonghumanreadablepartthatcontainsthetheexcludedcharactersbioandnumber11sg7hg6");
-    decode("abcdef1l7aum6echk45nj3s0wdvt2fg8x9yrzpqzd3ryx");
-    decode("11llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllludsr8");
-    decode("split1checkupstagehandshakeupstreamerranterredcaperredlc445v");
-    decode("?1v759aa");
+    ASSERT_DOES_NOT_THROW(decode("A1LQFN3A"));
+    ASSERT_DOES_NOT_THROW(decode("a1lqfn3a"));
+    ASSERT_DOES_NOT_THROW(decode("an83characterlonghumanreadablepartthatcontainsthetheexcludedcharactersbioandnumber11sg7hg6"));
+    ASSERT_DOES_NOT_THROW(decode("abcdef1l7aum6echk45nj3s0wdvt2fg8x9yrzpqzd3ryx"));
+    ASSERT_DOES_NOT_THROW(decode("11llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllludsr8"));
+    ASSERT_DOES_NOT_THROW(decode("split1checkupstagehandshakeupstreamerranterredcaperredlc445v"));
+    ASSERT_DOES_NOT_THROW(decode("?1v759aa"));
 }
 
+/**
+ * Tests the proper Bech32m encoding
+ */
 void test_encode() {
     // v0-v16 native segregated witness addresses
     ASSERT_EQUALS(encode("0014751e76e8199196d454941c45d1b3a323f1433bd6"), "BC1QW508D6QEJXTDG4Y5R3ZARVARY0C5XW7KV8F3T4");
@@ -54,6 +89,9 @@ void test_encode() {
                   "bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqzk5jj0");
 }
 
+/**
+ * Tests the proper Bech32m decoding
+ */
 void test_decode() {
     // v0-v16 native segregated witness addresses
     ASSERT_EQUALS(decode("BC1QW508D6QEJXTDG4Y5R3ZARVARY0C5XW7KV8F3T4"), "0014751e76e8199196d454941c45d1b3a323f1433bd6");
@@ -71,14 +109,14 @@ void test_decode() {
                   "512079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798");
 }
 
+/**
+ * Tests if invalid Bech32m codes can be identified
+ */
 void test_invalid_bech32m() {
-    // 0x7F + 1g6xzxy: HRP character out of range
-    // 0x80 + 1vctc34: HRP character out of range
-    ASSERT_THROWS(decode(" 1xj0phk"), Bech32mException);
-    ASSERT_THROWS(decode(""), Bech32mException);
-    ASSERT_THROWS(decode(""), Bech32mException);
-    ASSERT_THROWS(decode("an84characterslonghumanreadablepartthatcontainsthetheexcludedcharactersbioandnumber11d6pts4"),
-                  Bech32mException);
+    ASSERT_THROWS(decode(std::to_string(0x20) + "1xj0phk"), Bech32mException);
+    ASSERT_THROWS(decode(std::to_string(0x7f) + "1g6xzxy"), Bech32mException);
+    ASSERT_THROWS(decode(std::to_string(0x80) + "1vctc34"), Bech32mException);
+    ASSERT_THROWS(decode("an84characterslonghumanreadablepartthatcontainsthetheexcludedcharactersbioandnumber11d6pts4"), Bech32mException);
     ASSERT_THROWS(decode("qyrz8wqd2c9m"), Bech32mException);
     ASSERT_THROWS(decode("1qyrz8wqd2c9m"), Bech32mException);
     ASSERT_THROWS(decode("y1b0jsk6g"), Bech32mException);
@@ -100,8 +138,7 @@ void test_invalid_segwit_addresses() {
     ASSERT_THROWS(decode("bc1p38j9r5y49hruaue7wxjce0updqjuyyx0kh56v8s25huc6995vvpql3jow4"), Bech32mException);
     ASSERT_THROWS(decode("BC130XLXVLHEMJA6C4DQV22UAPCTQUPFHLXM9H8Z3K2E72Q4K9HCZ7VQ7ZWS8R"), Bech32mException);
     ASSERT_THROWS(decode("bc1pw5dgrnzv"), Bech32mException);
-    ASSERT_THROWS(decode("bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7v8n0nx0muaewav253zgeav"),
-                  Bech32mException);
+    ASSERT_THROWS(decode("bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7v8n0nx0muaewav253zgeav"), Bech32mException);
     ASSERT_THROWS(decode("BC1QR508D6QEJXTDG4Y5R3ZARVARYV98GJ9P"), Bech32mException);
     ASSERT_THROWS(decode("tb1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vq47Zagq"), Bech32mException);
     ASSERT_THROWS(decode("bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7v07qwwzcrf"), Bech32mException);
@@ -109,11 +146,14 @@ void test_invalid_segwit_addresses() {
     ASSERT_THROWS(decode("bc1gmk9yu"), Bech32mException);
 }
 
+/**
+ * Runs all tests.
+ * @return Either 0 or 1, based on the number of failed tests.
+ */
 int main() {
     test_basic();
     test_encode();
     test_decode();
-    test_invalid_bech32m();
     test_invalid_bech32m();
     test_invalid_segwit_addresses();
 
