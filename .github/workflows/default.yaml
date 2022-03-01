@@ -13,4 +13,12 @@ jobs:
         run: cd build && cmake --build .
       - name: Run the test binary
         run: build/test/Test
+  CppCheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install cppcheck
+        run: sudo apt-get install --assume-yes cppcheck
+      - name: Run cppcheck
+        run: cppcheck --enable=all ./src/ ./test/
       
