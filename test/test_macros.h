@@ -1,8 +1,6 @@
 #ifndef BECH32M_TEST_MACROS_H
 #define BECH32M_TEST_MACROS_H
 
-// counter for failed errors
-static long errors_count = 0;
 
 /**
  * @brief A simple assert macro for testing.
