@@ -1,7 +1,11 @@
 #include "../src/bech32m.h"
 #include "../src/bech32m_exception.h"
 #include "test_macros.h"
+#include "test_bit_storage.h"
 #include <iostream>
+
+// counter for failed errors
+long errors_count = 0;
 
 /**
  * Some basic inputs, test they are identified as valid Bech32m codes
@@ -103,6 +107,8 @@ int main() {
     test_decode();
     test_invalid_bech32m();
     test_invalid_segwit_addresses();
+
+    test_hex_bit_storage();
 
     if (errors_count == 0) {
         std::cout << "All tests have passed successfully." << std::endl;
