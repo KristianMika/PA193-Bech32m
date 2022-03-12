@@ -16,12 +16,10 @@ uint32_t polymod(const std::vector<std::bitset<5>> &input) {
     for (const auto value : input) {
         val = value.to_ulong();
         auto derived = (checksum >> 25);
-        checksum = (checksum & 0x1ffffff) << 5 ^ val;
+        checksum = ((checksum & 0x1ffffff) << 5) ^ val;
         for (int i = 0; i < 5; ++i) {
             if ((derived >> i) & 1) {
                 checksum = checksum ^ GEN[i];
-            } else {
-                checksum = checksum ^ 0;
             }
         }
     }
@@ -43,11 +41,11 @@ std::vector<std::bitset<5>> calculate_checksum(std::vector<std::bitset<5>> combi
     for (uint8_t i = 0; i < 6; ++i) {
         combined.push_back(0);
     }
-    auto poly = polymod(combined) ^ BECH32M_CONSTANT;
+    uint32_t poly = polymod(combined) ^ BECH32M_CONSTANT;
     std::vector<uint8_t> checksum;
     std::vector<std::bitset<5>> checksum2;
     for (int i = 0; i < 6; ++i) {
-        auto value = (poly >> 5 * (5 - i)) & 31;
+        uint32_t value = (poly >> (5 * (5 - i))) & 31;
         checksum.push_back(value);
         checksum2.push_back(value);
     }

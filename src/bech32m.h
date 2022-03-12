@@ -3,6 +3,7 @@
 
 #include "bit_storage.h"
 #include <string>
+#include <vector>
 
 /**
  * @brief Encodes the input string to bach32m
