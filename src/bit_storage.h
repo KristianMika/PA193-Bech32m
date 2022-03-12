@@ -4,9 +4,9 @@
 #define BECH32M_BIT_STORAGE_H
 #include <bitset>
 #include <iostream>
-static uint const BECH32M_CHAR_BIT_COUNT = 5;
-static uint const MAX_BECH32M_HUMAN_READABLE_CHARS = 83;
-static uint const MAX_BITSET_LENGTH = MAX_BECH32M_HUMAN_READABLE_CHARS * BECH32M_CHAR_BIT_COUNT; // 415 bits
+static uint16_t const BECH32M_CHAR_BIT_COUNT = 5;
+static uint16_t const MAX_BECH32M_HUMAN_READABLE_CHARS = 83;
+static uint16_t const MAX_BITSET_LENGTH = MAX_BECH32M_HUMAN_READABLE_CHARS * BECH32M_CHAR_BIT_COUNT; // 415 bits
 using BechCharType = std::bitset<BECH32M_CHAR_BIT_COUNT>;
 /**
  * Represents a base class for all type of inputs.
@@ -55,7 +55,7 @@ class BitStorage {
 
     BitStorage::Iterator end() const { return Iterator(&value, length); }
 
-    uint size() const { return length; }
+    uint16_t size() const { return length; }
 
     void pad();
 };
