@@ -13,6 +13,15 @@ jobs:
         run: cd build && cmake --build .
       - name: Run the test binary
         run: build/test/Test
+      # TODO: make a different stage for valgrind
+      - name: Update indices
+        run: sudo apt-get update  
+      - name: Install memcheck   
+        run: sudo apt-get install --assume-yes valgrind
+      # Run memcheck only after the tests have passed 
+      - name: Run memcheck
+        run: valgrind --leak-check=full --track-origins=yes build/test/Test 
+        
   CppCheck:
     runs-on: ubuntu-latest
     steps:
@@ -20,5 +29,4 @@ jobs:
       - name: Install cppcheck
         run: sudo apt-get install --assume-yes cppcheck
       - name: Run cppcheck
-        run: cppcheck --enable=all ./src/ ./test/
-      
+        run: cppcheck --enable=all ./src/ ./test/      
