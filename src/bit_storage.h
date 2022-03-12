@@ -56,6 +56,8 @@ class BitStorage {
     BitStorage::Iterator end() const { return Iterator(&value, length); }
 
     uint size() const { return length; }
+
+    void pad();
 };
 
 #endif // BECH32M_BIT_STORAGE_H
