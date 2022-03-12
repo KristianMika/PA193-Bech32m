@@ -18,15 +18,17 @@ HexBitStorage::HexBitStorage(const std::string &hex_value) {
         throw(Bech32mException("Invalid hex string."));
     }
 
-    for (int i = 0; i < hex_value.size(); ++i) {
+    int offset = 5 - (static_cast<int>(hex_value.size()) * 4 % 5);
+    //for (int i = 0; i < hex_value.size(); ++i) {
+    for (int i =  static_cast<int>(hex_value.size()) - 1; i >= 0 ; --i) {
         BechCharType  curr = hex_2_int(hex_value[i]);
 
         for (int j = 0; j < 4; ++j) {
-
-            value.set(i * 4 + j, (curr & BechCharType (1 << j)).any());
+            value.set(offset + i * 4 + j, (curr & BechCharType (1 << j)).any());
         }
     }
     length = hex_value.size() * 4;
+    length += offset;
 
-    pad();
+    // pad();
 }
