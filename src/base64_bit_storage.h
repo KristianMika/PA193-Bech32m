@@ -1,7 +1,6 @@
-
-
 #ifndef BECH32M_BASE64_BIT_STORAGE_H
 #define BECH32M_BASE64_BIT_STORAGE_H
+
 #include "bit_storage.h"
 
 /**

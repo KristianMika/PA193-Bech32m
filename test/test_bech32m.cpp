@@ -1,7 +1,7 @@
 #include "../src/bech32m.h"
 #include "../src/bech32m_exception.h"
-#include "test_macros.h"
 #include "test_bit_storage.h"
+#include "test_macros.h"
 #include <iostream>
 
 // counter for failed errors
@@ -13,9 +13,11 @@ long errors_count = 0;
 void test_basic() {
     ASSERT_DOES_NOT_THROW(decode("A1LQFN3A"));
     ASSERT_DOES_NOT_THROW(decode("a1lqfn3a"));
-    ASSERT_DOES_NOT_THROW(decode("an83characterlonghumanreadablepartthatcontainsthetheexcludedcharactersbioandnumber11sg7hg6"));
+    ASSERT_DOES_NOT_THROW(
+        decode("an83characterlonghumanreadablepartthatcontainsthetheexcludedcharactersbioandnumber11sg7hg6"));
     ASSERT_DOES_NOT_THROW(decode("abcdef1l7aum6echk45nj3s0wdvt2fg8x9yrzpqzd3ryx"));
-    ASSERT_DOES_NOT_THROW(decode("11llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllludsr8"));
+    ASSERT_DOES_NOT_THROW(
+        decode("11llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllludsr8"));
     ASSERT_DOES_NOT_THROW(decode("split1checkupstagehandshakeupstreamerranterredcaperredlc445v"));
     ASSERT_DOES_NOT_THROW(decode("?1v759aa"));
 }
@@ -67,7 +69,8 @@ void test_invalid_bech32m() {
     ASSERT_THROWS(decode(std::to_string(0x20) + "1xj0phk"), Bech32mException);
     ASSERT_THROWS(decode(std::to_string(0x7f) + "1g6xzxy"), Bech32mException);
     ASSERT_THROWS(decode(std::to_string(0x80) + "1vctc34"), Bech32mException);
-    ASSERT_THROWS(decode("an84characterslonghumanreadablepartthatcontainsthetheexcludedcharactersbioandnumber11d6pts4"), Bech32mException);
+    ASSERT_THROWS(decode("an84characterslonghumanreadablepartthatcontainsthetheexcludedcharactersbioandnumber11d6pts4"),
+                  Bech32mException);
     ASSERT_THROWS(decode("qyrz8wqd2c9m"), Bech32mException);
     ASSERT_THROWS(decode("1qyrz8wqd2c9m"), Bech32mException);
     ASSERT_THROWS(decode("y1b0jsk6g"), Bech32mException);
@@ -89,7 +92,8 @@ void test_invalid_segwit_addresses() {
     ASSERT_THROWS(decode("bc1p38j9r5y49hruaue7wxjce0updqjuyyx0kh56v8s25huc6995vvpql3jow4"), Bech32mException);
     ASSERT_THROWS(decode("BC130XLXVLHEMJA6C4DQV22UAPCTQUPFHLXM9H8Z3K2E72Q4K9HCZ7VQ7ZWS8R"), Bech32mException);
     ASSERT_THROWS(decode("bc1pw5dgrnzv"), Bech32mException);
-    ASSERT_THROWS(decode("bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7v8n0nx0muaewav253zgeav"), Bech32mException);
+    ASSERT_THROWS(decode("bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7v8n0nx0muaewav253zgeav"),
+                  Bech32mException);
     ASSERT_THROWS(decode("BC1QR508D6QEJXTDG4Y5R3ZARVARYV98GJ9P"), Bech32mException);
     ASSERT_THROWS(decode("tb1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vq47Zagq"), Bech32mException);
     ASSERT_THROWS(decode("bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7v07qwwzcrf"), Bech32mException);

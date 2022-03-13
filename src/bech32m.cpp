@@ -1,14 +1,11 @@
 #include "bech32m.h"
 #include "bech32m_exception.h"
-#include <vector>
-
 #include "hex_bit_storage.h"
+#include <vector>
 
 static const std::string BECH_SYMBOLS = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
 static const uint32_t GEN[5] = {0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3};
 static const uint32_t BECH32M_CONSTANT = 0x2bc830a3;
-
-
 
 uint32_t polymod(const std::vector<std::bitset<5>> &input) {
     uint32_t checksum = 1;
@@ -52,7 +49,7 @@ std::vector<std::bitset<5>> calculate_checksum(std::vector<std::bitset<5>> combi
     return checksum2;
 }
 
-std::string encode(const std::string &hrp, const std::string &input) { 
+std::string encode(const std::string &hrp, const std::string &input) {
     // creating storage and converting to bitset vector
     BitStorage storage = HexBitStorage(input);
     std::vector<std::bitset<5>> processed;
@@ -79,15 +76,13 @@ std::string encode(const std::string &hrp, const std::string &input) {
 
 std::string encode(const std::string &input) { return input; }
 
-
-bool bech32_verify_checksum(std::string const &hrp, std::vector<std::bitset<5>> data) { 
+bool bech32_verify_checksum(std::string const &hrp, std::vector<std::bitset<5>> data) {
     auto combined = expand_hrp(hrp);
     combined.insert(combined.end(), data.begin(), data.end());
     return polymod(combined) == BECH32M_CONSTANT;
 }
 
-
-std::vector<std::bitset<5>> reverse_code(int begin, int end, const std::string& code) {
+std::vector<std::bitset<5>> reverse_code(int begin, int end, const std::string &code) {
     std::vector<std::bitset<5>> result;
     int index;
     char c;
@@ -103,7 +98,7 @@ std::vector<std::bitset<5>> reverse_code(int begin, int end, const std::string& 
     return result;
 }
 
-std::string decode(const std::string &code) { 
+std::string decode(const std::string &code) {
     auto var = 1;
 
     bool has_upper = false;
@@ -113,7 +108,7 @@ std::string decode(const std::string &code) {
             throw Bech32mException("Invalid character in the string to decode.");
         }
         if (c > 'a' && c < 'z') {
-            has_lower = true;    
+            has_lower = true;
         } else if (c > 'A' && c < 'Z') {
             has_upper = true;
         }
@@ -141,18 +136,15 @@ std::string decode(const std::string &code) {
         throw Bech32mException("Sent data do not match the received data.");
     }
 
-    return code; 
-
-
+    return code;
 }
 
-inline char encodeBechChar(const BechCharType chr) { return BECH_SYMBOLS[chr.to_ulong()]; }
+inline char encodeBechChar(const Bech32mChar chr) { return BECH_SYMBOLS[chr.to_ulong()]; }
 
-// only human-readable part!
-std::string encodeHumanReadablePart(const BitStorage &storage) {
+std::string encodeDataPart(const BitStorage &storage) {
     std::vector<char> out;
 
-    for (const BechCharType val : storage) {
+    for (const Bech32mChar val : storage) {
         out.push_back(encodeBechChar(val));
     }
     return {out.begin(), out.end()};
