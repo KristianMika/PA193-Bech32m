@@ -3,6 +3,8 @@
 #include "bech32m_exception.h"
 #include "hex_bit_storage.h"
 #include <vector>
+#include <sstream>
+#include <iomanip>
 
 static const uint32_t GEN[5] = {0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3};
 static const uint32_t BECH32M_CONSTANT = 0x2bc830a3;
@@ -99,8 +101,6 @@ std::vector<std::bitset<5>> reverse_code(int begin, int end, const std::string &
 }
 
 std::string decode(const std::string &code) {
-    auto var = 1;
-
     bool has_upper = false;
     bool has_lower = false;
     for (char const &c : code) {
@@ -132,13 +132,34 @@ std::string decode(const std::string &code) {
     if (separator > 0) {
         hrp = lowered.substr(0, separator);
     }
-    std::vector<std::bitset<5>> data = reverse_code(hrp.length() + 1, lowered.length(), lowered);
+    std::vector<Bech32mChar> data = reverse_code(hrp.length() + 1, lowered.length(), lowered);
 
     if (!bech32_verify_checksum(hrp, data)) {
         throw Bech32mException("Sent data do not match the received data.");
     }
 
-    return lowered;
+    std::vector<Bech32mChar> data_filtered = {};
+    data_filtered.insert(data_filtered.end(), data.begin(), data.end() - 6);
+
+    std::vector<uint8_t> pub_key = {};
+    pub_key.emplace_back(static_cast<uint8_t>(data[0].to_ulong()) + 0x50);
+
+    // TODO Convert the data filtered from Bech32mChar to std::bitset<8> essentially a vector of bytes
+    
+    Bech32mBitStorage store = Bech32mBitStorage(data_filtered);
+
+    // pub_key.emplace_back(static_cast<uint8_t>(produced_byte_vector.size()));
+    // pub_key.insert(pub_key.end(), produced_byte_vector.begin(), produced_byte_vector.end());
+
+    // TMP implementation to convert byte[] to hex string
+    std::ostringstream ss;
+
+    ss << std::hex << std::setfill('0');
+    for (int c : pub_key) {
+        ss << std::setw(2) << c;
+    }
+
+    return ss.str();
 }
 
 inline char encodeBechChar(const Bech32mChar chr) { return BECH_SYMBOLS[chr.to_ulong()]; }
