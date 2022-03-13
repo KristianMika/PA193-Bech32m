@@ -3,6 +3,7 @@
 
 #include "bit_storage.h"
 #include <string>
+#include <algorithm>
 #include <vector>
 
 /**

@@ -1,7 +1,7 @@
 #ifndef BECH32M_TEST_MACROS_H
 #define BECH32M_TEST_MACROS_H
 
-#define ERROR_HEADER std::endl << "ASSERTION ERROR: File " << __FILE__ << ", L" << __LINE__ << ":\n - "
+#define ERROR_HEADER std::endl << "Err: Line:" << __LINE__ << ":\n - "
 /**
  * @brief A simple assert macro for testing.
  * In case of an error, the @param errors_count is incremented.

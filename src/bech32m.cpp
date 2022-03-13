@@ -119,24 +119,27 @@ std::string decode(const std::string &code) {
         throw Bech32mException("Both lower and upper case letters in the string to decode.");
     }
 
-    int separator = code.rfind('1');
+    std::string lowered(code.length(), '_');
+    std::transform(code.begin(), code.end(), lowered.begin(), tolower);
+
+    int separator = lowered.rfind('1');
     if (separator == std::string::npos) {
         throw Bech32mException("No separator of human readable part in the string to decode.");
     }
-    if (separator > code.length() - 6) {
+    if (separator > lowered.length() - 6) {
         throw Bech32mException("Data part is shorter than 6 symbols");
     }
     std::string hrp = "";
     if (separator > 0) {
-        hrp = code.substr(0, separator);
+        hrp = lowered.substr(0, separator);
     }
-    std::vector<std::bitset<5>> data = reverse_code(code.length() - 6, code.length(), code);
+    std::vector<std::bitset<5>> data = reverse_code(hrp.length() + 1, lowered.length(), lowered);
 
     if (!bech32_verify_checksum(hrp, data)) {
         throw Bech32mException("Sent data do not match the received data.");
     }
 
-    return code;
+    return lowered;
 }
 
 inline char encodeBechChar(const Bech32mChar chr) { return BECH_SYMBOLS[chr.to_ulong()]; }
