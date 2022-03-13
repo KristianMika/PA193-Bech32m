@@ -125,23 +125,13 @@ int interpret_test_results() {
  * @return Either 0 or 1, based on the number of failed tests.
  */
 int main() {
-    std::cout << "** Basic **" << std::endl;
-    test_basic();
-    std::cout << std::endl;
-    std::cout << "** Encode **" << std::endl;
-    test_encode();
-    std::cout << std::endl;
-    std::cout << "** Decode **" << std::endl;
-    test_decode();
-    std::cout << std::endl;
-    std::cout << "** Invalid Bech32m **" << std::endl;
-    test_invalid_bech32m();
-    std::cout << std::endl;
-    std::cout << "** Invalid Segwit **" << std::endl;
-    test_invalid_segwit_addresses();
-    std::cout << std::endl;
 
-    test_bit_storage();
+    RUN_TEST(test_basic);
+    RUN_TEST(test_encode);
+    RUN_TEST(test_decode);
+    RUN_TEST(test_invalid_bech32m);
+    RUN_TEST(test_invalid_segwit_addresses);
+    RUN_TEST(test_bit_storage);
 
     return interpret_test_results();
 }

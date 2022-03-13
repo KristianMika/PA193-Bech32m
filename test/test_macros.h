@@ -55,4 +55,14 @@
         }                                                                                                              \
     }
 
+#define RUN_TEST(TEST_NAME)                                                                                            \
+    {                                                                                                                  \
+        std::cout << std::endl << " ** Test " << (#TEST_NAME) << " **" << std::endl;                                   \
+        long err_prev = errors_count;                                                                                  \
+        (TEST_NAME());                                                                                                 \
+        if (err_prev == errors_count) {                                                                                \
+            std::cout << "  [OK]" << std::endl;                                                                        \
+        }                                                                                                              \
+    }
+
 #endif // BECH32M_TEST_MACROS_H
