@@ -39,4 +39,8 @@
 .vs
 out
 
+# CLion folders
+.idea
+cmake-build-debug-visual-studio
+
 CMakeSettings.json

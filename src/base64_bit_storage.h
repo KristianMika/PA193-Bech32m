@@ -1,8 +1,8 @@
-
-
 #ifndef BECH32M_BASE64_BIT_STORAGE_H
 #define BECH32M_BASE64_BIT_STORAGE_H
+
 #include "bit_storage.h"
+static const uint16_t BASE64_CHAR_BIT_LENGTH = 6;
 
 /**
  * Represents a Base64 encoded input

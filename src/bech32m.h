@@ -3,6 +3,7 @@
 
 #include "bit_storage.h"
 #include <string>
+#include <algorithm>
 #include <vector>
 
 /**
@@ -19,16 +20,21 @@ std::string encode(const std::string &plain);
  * @param input text as a hex string
  * @param hrp plaintext humen readable part
  * @return std::string bech32m code of the input string
-**/
+ **/
 std::string encode(const std::string &hrp, const std::string &input);
 
-    /**
+/**
  * @brief Decodes the input bech32m string
  *
  * @param code in bech32m
  * @return std::string decoded string
  */
 std::string decode(const std::string &code);
-#endif // BECH32M_BECH32M_H
 
-std::string encodeHumanReadablePart(const BitStorage &storage);
+/**
+ * Encodes the data part without the checksum
+ * @param storage
+ * @return Bech32m value
+ */
+std::string encodeDataPart(const BitStorage &storage);
+#endif // BECH32M_BECH32M_H
