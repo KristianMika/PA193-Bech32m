@@ -10,7 +10,7 @@ static const uint32_t BECH32M_CONSTANT = 0x2bc830a3;
 uint32_t polymod(const std::vector<std::bitset<5>> &input) {
     uint32_t checksum = 1;
     uint8_t val;
-    for (const auto value : input) {
+    for (const auto &value : input) {
         val = value.to_ulong();
         auto derived = (checksum >> 25);
         checksum = ((checksum & 0x1ffffff) << 5) ^ val;
@@ -53,7 +53,7 @@ std::string encode(const std::string &hrp, const std::string &input) {
     // creating storage and converting to bitset vector
     BitStorage storage = HexBitStorage(input);
     std::vector<std::bitset<5>> processed;
-    for (auto symbol : storage) {
+    for (const auto &symbol : storage) {
         processed.push_back(symbol);
     }
     // expanding the header
@@ -65,19 +65,20 @@ std::string encode(const std::string &hrp, const std::string &input) {
     auto checksum = calculate_checksum(combined);
     std::string result = hrp;
     result += "1";
-    for (const std::bitset<5> c : processed) {
-        result += BECH_SYMBOLS[c.to_ulong()];
+    for (const auto &b_set : processed) {
+        result += BECH_SYMBOLS[b_set.to_ulong()];
     }
-    for (const std::bitset<5> c : checksum) {
-        result += BECH_SYMBOLS[c.to_ulong()];
+    for (const auto &b_set : checksum) {
+        result += BECH_SYMBOLS[b_set.to_ulong()];
     }
     return result;
 }
 
 std::string encode(const std::string &input) { return input; }
 
+
 bool bech32_verify_checksum(std::string const &hrp, std::vector<std::bitset<5>> data) {
-    auto combined = expand_hrp(hrp);
+    std::vector<std::bitset<5>> combined = expand_hrp(hrp);
     combined.insert(combined.end(), data.begin(), data.end());
     return polymod(combined) == BECH32M_CONSTANT;
 }
@@ -117,8 +118,8 @@ std::string decode(const std::string &code) {
     if (has_upper && has_lower) {
         throw Bech32mException("Both lower and upper case letters in the string to decode.");
     }
-    int separator;
-    separator = BECH_SYMBOLS.rfind('1');
+
+    int separator = code.rfind('1');
     if (separator == std::string::npos) {
         throw Bech32mException("No separator of human readable part in the string to decode.");
     }
@@ -127,10 +128,9 @@ std::string decode(const std::string &code) {
     }
     std::string hrp = "";
     if (separator > 0) {
-        hrp = code.substr(0, separator - 1);
+        hrp = code.substr(0, separator);
     }
-    std::vector<std::bitset<5>> data = reverse_code(separator + 1, code.length() - 6, code);
-    std::vector<std::bitset<5>> checksum = reverse_code(code.length() - 6, code.length(), code);
+    std::vector<std::bitset<5>> data = reverse_code(code.length() - 6, code.length(), code);
 
     if (!bech32_verify_checksum(hrp, data)) {
         throw Bech32mException("Sent data do not match the received data.");
@@ -144,8 +144,8 @@ inline char encodeBechChar(const Bech32mChar chr) { return BECH_SYMBOLS[chr.to_u
 std::string encodeDataPart(const BitStorage &storage) {
     std::vector<char> out;
 
-    for (const Bech32mChar val : storage) {
-        out.push_back(encodeBechChar(val));
+    for (const auto &b_set : storage) {
+        out.push_back(encodeBechChar(b_set));
     }
     return {out.begin(), out.end()};
 }
