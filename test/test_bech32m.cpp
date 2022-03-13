@@ -112,7 +112,7 @@ int main() {
     test_invalid_bech32m();
     test_invalid_segwit_addresses();
 
-    test_hex_bit_storage();
+    test_bit_storage();
 
     if (errors_count == 0) {
         std::cout << "All tests have passed successfully." << std::endl;

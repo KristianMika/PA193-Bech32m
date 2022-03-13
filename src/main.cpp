@@ -16,7 +16,7 @@ int main() {
     std::cout << "bech32m(" << to_encode << ") = " << encodeDataPart(storage) << std::endl;
 
     // BASE64 demo
-    auto some_base64 = "aGkK";
+    auto some_base64 = "YTh2Cg==";
     Base64BitStorage base_storage = Base64BitStorage(some_base64);
 
     for (const Bech32mChar val : base_storage) {

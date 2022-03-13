@@ -34,11 +34,11 @@ bool check_hex_string(const std::string &str) {
  * @return true if the string can be encoded into Bech32m, false otherwise
  */
 inline bool check_length(const std::string &hex_string) {
-    return hex_string.length() * HEX_CHAR_BIT_COUNT > BECH32M_MAX_BITSET_LENGTH;
+    return hex_string.length() * HEX_CHAR_BIT_COUNT <= BECH32M_MAX_BITSET_LENGTH;
 }
 
 HexBitStorage::HexBitStorage(const std::string &hex_value) {
-    if (!check_hex_string(hex_value) || check_length(hex_value)) {
+    if (!check_hex_string(hex_value) || !check_length(hex_value)) {
         throw(Bech32mException("Invalid hex string."));
     }
     static const int MOST_SIGNIFICANT_HEX_BIT_MASK = 0b1000;
