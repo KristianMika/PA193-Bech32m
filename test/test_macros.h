@@ -8,7 +8,9 @@
 #define ASSERT_EQUALS(EXPRESSION, TARGET)                                                                              \
     {                                                                                                                  \
         try {                                                                                                          \
-            if ((EXPRESSION) != (TARGET)) {                                                                            \
+            if ((EXPRESSION) == (TARGET)) {                                                                            \
+                ++success_count;                                                                                       \
+            } else {                                                                                                   \
                 std::cout << __TIME__ << ": ERROR on line " << __LINE__ << ": " << #EXPRESSION << " != \"" << (TARGET) \
                           << "\"." << std::endl;                                                                       \
                 ++errors_count;                                                                                        \
@@ -31,6 +33,7 @@
                       << " did not throw, an instance of " << #EXCEPTION_CLASS << " expected." << std::endl;           \
             ++errors_count;                                                                                            \
         } catch (EXCEPTION_CLASS & _) {                                                                                \
+            ++success_count;                                                                                           \
         } catch (std::exception & e) {                                                                                 \
             std::cout << __TIME__ << ": ERROR on line " << __LINE__ << ": " << #EXPRESSION                             \
                       << " threw an unexpected exception: " << typeid(e).name() << ":" << e.what() << ", "             \
@@ -46,6 +49,7 @@
     {                                                                                                                  \
         try {                                                                                                          \
             (EXPRESSION);                                                                                              \
+            ++success_count;                                                                                           \
         } catch (std::exception & e) {                                                                                 \
             std::cout << __TIME__ << ": ERROR on line " << __LINE__ << ": " << #EXPRESSION                             \
                       << " threw an unexpected exception: " << typeid(e).name() << ":" << e.what() << std::endl;       \

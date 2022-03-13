@@ -6,6 +6,7 @@
 
 // counter for failed errors
 long errors_count = 0;
+long success_count = 0;
 
 /**
  * Some basic inputs, test they are identified as valid Bech32m codes
@@ -102,6 +103,23 @@ void test_invalid_segwit_addresses() {
 }
 
 /**
+ * Prints the results of the tests
+ * @return 0 if all tests have passed successfullt, 1 otherwise
+ */
+int interpret_test_results() {
+    std::cout << std::endl << "***** Test results *****" << std::endl;
+    // Just to make sure we are running some tests
+    std::cout << " ✓ " << success_count << " check(s) passed successfully." << std::endl;
+    if (errors_count == 0) {
+        std::cout << " ✓ "
+                  << "All tests have passed successfully." << std::endl;
+        return 0;
+    } else {
+        std ::cout << " ✘ " << errors_count << " check(s) failed." << std::endl;
+        return 1;
+    }
+}
+/**
  * Runs all tests.
  * @return Either 0 or 1, based on the number of failed tests.
  */
@@ -114,11 +132,5 @@ int main() {
 
     test_bit_storage();
 
-    if (errors_count == 0) {
-        std::cout << "All tests have passed successfully." << std::endl;
-        return 0;
-    } else {
-        std ::cout << errors_count << " test(s) failed." << std::endl;
-        return 1;
-    }
+    return interpret_test_results();
 }

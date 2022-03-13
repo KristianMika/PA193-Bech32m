@@ -1,9 +1,11 @@
 #include "../src/base64_bit_storage.h"
+#include "../src/bech32m_exception.h"
 #include "../src/hex_bit_storage.h"
 #include "test_macros.h"
 
 // counter for failed errors
 extern long errors_count;
+extern long success_count;
 
 /**
  * TODO: more tests
@@ -14,8 +16,8 @@ void test_hex_bit_storage() {
     // 11111 01011 11101 01111 10100
     const std::string to_encode = "fafafa";
     HexBitStorage storage(to_encode);
-    int valid_length = to_encode.size() * HEX_CHAR_BIT_COUNT; // 24
-    valid_length += 1;                                        // padding
+    int valid_length = static_cast<int>(to_encode.size()) * HEX_CHAR_BIT_COUNT; // 24
+    valid_length += 1;                                                          // padding
     ASSERT_EQUALS(storage.size(), valid_length);
     auto it = storage.begin();
     ASSERT_EQUALS(*(it++), Bech32mChar(0b11111));
@@ -35,8 +37,8 @@ void test_base64_bit_storage() {
     // 01100 00100 11100 00111 01100 00010 10000 00000
     const std::string to_encode = "YTh2Cg==";
     Base64BitStorage storage(to_encode);
-    int valid_length = (to_encode.size() - 2) * BASE64_CHAR_BIT_LENGTH; // 36, -2 for padding
-    valid_length += 4;                                                  // padding
+    int valid_length = (static_cast<int>(to_encode.size()) - 2) * BASE64_CHAR_BIT_LENGTH; // 36, -2 for padding
+    valid_length += 4;                                                                    // padding
     ASSERT_EQUALS(storage.size(), valid_length);
     auto it = storage.begin();
     ASSERT_EQUALS(*(it++), Bech32mChar(0b01100));
@@ -49,6 +51,8 @@ void test_base64_bit_storage() {
     ASSERT_EQUALS(*(it++), Bech32mChar(0b10000));
     ASSERT_EQUALS(*(it++), Bech32mChar(0b00000));
     ASSERT_EQUALS(it, storage.end());
+
+    ASSERT_THROWS(Base64BitStorage("YTh2Cg."), Bech32mException);
 }
 
 void test_bit_storage() {
