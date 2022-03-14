@@ -31,7 +31,7 @@ std::string encode(const std::string &hrp, const std::string &input);
  * @param code in bech32m
  * @return std::string decoded string
  */
-std::string decode(const std::string &code);
+std::vector<Bech32mChar> decode(const std::string &code);
 
 /**
  * Encodes the data part without the checksum
@@ -41,4 +41,8 @@ std::string decode(const std::string &code);
 std::string encodeDataPart(const BitStorage &storage);
 
 std::string decode_data_part(const std::string &bech);
+
+std::string get_pub_key(std::vector<Bech32mChar> &in);
+
+std::vector<uint8_t> _5to8(std::vector<Bech32mChar> in);
 #endif // BECH32M_BECH32M_H
