@@ -137,9 +137,9 @@ std::vector<Bech32mChar> decode(const std::string &code) {
         if (c < 33 || c > 126) {
             throw Bech32mException("Invalid character in the string to decode.");
         }
-        if (c > 'a' && c < 'z') {
+        if (c >= 'a' && c <= 'z') {
             has_lower = true;
-        } else if (c > 'A' && c < 'Z') {
+        } else if (c >= 'A' && c <= 'Z') {
             has_upper = true;
         }
     }
