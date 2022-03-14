@@ -133,6 +133,9 @@ std::vector<uint8_t> _5to8(std::vector<Bech32mChar> in) {
 std::vector<Bech32mChar> decode(const std::string &code) {
     bool has_upper = false;
     bool has_lower = false;
+    if (code.length() > 90) {
+        throw Bech32mException("Invalid length of Bech32m code.");
+    }
     for (char const &c : code) {
         if (c < 33 || c > 126) {
             throw Bech32mException("Invalid character in the string to decode.");
