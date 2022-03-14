@@ -2,6 +2,7 @@
 #include "bech32m_bit_storage.h"
 #include "bech32m_exception.h"
 #include "hex_bit_storage.h"
+#include <sstream>
 #include <vector>
 
 static const uint32_t GEN[5] = {0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3};
@@ -98,18 +99,47 @@ std::vector<std::bitset<5>> reverse_code(int begin, int end, const std::string &
     return result;
 }
 
-std::string decode(const std::string &code) {
-    auto var = 1;
+std::string bytes_to_hex(std::vector<uint8_t> &in) {
+    char hex_chars[] = "0123456789abcdef";
 
+    std::string ret(in.size() * 2, '_');
+
+    char *buffer = const_cast<char *>(ret.data());
+
+    for (const auto &byte : in) {
+        *buffer++ = hex_chars[byte >> 4];
+        *buffer++ = hex_chars[byte & 0x0F];
+    }
+    return ret;
+}
+
+std::vector<uint8_t> _5to8(std::vector<Bech32mChar> in) {
+    int acc = 0;
+    int bits = 0;
+    std::vector<uint8_t> ret = {};
+    int maxv = (1 << 8) - 1;
+    int max_acc = (1 << 12) - 1;
+    for (const auto &val : in) {
+        acc = ((acc << 5) | static_cast<uint8_t>(val.to_ulong())) & max_acc;
+        bits += 5;
+        while (bits >= 8) {
+            bits -= 8;
+            ret.push_back((acc >> bits) & maxv);
+        }
+    }
+    return ret;
+}
+
+std::vector<Bech32mChar> decode(const std::string &code) {
     bool has_upper = false;
     bool has_lower = false;
     for (char const &c : code) {
         if (c < 33 || c > 126) {
             throw Bech32mException("Invalid character in the string to decode.");
         }
-        if (c > 'a' && c < 'z') {
+        if (c >= 'a' && c <= 'z') {
             has_lower = true;
-        } else if (c > 'A' && c < 'Z') {
+        } else if (c >= 'A' && c <= 'Z') {
             has_upper = true;
         }
     }
@@ -131,15 +161,58 @@ std::string decode(const std::string &code) {
     std::string hrp = "";
     if (separator > 0) {
         hrp = lowered.substr(0, separator);
+    } else {
+        throw Bech32mException("Empty human readable part");
     }
-    std::vector<std::bitset<5>> data = reverse_code(hrp.length() + 1, lowered.length(), lowered);
+    std::vector<Bech32mChar> data = reverse_code(hrp.length() + 1, lowered.length(), lowered);
 
     if (!bech32_verify_checksum(hrp, data)) {
         throw Bech32mException("Sent data do not match the received data.");
     }
-
-    return lowered;
+    return data;
 }
+
+
+std::vector<Bech32mChar> decode_segwit(const std::string &hrp, const std::string &code) {
+    std::vector<Bech32mChar> data = decode(code);
+
+    // TODO remove this code duplicate vvv
+    std::string lowered(code.length(), '_');
+    std::transform(code.begin(), code.end(), lowered.begin(), tolower);
+
+    int separator = lowered.rfind('1');
+    if (separator == std::string::npos) {
+        throw Bech32mException("No separator of human readable part in the string to decode.");
+    }
+    if (separator > lowered.length() - 6) {
+        throw Bech32mException("Data part is shorter than 6 symbols");
+    }
+    std::string decoded_hrp = "";
+    if (separator > 0) {
+        decoded_hrp = lowered.substr(0, separator);
+    }
+    // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    if (decoded_hrp != hrp) {
+        throw Bech32mException("User data not matching!");
+    }
+    return data;
+}
+
+std::string get_pub_key(const std::vector<Bech32mChar>& in) {
+    std::vector<Bech32mChar> data_filtered = {};
+    data_filtered.insert(data_filtered.end(), in.begin() + 1, in.end() - 6);
+
+    std::vector<uint8_t> pub_key = {};
+    pub_key.emplace_back(static_cast<uint8_t>(in[0].to_ulong()) + 0x50);
+
+    std::vector<uint8_t> bytes = _5to8(data_filtered);
+    pub_key.emplace_back(static_cast<uint8_t>(bytes.size()));
+    pub_key.insert(pub_key.end(), bytes.begin(), bytes.end());
+
+    std::string str = bytes_to_hex(pub_key);
+    return str;
+}
+
 
 inline char encodeBechChar(const Bech32mChar chr) { return BECH_SYMBOLS[chr.to_ulong()]; }
 
