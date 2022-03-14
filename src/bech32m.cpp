@@ -161,6 +161,8 @@ std::vector<Bech32mChar> decode(const std::string &code) {
     std::string hrp = "";
     if (separator > 0) {
         hrp = lowered.substr(0, separator);
+    } else {
+        throw Bech32mException("Empty human readable part");
     }
     std::vector<Bech32mChar> data = reverse_code(hrp.length() + 1, lowered.length(), lowered);
 
