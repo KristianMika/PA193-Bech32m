@@ -1,9 +1,9 @@
 #include "bech32m.h"
+#include "bech32m_bit_storage.h"
 #include "bech32m_exception.h"
 #include "hex_bit_storage.h"
 #include <vector>
 
-static const std::string BECH_SYMBOLS = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
 static const uint32_t GEN[5] = {0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3};
 static const uint32_t BECH32M_CONSTANT = 0x2bc830a3;
 
@@ -75,7 +75,6 @@ std::string encode(const std::string &hrp, const std::string &input) {
 }
 
 std::string encode(const std::string &input) { return input; }
-
 
 bool bech32_verify_checksum(std::string const &hrp, std::vector<std::bitset<5>> data) {
     std::vector<std::bitset<5>> combined = expand_hrp(hrp);
@@ -151,4 +150,18 @@ std::string encodeDataPart(const BitStorage &storage) {
         out.push_back(encodeBechChar(b_set));
     }
     return {out.begin(), out.end()};
+}
+
+// TODO: support multiple output formats
+std::string decode_data_part(const std::string &bech) {
+    Bech32mBitStorage storage(bech);
+    std::stringstream out;
+    storage.pad(4);
+    auto it = storage.begin<4>();
+    std::cout << std::endl;
+    while (it != storage.end<4>()) {
+        out << std::hex << (*it).to_ulong();
+        ++it;
+    }
+    return out.str();
 }

@@ -24,7 +24,6 @@ int main() {
     }
     std::cout << std::endl;
     std::cout << "bech32m(" << some_base64 << ") = " << encodeDataPart(base_storage) << std::endl;
-
     // encoding
     std::cout << encode("abcd", "00201863143c14c5166804bd19203356da136c985678cd4d27a1b8c63296") << std::endl;
     return 0;
