@@ -33,7 +33,6 @@ std::string encode(const std::string &hrp, const std::string &input);
  */
 std::vector<Bech32mChar> decode(const std::string &code);
 
-
 /**
  * @brief Decodes the input bech32m string
  *

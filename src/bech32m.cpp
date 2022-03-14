@@ -179,7 +179,6 @@ std::vector<Bech32mChar> decode(const std::string &code) {
     return data;
 }
 
-
 std::vector<Bech32mChar> decode_segwit(const std::string &hrp, const std::string &code) {
     std::vector<Bech32mChar> data = decode(code);
 
@@ -208,7 +207,7 @@ std::vector<Bech32mChar> decode_segwit(const std::string &hrp, const std::string
     return data;
 }
 
-std::string get_pub_key(const std::vector<Bech32mChar>& in) {
+std::string get_pub_key(const std::vector<Bech32mChar> &in) {
     std::vector<Bech32mChar> data_filtered = {};
     data_filtered.insert(data_filtered.end(), in.begin() + 1, in.end() - 6);
 
@@ -226,7 +225,6 @@ std::string get_pub_key(const std::vector<Bech32mChar>& in) {
     std::string str = bytes_to_hex(pub_key);
     return str;
 }
-
 
 inline char encodeBechChar(const Bech32mChar chr) { return BECH_SYMBOLS[chr.to_ulong()]; }
 
