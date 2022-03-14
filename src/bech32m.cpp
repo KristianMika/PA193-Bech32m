@@ -170,7 +170,7 @@ std::vector<Bech32mChar> decode(const std::string &code) {
     return data;
 }
 
-std::string get_pub_key(std::vector<Bech32mChar>& in) {
+std::string get_pub_key(const std::vector<Bech32mChar>& in) {
     std::vector<Bech32mChar> data_filtered = {};
     data_filtered.insert(data_filtered.end(), in.begin() + 1, in.end() - 6);
 
