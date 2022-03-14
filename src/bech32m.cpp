@@ -114,18 +114,22 @@ std::string bytes_to_hex(std::vector<uint8_t> &in) {
 }
 
 std::vector<uint8_t> _5to8(std::vector<Bech32mChar> in) {
-    int acc = 0;
+    // TODO convert this to use the BitStorage class
+    int accumulator = 0;
     int bits = 0;
     std::vector<uint8_t> ret = {};
-    int maxv = (1 << 8) - 1;
+    int max_val = (1 << 8) - 1;
     int max_acc = (1 << 12) - 1;
     for (const auto &val : in) {
-        acc = ((acc << 5) | static_cast<uint8_t>(val.to_ulong())) & max_acc;
+        accumulator = ((accumulator << 5) | static_cast<uint8_t>(val.to_ulong())) & max_acc;
         bits += 5;
         while (bits >= 8) {
             bits -= 8;
-            ret.push_back((acc >> bits) & maxv);
+            ret.push_back((accumulator >> bits) & max_val);
         }
+    }
+    if (bits >= 5 || ((accumulator << (8 - bits)) & max_val)) {
+        throw Bech32mException("Invalid alignment!");
     }
     return ret;
 }
@@ -198,6 +202,9 @@ std::vector<Bech32mChar> decode_segwit(const std::string &hrp, const std::string
     if (decoded_hrp != hrp) {
         throw Bech32mException("User data not matching!");
     }
+    if (static_cast<uint8_t>(data[0].to_ulong() > 16)) {
+        throw Bech32mException("Invalid witness version > 16! This is not not acceptable.");
+    }
     return data;
 }
 
@@ -209,6 +216,10 @@ std::string get_pub_key(const std::vector<Bech32mChar>& in) {
     pub_key.emplace_back(static_cast<uint8_t>(in[0].to_ulong()) + 0x50);
 
     std::vector<uint8_t> bytes = _5to8(data_filtered);
+
+    if (bytes.size() < 2 || bytes.size() > 40) {
+        throw Bech32mException("Converted bytes length is OOB");
+    }
     pub_key.emplace_back(static_cast<uint8_t>(bytes.size()));
     pub_key.insert(pub_key.end(), bytes.begin(), bytes.end());
 
