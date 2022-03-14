@@ -33,6 +33,16 @@ std::string encode(const std::string &hrp, const std::string &input);
  */
 std::vector<Bech32mChar> decode(const std::string &code);
 
+
+/**
+ * @brief Decodes the input bech32m string
+ *
+ * @param hrp as plain text 'bc' or 'tb'
+ * @param code in bech32m
+ * @return std::string decoded string
+ */
+std::vector<Bech32mChar> decode_segwit(const std::string &hrp, const std::string &code);
+
 /**
  * Encodes the data part without the checksum
  * @param storage

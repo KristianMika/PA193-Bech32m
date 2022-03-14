@@ -172,6 +172,32 @@ std::vector<Bech32mChar> decode(const std::string &code) {
     return data;
 }
 
+
+std::vector<Bech32mChar> decode_segwit(const std::string &hrp, const std::string &code) {
+    std::vector<Bech32mChar> data = decode(code);
+
+    // TODO remove this code duplicate vvv
+    std::string lowered(code.length(), '_');
+    std::transform(code.begin(), code.end(), lowered.begin(), tolower);
+
+    int separator = lowered.rfind('1');
+    if (separator == std::string::npos) {
+        throw Bech32mException("No separator of human readable part in the string to decode.");
+    }
+    if (separator > lowered.length() - 6) {
+        throw Bech32mException("Data part is shorter than 6 symbols");
+    }
+    std::string decoded_hrp = "";
+    if (separator > 0) {
+        decoded_hrp = lowered.substr(0, separator);
+    }
+    // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    if (decoded_hrp != hrp) {
+        throw Bech32mException("User data not matching!");
+    }
+    return data;
+}
+
 std::string get_pub_key(const std::vector<Bech32mChar>& in) {
     std::vector<Bech32mChar> data_filtered = {};
     data_filtered.insert(data_filtered.end(), in.begin() + 1, in.end() - 6);
