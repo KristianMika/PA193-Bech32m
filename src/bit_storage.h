@@ -36,7 +36,7 @@ class BitStorage {
         uint16_t index = 0;
 
       public:
-        explicit Iterator(const Bech32mBitset *_ptr, uint8_t _index) : ptr(_ptr), index(_index) {}
+        explicit Iterator(const Bech32mBitset *_ptr, uint16_t _index) : ptr(_ptr), index(_index) {}
 
         std::bitset<L> operator*() const {
             std::bitset<L> num = 0;
