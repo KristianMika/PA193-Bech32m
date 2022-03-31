@@ -53,5 +53,4 @@ HexBitStorage::HexBitStorage(const std::string &hex_value) {
     }
     length = hex_value.size() * HEX_CHAR_BIT_COUNT;
 
-    pad();
 }
