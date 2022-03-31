@@ -108,6 +108,17 @@ void test_insert() {
     ASSERT_EQUALS(*(it++), std::bitset<4>(0xa));
     // ASSERT_EQUALS(it, storage.end<4>());
 }
+
+void test_insert() {
+    BitStorage storage = HexBitStorage("fa");
+    storage.insert(4, std::bitset<4>(0xd));
+
+    auto it = storage.begin<4>();
+    ASSERT_EQUALS(*(it++), std::bitset<4>(0xf));
+    ASSERT_EQUALS(*(it++), std::bitset<4>(0xd));
+    ASSERT_EQUALS(*(it++), std::bitset<4>(0xa));
+    // ASSERT_EQUALS(it, storage.end<4>());
+}
 void test_bit_storage() {
     test_hex_bit_storage();
     test_base64_bit_storage();
