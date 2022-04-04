@@ -76,8 +76,6 @@ std::string encode(const std::string &hrp, const std::string &input) {
     return result;
 }
 
-std::string encode(const std::string &input) { return input; }
-
 bool bech32_verify_checksum(std::string const &hrp, const Bech32mVector &data) {
     Bech32mVector combined = expand_hrp(hrp);
     combined.insert(combined.end(), data.begin(), data.end());
@@ -110,27 +108,6 @@ std::string bytes_to_hex(std::vector<uint8_t> &in) {
     for (const auto &byte : in) {
         *buffer++ = hex_chars[byte >> 4];
         *buffer++ = hex_chars[byte & 0x0F];
-    }
-    return ret;
-}
-
-std::vector<uint8_t> _5to8(Bech32mVector in) {
-    // TODO convert this to use the BitStorage class
-    int accumulator = 0;
-    int bits = 0;
-    std::vector<uint8_t> ret = {};
-    int max_val = (1 << 8) - 1;
-    int max_acc = (1 << 12) - 1;
-    for (const auto &val : in) {
-        accumulator = ((accumulator << 5) | static_cast<uint8_t>(val.to_ulong())) & max_acc;
-        bits += 5;
-        while (bits >= 8) {
-            bits -= 8;
-            ret.push_back((accumulator >> bits) & max_val);
-        }
-    }
-    if (bits >= 5 || ((accumulator << (8 - bits)) & max_val)) {
-        throw Bech32mException("Invalid alignment!");
     }
     return ret;
 }

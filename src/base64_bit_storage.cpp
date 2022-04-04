@@ -21,7 +21,6 @@ uint8_t decode_base64_symbol(const char chr) {
 
 /**
  * Validates a base64 string
- *
  * @param base64_str a hex string to be validated
  * @return true if base64_str is a valid base64 string, else otherwise
  */
@@ -31,7 +30,6 @@ bool checkBase64(const std::string &base64_str) {
 
 /**
  * Checks if the base64 input chan be encoded into Bech32m
- *
  * @param base64 to be checked
  * @return true if the code can fit the limits, false otherwise
  */

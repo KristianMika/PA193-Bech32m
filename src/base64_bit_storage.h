@@ -11,6 +11,10 @@ static const uint16_t BASE64_CHAR_BIT_LENGTH = 6;
  */
 class Base64BitStorage : public BitStorage {
   public:
+    /**
+     * Construct a Base64 bit store from a valid Base64 string
+     * @param base64 Base64 string input
+     */
     explicit Base64BitStorage(const std::string &base64);
     Base64BitStorage(const BitStorage &storage) : BitStorage(storage) {}
     ~Base64BitStorage() override = default;
