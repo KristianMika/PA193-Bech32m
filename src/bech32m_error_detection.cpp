@@ -34,7 +34,7 @@ error_detection_result detect_error(const std::string &bech32m_enc_hex, size_t i
             Bech32mVector data = reverse_code(hrp.length() + 1, cpy.length(), cpy);
 
             if (bech32_verify_checksum(hrp, data)) {
-                // the substitution was in the hrp
+                // the substitution was in the checksum
                 return error_detection_result(detection_result::ONE_CHAR_SUBST, data);
             }
         }
