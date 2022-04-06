@@ -27,14 +27,14 @@ enum class input {
 struct Program_args {
     program_mode mode = program_mode::encode;
 
-    input input = input::stdinput;
+    input input_type = input::stdinput;
     std::string input_file = "";
     std::string input_text = "";
 
     // used in encode mode
     data_form input_format = data_form::hex;
 
-    output output = output::stdoutput;
+    output output_type = output::stdoutput;
     std::string outpu_file = "";
     // used in decode mode
     data_form output_format = data_form::Bech32m;

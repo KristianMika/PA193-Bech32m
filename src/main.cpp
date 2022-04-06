@@ -109,7 +109,7 @@ int encoding(const Program_args& arguments) {
     std::string input = "";
     std::string result;
     std::ofstream outpu_file;
-    if (arguments.output == output::file) {
+    if (arguments.output_type == output::file) {
         try {
             outpu_file.open(arguments.outpu_file, std::ios::out | std::ios::app);
         } catch (const std::ios_base::failure &e) {
@@ -120,7 +120,7 @@ int encoding(const Program_args& arguments) {
     }
 
     std::ifstream input_file;
-    switch (arguments.input) {
+    switch (arguments.input_type) {
     case input::stdinput: 
 
         std::cout << "Enter the value to be encoded:" << std::endl;
@@ -128,7 +128,7 @@ int encoding(const Program_args& arguments) {
         get_input_storage(arguments, input, storage);
         result = encode("BC", input);
         std::cout << input + " : " << result << std::endl;
-        if (arguments.output == output::file) {
+        if (arguments.output_type == output::file) {
             outpu_file << result << std::endl;
         }
         
@@ -137,7 +137,7 @@ int encoding(const Program_args& arguments) {
         get_input_storage(arguments, arguments.input_text, storage);
         result = encode("BC", arguments.input_text);
         std::cout << arguments.input_text + " : " << result << std::endl;
-        if (arguments.output == output::file) {
+        if (arguments.output_type == output::file) {
             outpu_file << result << std::endl;
         }
         break;
@@ -149,7 +149,7 @@ int encoding(const Program_args& arguments) {
                 result = encode("BC", input);
                 get_input_storage(arguments, input, storage);
                 std::cout << input + " : " << result << std::endl;
-                if (arguments.output == output::file) {
+                if (arguments.output_type == output::file) {
                     outpu_file << result << std::endl;
                 }
             }
@@ -163,7 +163,7 @@ int encoding(const Program_args& arguments) {
         break;
     }
 
-    if (arguments.output == output::file) {
+    if (arguments.output_type == output::file) {
         outpu_file.close();
     }
     return 0;
@@ -175,7 +175,7 @@ void decoding(const Program_args& arguments) {
     std::string input = "";
     std::string result;
     std::ofstream outpu_file;
-    if (arguments.output == output::file) {
+    if (arguments.output_type == output::file) {
         try {
             outpu_file.open(arguments.outpu_file, std::ios::out | std::ios::app);
         } catch (const std::ios_base::failure &e) {
@@ -185,7 +185,7 @@ void decoding(const Program_args& arguments) {
     }
 
     std::ifstream input_file;
-    switch (arguments.input) {
+    switch (arguments.input_type) {
     case input::stdinput:
         while (input != "end") {
             std::cout << "Enter the value to be encoded. For ending the program, enter 'end'" << std::endl;
@@ -193,7 +193,7 @@ void decoding(const Program_args& arguments) {
             get_input_storage(arguments, input, storage);
             //result = decode(input);
             std::cout << input + " : " << result << std::endl;
-            if (arguments.output == output::file) {
+            if (arguments.output_type == output::file) {
                 outpu_file << result << std::endl;
             }
         }
@@ -202,7 +202,7 @@ void decoding(const Program_args& arguments) {
         get_input_storage(arguments, arguments.input_text, storage);
         //result = decode(input);
         std::cout << arguments.input_text + " : " << result << std::endl;
-        if (arguments.output == output::file) {
+        if (arguments.output_type == output::file) {
             outpu_file << result << std::endl;
         }
         break;
@@ -214,7 +214,7 @@ void decoding(const Program_args& arguments) {
                 //result = get_pub_key(decode(input));
                 get_input_storage(arguments, input, storage);
                 std::cout << input + " : " << result << std::endl;
-                if (arguments.output == output::file) {
+                if (arguments.output_type == output::file) {
                     outpu_file << result << std::endl;
                 }
             }
@@ -228,7 +228,7 @@ void decoding(const Program_args& arguments) {
         break;
     }
 
-    if (arguments.output == output::file) {
+    if (arguments.output_type == output::file) {
         outpu_file.close();
     }
 }
