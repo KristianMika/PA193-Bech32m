@@ -1,9 +1,10 @@
+# TODO: use working-directory attribute
 name: Default CI
 on: [push]
 jobs:
   Build-and-Test-Ubuntu:
     runs-on: ubuntu-latest
-    name: run on Ubuntu
+    name: Build & test (Ubuntu)
     steps:
       - uses: actions/checkout@v2
       - name: Make build directory
@@ -24,7 +25,7 @@ jobs:
         run: valgrind --leak-check=full --track-origins=yes build/test/Test
 
   Build-and-Test-Windows:
-    name: run on Windows
+    name: Build & test (Windows)
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
@@ -46,3 +47,42 @@ jobs:
         run: sudo apt-get install --assume-yes cppcheck
       - name: Run cppcheck
         run: cppcheck --enable=all ./src/ ./test/      
+
+  Coverity:
+    env:
+      PROJECT_NAME: KristianMika%2FPA193-Bech32m
+      TOKEN: ${{ secrets.COVERITY_TOKEN }}
+    runs-on: ubuntu-latest
+    needs: [Build-and-Test-Ubuntu, Build-and-Test-Windows]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download coverity
+        run: |
+          wget https://scan.coverity.com/download/linux64 \
+            --quiet \
+            --post-data "token=${TOKEN}&project=${PROJECT_NAME}" \
+            --output-document coverity_tool.tgz
+      - name: Make Coverity dir
+        run: mkdir coverity
+      - name: Extract coverity
+        run: tar xvf coverity_tool.tgz --strip 1 -C coverity/
+      - name: Generate build files
+        run: mkdir build && cd build && cmake ..
+      - name: Build project
+        working-directory: build/
+        run: ../coverity/bin/cov-build --dir cov-int cmake --build .
+      - name: Display build log
+        working-directory: build/
+        run: tail cov-int/build-log.txt
+      - name: Create archive
+        working-directory: build/
+        run: tar czvf bech32m.tgz cov-int
+      - name: Upload results
+        working-directory: build/
+        run: |
+          curl --form token=${TOKEN} \
+            --form email=kristian.mika@protonmail.com \
+            --form file=@bech32m.tgz \
+            --form version="Version" \
+            --form description="Description" \
+            https://scan.coverity.com/builds?project=${PROJECT_NAME}
