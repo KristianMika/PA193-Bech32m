@@ -1,6 +1,7 @@
 #ifndef BECH32M_BECH32M_ERROR_DETECTION_H
 #define BECH32M_BECH32M_ERROR_DETECTION_H
 #include <string>
+#include <utility>
 
 enum class check_result {
     // The input string was valid, no correction took place
