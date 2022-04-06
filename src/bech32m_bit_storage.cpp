@@ -16,3 +16,5 @@ Bech32mBitStorage::Bech32mBitStorage(const std::string &bech32m) {
         }
     }
 }
+
+

@@ -52,7 +52,8 @@ Bech32mVector calculate_checksum(const Bech32mVector &combined) {
 
 std::string encode(const std::string &hrp, const std::string &input) {
     // creating storage and converting to bitset vector
-    BitStorage storage = HexBitStorage(input);
+    Bech32mBitStorage storage = HexBitStorage(input);
+
     Bech32mVector processed;
     for (const auto &symbol : storage) {
         processed.push_back(symbol);
@@ -196,27 +197,27 @@ std::bitset<T> reverse(std::bitset<T> in) {
 
 inline char encodeBechChar(const Bech32mChar chr) { return BECH_SYMBOLS[chr.to_ulong()]; }
 
-std::string encodeDataPart(const BitStorage &storage) {
-    std::vector<char> out;
-
-    for (const auto &b_set : storage) {
-        out.push_back(encodeBechChar(b_set));
-    }
-    return {out.begin(), out.end()};
-}
+//std::string encodeDataPart(const BitStorage &storage) {
+//    std::vector<char> out;
+//
+//    for (const auto &b_set : storage) {
+//        out.push_back(encodeBechChar(b_set));
+//    }
+//    return {out.begin(), out.end()};
+//}
 
 // TODO: support multiple output formats
-std::string decode_data_part(const std::string &bech) {
-    Bech32mBitStorage storage(bech);
-    std::stringstream out;
-    auto it = storage.begin<4>();
-    std::cout << std::endl;
-    while (it != storage.end<4>()) {
-        out << std::hex << (*it).to_ulong();
-        ++it;
-    }
-    return out.str();
-}
+//std::string decode_data_part(const std::string &bech) {
+//    Bech32mBitStorage storage(bech);
+//    std::stringstream out;
+//    auto it = storage.begin<4>();
+//    std::cout << std::endl;
+//    while (it != storage.end<4>()) {
+//        out << std::hex << (*it).to_ulong();
+//        ++it;
+//    }
+//    return out.str();
+//}
 
 template <uint16_t T>
 void encode_hex(BitStorage::Iterator<T> it, std::stringstream &out) {

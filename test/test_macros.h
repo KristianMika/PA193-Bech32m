@@ -14,7 +14,7 @@
                 ++success_count;                                                                                       \
             } else {                                                                                                   \
                 std::cout << ERROR_HEADER << #EXPRESSION << " != \"" << (TARGET) << "\"." << std::endl;                \
-                std::cout << "   Expression was evaluated to: " << expr << std::endl;                                                                    \
+                std::cout << "   Expression was evaluated to: " << expr << std::endl;                                  \
                 ++errors_count;                                                                                        \
             }                                                                                                          \
         } catch (std::exception & e) {                                                                                 \

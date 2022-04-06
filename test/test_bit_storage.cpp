@@ -16,9 +16,10 @@ void test_hex_bit_storage() {
     // 1111 1010 1111 1010 1111 1010
     // 11111 01011 11101 01111 10100
     const std::string to_encode = "fafafa";
-    HexBitStorage storage(to_encode);
+    Bech32mBitStorage storage = HexBitStorage(to_encode);
     int valid_length = static_cast<int>(to_encode.size()) * HEX_CHAR_BIT_COUNT; // 24
     ASSERT_EQUALS(storage.size(), valid_length);
+
     auto it = storage.begin();
     ASSERT_EQUALS(*(it++), Bech32mChar(0b11111));
     ASSERT_EQUALS(*(it++), Bech32mChar(0b01011));
@@ -36,9 +37,10 @@ void test_base64_bit_storage() {
     // 011000 010011 100001 110110 000010 100000
     // 01100 00100 11100 00111 01100 00010 10000 00000
     const std::string to_encode = "YTh2Cg==";
-    Base64BitStorage storage(to_encode);
+    Bech32mBitStorage storage = Base64BitStorage(to_encode);
     int valid_length = (static_cast<int>(to_encode.size()) - 2) * BASE64_CHAR_BIT_LENGTH; // 36, -2 for padding
     ASSERT_EQUALS(storage.size(), valid_length);
+
     auto it = storage.begin();
     ASSERT_EQUALS(*(it++), Bech32mChar(0b01100));
     ASSERT_EQUALS(*(it++), Bech32mChar(0b00100));
@@ -80,11 +82,12 @@ void test_hex_iterator() {
     // 11111  01011 11101 01111 10100
     // 1111 1010 1111 1010 1111 1010 0
     const std::string to_encode = "lta05";
-    Bech32mBitStorage storage(to_encode);
+    HexBitStorage storage = Bech32mBitStorage(to_encode);
     int storage_length = static_cast<int>(to_encode.size()) * BECH32M_CHAR_BIT_COUNT;
     ASSERT_EQUALS(storage.size(), storage_length);
     ASSERT_EQUALS(storage.size(), storage_length);
-    auto it = storage.begin<HEX_CHAR_BIT_COUNT>();
+
+    auto it = storage.begin();
     ASSERT_EQUALS(*(it++), std::bitset<4>(0b1111));
     ASSERT_EQUALS(*(it++), std::bitset<4>(0b1010));
     ASSERT_EQUALS(*(it++), std::bitset<4>(0b1111));
@@ -92,14 +95,14 @@ void test_hex_iterator() {
     ASSERT_EQUALS(*(it++), std::bitset<4>(0b1111));
     ASSERT_EQUALS(*(it++), std::bitset<4>(0b1010));
     ASSERT_EQUALS(*(it++), std::bitset<4>(0b0000));
-    ASSERT_EQUALS(it, storage.end<4>());
+    ASSERT_EQUALS(it, storage.end());
 }
 
 void test_insert() {
-    BitStorage storage = HexBitStorage("fa");
+    HexBitStorage storage = HexBitStorage("fa");
     storage.insert(4, std::bitset<4>(0xd));
 
-    auto it = storage.begin<4>();
+    auto it = storage.begin();
     ASSERT_EQUALS(*(it++), std::bitset<4>(0xf));
     ASSERT_EQUALS(*(it++), std::bitset<4>(0xd));
     ASSERT_EQUALS(*(it++), std::bitset<4>(0xa));
