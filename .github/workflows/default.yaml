@@ -1,4 +1,3 @@
-# TODO: use working-directory attribute
 name: Default CI
 on: [push]
 jobs:
@@ -10,9 +9,11 @@ jobs:
       - name: Make build directory
         run: mkdir build/
       - name: Generate build files
-        run: cd build && cmake ..
+        working-directory: build/
+        run: cmake ..
       - name: Compile binaries
-        run: cd build && cmake --build .
+        working-directory: build/
+        run: cmake --build .
       - name: Run the test binary
         run: build/test/Test
       # TODO: make a different stage for valgrind
@@ -33,9 +34,11 @@ jobs:
       - name: Make build directory
         run: mkdir build
       - name: Generate build files
-        run: cd build && cmake -G "NMake Makefiles" ..
+        working-directory: build\
+        run: cmake -G "NMake Makefiles" ..
       - name: Build 
-        run: cd build && nmake
+        working-directory: build\
+        run: nmake
       - name: Run the test binary
         run: build\test\Test.exe
         
