@@ -1,14 +1,12 @@
 #include "base64_bit_storage.h"
 #include "bech32m.h"
 #include "hex_bit_storage.h"
+#include "bech32m_bit_storage.h"
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include "argument_parser.h"
-
-
-int encoding(const Program_args &arguments);
-void decoding(const Program_args &arguments);
 
 
 int main(int argc, char** argv) {
@@ -52,183 +50,84 @@ int main(int argc, char** argv) {
     
     std::cout << "Parsed" << std::endl;
 
-    switch (arguments.mode) {
-    case program_mode::encode:
-        encoding(arguments);
-        break;
-    case program_mode::decode:
-        decoding(arguments);
-        break;
-    default:
-        break;
-    }
+    read_write(arguments);
     return 0;
 }
 
-void get_input_storage(const Program_args& arguments, const std::string& value, BitStorage& storage) {
-    switch (arguments.input_format) {
-    case data_form::bin:
-        std::cout << "Creating bin input sotrage" << std::endl;
-        storage = HexBitStorage(value);
-        break;
-    case data_form::hex:
-        std::cout << "Creating hex input sotrage" << std::endl;
-        storage = HexBitStorage(value);
-        break;
-    case data_form::base64:
-        std::cout << "Creating base64 input sotrage" << std::endl;
-        storage = Base64BitStorage(value);
-        break;
-    default:
-        break;
-    }
-}
-
-void get_output_storage(const Program_args &arguments, const std::string &value, BitStorage &storage) {
-    switch (arguments.output_format) {
-    case data_form::bin:
-        std::cout << "Creating bin output sotrage" << std::endl;
-        storage = HexBitStorage(value);
-        break;
-    case data_form::hex:
-        std::cout << "Creating hex output sotrage" << std::endl;
-        storage = HexBitStorage(value);
-        break;
-    case data_form::base64:
-        std::cout << "Creating base64 output sotrage" << std::endl;
-        storage = Base64BitStorage(value);
-        break;
-    default:
-        break;
-    }
-}
-
-int encoding(const Program_args& arguments) { 
-    std::cout << "Encoding" << std::endl;
+std::string presentation_layer(const Program_args &arguments, const std::string& input) {
     BitStorage storage;
+    switch (arguments.input_format) {
+    case data_form::Bech32m:
+        storage = Bech32mBitStorage(input);
+        break;
+    case data_form::base64:
+        storage = Base64BitStorage(input);
+        break;
+    case data_form::hex:
+        storage = HexBitStorage(input);
+        break;
+    case data_form::bin:
+        storage = HexBitStorage(input);
+        break;
+    default:
+        break;
+    }
+
+
+
+
+    return input;
+}
+
+
+int read_write(const Program_args& arguments) {
     std::string input = "";
     std::string result;
-    std::ofstream outpu_file;
+    std::ofstream output_file;
+    std::ifstream input_file;
+    std::istringstream input_string(arguments.input_text);
+
+    // try to open output file if needed
     if (arguments.output_type == output::file) {
         try {
-            outpu_file.open(arguments.outpu_file, std::ios::out | std::ios::app);
+            output_file.open(arguments.outpu_file, std::ios::out | std::ios::app);
         } catch (const std::ios_base::failure &e) {
-            outpu_file.close();
+            output_file.close();
             std::cout << "Something went wrong when handling the output file." << std::endl << e.what() << std::endl;
             return 1;
         }
     }
 
-    std::ifstream input_file;
-    switch (arguments.input_type) {
-    case input::stdinput: 
+    // set target as file or std::cout
+    std::ostream& target = arguments.output_type == output::file ? output_file : std::cout;
 
-        std::cout << "Enter the value to be encoded:" << std::endl;
-        std::cin >> input;
-        get_input_storage(arguments, input, storage);
-        result = encode("BC", input);
-        std::cout << input + " : " << result << std::endl;
-        if (arguments.output_type == output::file) {
-            outpu_file << result << std::endl;
-        }
-        
-        break;
-    case input::argument:
-        get_input_storage(arguments, arguments.input_text, storage);
-        result = encode("BC", arguments.input_text);
-        std::cout << arguments.input_text + " : " << result << std::endl;
-        if (arguments.output_type == output::file) {
-            outpu_file << result << std::endl;
-        }
-        break;
-    case input::file:
+    // try to open input file if needed
+    if (arguments.input_type == input::file) {
         try {
-            input_file.open("example.txt", std::ios::in);
-
-            while (std::getline(input_file, input)) {
-                result = encode("BC", input);
-                get_input_storage(arguments, input, storage);
-                std::cout << input + " : " << result << std::endl;
-                if (arguments.output_type == output::file) {
-                    outpu_file << result << std::endl;
-                }
-            }
-            input_file.close();
-        } catch (const std::ios_base::failure& e) {
-            input_file.close();
-            std::cout << "Something went wrong when handling the input file." << std::endl << e.what() << std::endl;
-        } 
-        break;
-    default:
-        break;
-    }
-
-    if (arguments.output_type == output::file) {
-        outpu_file.close();
-    }
-    return 0;
-}
-
-void decoding(const Program_args& arguments) {
-    std::cout << "Decoding" << std::endl;
-    BitStorage storage;
-    std::string input = "";
-    std::string result;
-    std::ofstream outpu_file;
-    if (arguments.output_type == output::file) {
-        try {
-            outpu_file.open(arguments.outpu_file, std::ios::out | std::ios::app);
+            input_file.open(arguments.input_file, std::ios::in);
         } catch (const std::ios_base::failure &e) {
-            outpu_file.close();
+            input_file.close();
             std::cout << "Something went wrong when handling the output file." << std::endl << e.what() << std::endl;
+            return 1;
         }
     }
 
-    std::ifstream input_file;
-    switch (arguments.input_type) {
-    case input::stdinput:
-        while (input != "end") {
-            std::cout << "Enter the value to be encoded. For ending the program, enter 'end'" << std::endl;
-            std::cin >> input;
-            get_input_storage(arguments, input, storage);
-            //result = decode(input);
-            std::cout << input + " : " << result << std::endl;
-            if (arguments.output_type == output::file) {
-                outpu_file << result << std::endl;
-            }
-        }
-        break;
-    case input::argument:
-        get_input_storage(arguments, arguments.input_text, storage);
-        //result = decode(input);
-        std::cout << arguments.input_text + " : " << result << std::endl;
-        if (arguments.output_type == output::file) {
-            outpu_file << result << std::endl;
-        }
-        break;
-    case input::file:
-        try {
-            input_file.open("example.bin", std::ios::in);
+    std::istream& source = arguments.input_type == input::file ? input_file : 
+                           arguments.input_type == input::argument ? input_string 
+                                                                : std::cin;
 
-            while (std::getline(input_file, input)) {
-                //result = get_pub_key(decode(input));
-                get_input_storage(arguments, input, storage);
-                std::cout << input + " : " << result << std::endl;
-                if (arguments.output_type == output::file) {
-                    outpu_file << result << std::endl;
-                }
-            }
-            input_file.close();
-        } catch (const std::ios_base::failure &e) {
-            input_file.close();
-            std::cout << "Something went wrong when handling the input file." << std::endl << e.what() << std::endl;
-        }
-        break;
-    default:
-        break;
+    std::string line;
+    while (std::getline(source, line) && !std::all_of(line.begin(), line.end(), isspace)) {
+        result = presentation_layer(arguments, line);
+        target << result << std::endl;
     }
 
-    if (arguments.output_type == output::file) {
-        outpu_file.close();
+    // comented out, based on cppreference the ofstream and ifstream .close() methods are called in destructor
+    /*if (arguments.output_type == output::file) {
+        output_file.close();
     }
+    if (arguments.input_type == input::file) {
+        output_file.close();
+    }*/
 }
+
