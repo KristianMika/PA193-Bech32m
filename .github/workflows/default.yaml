@@ -10,7 +10,7 @@ jobs:
         run: mkdir build/
       - name: Generate build files
         working-directory: build/
-        run: cmake ..
+        run: cmake -DCMAKE_BUILD_TYPE=Release ..
       - name: Compile binaries
         working-directory: build/
         run: cmake --build .
@@ -35,7 +35,7 @@ jobs:
         run: mkdir build
       - name: Generate build files
         working-directory: build\
-        run: cmake -G "NMake Makefiles" ..
+        run: cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release ..
       - name: Build 
         working-directory: build\
         run: nmake
@@ -71,7 +71,7 @@ jobs:
       - name: Extract coverity
         run: tar xvf coverity_tool.tgz --strip 1 --directory coverity/
       - name: Generate build files
-        run: mkdir build && cd build && cmake ..
+        run: mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release ..
       - name: Build project
         working-directory: build/
         run: ../coverity/bin/cov-build --dir cov-int cmake --build .
@@ -111,6 +111,6 @@ jobs:
       # A simple hack, since Infer does not work with cmake 
       # https://github.com/facebook/infer/issues/909#issuecomment-402829290
       - name: Generate build files
-        run: cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1
+        run: cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_BUILD_TYPE=Release
       - name: Run Infer
         run: infer/bin/infer run --compilation-database compile_commands.json 
