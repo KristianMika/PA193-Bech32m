@@ -4,7 +4,7 @@ project(Bech32m)
 set(CMAKE_CXX_STANDARD 14)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    SET(CMAKE_CXX_BUILD_FLAGS  "/Wall")
+    SET(CMAKE_CXX_BUILD_FLAGS  "/Wall /sdl")
 else()
     SET(CMAKE_CXX_BUILD_FLAGS  "-Wall -Wextra -pedantic")
 endif()
