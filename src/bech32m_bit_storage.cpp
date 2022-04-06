@@ -17,10 +17,4 @@ Bech32mBitStorage::Bech32mBitStorage(const std::string &bech32m) {
     }
 }
 
-Bech32mBitStorage::Bech32mBitStorage(const std::vector<Bech32mChar> &bech32m) {
-    for (const Bech32mChar &bech_ch : bech32m) {
-        for (int i = 0; i < BECH32M_CHAR_BIT_COUNT; ++i) {
-            value.set(length++, bech_ch[i]);
-        }
-    }
-}
+

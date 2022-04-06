@@ -51,8 +51,8 @@ std::string encodeDataPart(const BitStorage &storage);
 
 std::string decode_data_part(const std::string &bech);
 
-std::string get_pub_key(const std::vector<Bech32mChar> &in);
-
 std::vector<uint8_t> _5to8(std::vector<Bech32mChar> in);
+
+std::string to_hex(const BitStorage &bech);
 
 #endif // BECH32M_BECH32M_H

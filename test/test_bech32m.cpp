@@ -44,25 +44,6 @@ void test_encode() {
                   "bc12ys8n0nx0muaewav2ksx99wwsu9swq5mlndjmn3gm9vl9q2mzmup0xqpy4uzg");
 }
 
-/**
- * Tests the proper Bech32m decoding
- */
-void test_decode() {
-    // v0-v16 native segregated witness addresses
-    ASSERT_THROWS(get_pub_key(decode("BC1QW508D6QEJXTDG4Y5R3ZARVARY0C5XW7KV8F3T4")), Bech32mException);
-    ASSERT_THROWS(get_pub_key(decode("tb1qrp33g0q5c5txsp9arysrx4k6zdkfs4nce4xj0gdcccefvpysxf3q0sl5k7")),
-                  Bech32mException);
-    ASSERT_EQUALS(get_pub_key(decode("bc1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7kt5nd6y")),
-                  "5128751e76e8199196d454941c45d1b3a323f1433bd6751e76e8199196d454941c45d1b3a323f1433bd6");
-    ASSERT_EQUALS(get_pub_key(decode("BC1SW50QGDZ25J")), "6002751e");
-    ASSERT_EQUALS(get_pub_key(decode("bc1zw508d6qejxtdg4y5r3zarvaryvaxxpcs")), "5210751e76e8199196d454941c45d1b3a323");
-    ASSERT_THROWS(get_pub_key(decode("tb1qqqqqp399et2xygdj5xreqhjjvcmzhxw4aywxecjdzew6hylgvsesrxh6hy")),
-                  Bech32mException);
-    ASSERT_EQUALS(get_pub_key(decode("tb1pqqqqp399et2xygdj5xreqhjjvcmzhxw4aywxecjdzew6hylgvsesf3hn0c")),
-                  "5120000000c4a5cad46221b2a187905e5266362b99d5e91c6ce24d165dab93e86433");
-    ASSERT_EQUALS(get_pub_key(decode("bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqzk5jj0")),
-                  "512079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798");
-}
 
 /**
  * Tests if invalid Bech32m codes can be identified
@@ -83,37 +64,6 @@ void test_invalid_bech32m() {
     ASSERT_THROWS(decode("M1VUXWEZ"), Bech32mException);
     ASSERT_THROWS(decode("16plkw9"), Bech32mException);
     ASSERT_THROWS(decode("1p2gdwpf"), Bech32mException);
-}
-
-void test_invalid_segwit_addresses() {
-    ASSERT_THROWS(get_pub_key(decode_segwit("tb", "tc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vq5zuyut")),
-                  Bech32mException); // tc Is not valid
-    ASSERT_THROWS(get_pub_key(decode_segwit("bc", "bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqh2y7hd")),
-                  Bech32mException); // Bech32
-    ASSERT_THROWS(get_pub_key(decode_segwit("bc", "BC1S0XLXVLHEMJA6C4DQV22UAPCTQUPFHLXM9H8Z3K2E72Q4K9HCZ7VQ54WELL")),
-                  Bech32mException); // Bech32
-    // ASSERT_THROWS(get_pub_key(decode_segwit("bc", "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kemeawh")), Bech32mException);
-    // // Is actually valid Bech32m ASSERT_THROWS(get_pub_key(decode_segwit("tb",
-    // "tb1q0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vq24jc47")),
-    //               Bech32mException); // Is actually valid Bech32m
-    ASSERT_THROWS(get_pub_key(decode_segwit("bc", "bc1p38j9r5y49hruaue7wxjce0updqjuyyx0kh56v8s25huc6995vvpql3jow4")),
-                  Bech32mException); // Invalid character in checksum
-    ASSERT_THROWS(get_pub_key(decode_segwit("bc", "BC130XLXVLHEMJA6C4DQV22UAPCTQUPFHLXM9H8Z3K2E72Q4K9HCZ7VQ7ZWS8R")),
-                  Bech32mException); // Invalid witness version
-    ASSERT_THROWS(get_pub_key(decode_segwit("bc", "bc1pw5dgrnzv")),
-                  Bech32mException); // Invalid program length (1 byte)
-    ASSERT_THROWS(get_pub_key(decode_segwit(
-                      "bc", "bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7v8n0nx0muaewav253zgeav")),
-                  Bech32mException); // Invalid program length (41 bytes)
-    ASSERT_THROWS(get_pub_key(decode_segwit("bc", "BC1QR508D6QEJXTDG4Y5R3ZARVARYV98GJ9P")),
-                  Bech32mException); // Invalid program length for witness version 0 (per BIP141)
-    ASSERT_THROWS(get_pub_key(decode_segwit("tb", "tb1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vq47Zagq")),
-                  Bech32mException); // Mixed case
-    ASSERT_THROWS(get_pub_key(decode_segwit("bc", "bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7v07qwwzcrf")),
-                  Bech32mException); // More than 4 padding bits
-    ASSERT_THROWS(get_pub_key(decode_segwit("tb", "tb1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vpggkg4j")),
-                  Bech32mException); // Non-zero padding in 8-to-5 conversion
-    ASSERT_THROWS(get_pub_key(decode_segwit("bc", "bc1gmk9yu")), Bech32mException); // Empty data section
 }
 
 /**
@@ -141,9 +91,7 @@ int main() {
 
     RUN_TEST(test_basic);
     RUN_TEST(test_encode);
-    RUN_TEST(test_decode);
     RUN_TEST(test_invalid_bech32m);
-    RUN_TEST(test_invalid_segwit_addresses);
     RUN_TEST(test_bit_storage);
 
     return interpret_test_results();
