@@ -1,28 +1,43 @@
 #include "bech32m_error_detection.h"
+#include "bech32m.h"
+#include <utility>
 
-std::pair<bool, std::string> check(const std::string &bech32m_enc) {
-    // check length is greater than min checksum length + separator + hrp
-    if (bech32m_enc.length() < 8) {
-        return std::make_pair(false, "bech32m_enc too short");
-    }
-    if (bech32m_enc.length() > 90) {
-        return std::make_pair(false, "bech32m_enc too long");
-    }
+error_detection_result detect_error(const std::string &bech32m_enc_hex, size_t idx_separator) {
+    std::string cpy = bech32m_enc_hex;
+    std::string hrp = bech32m_enc_hex.substr(0, idx_separator);
 
-    // check contains 1
-    if (bech32m_enc.find('1') == std::string::npos) {
-        // TODO find a position for '1' since that can be the only reason for failure (in single char errors)
-        return std::make_pair(false, "bech32m_enc does not contain 1");
-    }
+    // check hrp
+    for (size_t i = 0; i < idx_separator; ++i) {
+        char c = cpy[i];
+        for (int j = 33; j < 127; ++j) {
+            char valid_char = static_cast<char>(j);
+            if (c == valid_char) {
+                continue;
+            }
+            cpy[i] = valid_char;
+            Bech32mVector data = reverse_code(hrp.length() + 1, cpy.length(), cpy);
 
-    // iterate over bech32m_enc
-    for (int i = 0; i < bech32m_enc.length(); ++i) {
-        // check if char is in alphabet
-        if (bech32m_enc[i] < 'a' || bech32m_enc[i] > 'z') {
-            return std::make_pair(false, "bech32m_enc contains invalid char");
+            if (bech32_verify_checksum(hrp, data)) {
+                // the substitution was in the hrp
+                return error_detection_result(detection_result::ONE_CHAR_SUBST, data);
+            }
         }
     }
+    // check checksum
+    for (size_t i = idx_separator + 1; i < bech32m_enc_hex.length(); ++i) {
+        char c = cpy[i];
+        for (char valid_char : BECH_SYMBOLS) {
+            if (c == valid_char) {
+                continue;
+            }
+            cpy[i] = valid_char;
+            Bech32mVector data = reverse_code(hrp.length() + 1, cpy.length(), cpy);
 
-    // TODO
-    return std::make_pair(true, bech32m_enc);
+            if (bech32_verify_checksum(hrp, data)) {
+                // the substitution was in the hrp
+                return error_detection_result(detection_result::ONE_CHAR_SUBST, data);
+            }
+        }
+    }
+    return error_detection_result(detection_result::INVALID);
 }

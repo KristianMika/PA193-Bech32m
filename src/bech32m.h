@@ -44,4 +44,21 @@ std::string decode_data_part(const std::string &bech);
  */
 std::string to_hex(const BitStorage &bech);
 
+/**
+ * Remaps the input checksum string to the bech32m alphabet
+ * @param begin start of the checksum string
+ * @param end total length of the code
+ * @param code the encoded string
+ * @return intermediate representation of the checksum
+ */
+Bech32mVector reverse_code(int begin, int end, const std::string &code);
+
+/**
+ * Verify the validity of the checksum against the human readable part
+ * @param hrp human readable part
+ * @param data intermediate representation of the checksum
+ * @return true if the checksum is valid, false otherwise
+ */
+bool bech32_verify_checksum(std::string const &hrp, const Bech32mVector &data);
+
 #endif // BECH32M_BECH32M_H

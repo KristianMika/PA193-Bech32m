@@ -98,16 +98,16 @@ void test_hex_iterator() {
     ASSERT_EQUALS(it, storage.end());
 }
 
-//void test_insert() {
-//    HexBitStorage storage = HexBitStorage("fa");
-//    storage.insert(4, std::bitset<4>(0xd));
-//
-//    auto it = storage.begin();
-//    ASSERT_EQUALS(*(it++), std::bitset<4>(0xf));
-//    ASSERT_EQUALS(*(it++), std::bitset<4>(0xd));
-//    ASSERT_EQUALS(*(it++), std::bitset<4>(0xa));
-//    // ASSERT_EQUALS(it, storage.end<4>());
-//}
+void test_insert() {
+    HexBitStorage storage = HexBitStorage("fa");
+    storage.insert(4, std::bitset<4>(0xd));
+
+    auto it = storage.begin();
+    ASSERT_EQUALS(*(it++), std::bitset<4>(0xf));
+    ASSERT_EQUALS(*(it++), std::bitset<4>(0xd));
+    ASSERT_EQUALS(*(it++), std::bitset<4>(0xa));
+    ASSERT_EQUALS(it, storage.end<4>());
+}
 
 
 
@@ -116,5 +116,5 @@ void test_bit_storage() {
     test_base64_bit_storage();
     test_bech32m_bit_storage();
     test_hex_iterator();
-    // test_insert();
+    test_insert();
 }

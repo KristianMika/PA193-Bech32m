@@ -3,17 +3,22 @@
 #include <string>
 #include <utility>
 
-enum class check_result {
+enum class detection_result {
     // The input string was valid, no correction took place
     VALID,
     // The input string contained one character substitution, corrected string is in the second pair element
     ONE_CHAR_SUBST,
-    // The input string was too long for efficient processing
-    TOO_LONG,
-    // The input string was too short and one char addition did not yield a valid encoded value
-    TOO_SHORT,
     // The input string contains two or more error and could not be repaired
     INVALID
+};
+
+class error_detection_result {
+  public:
+    detection_result result;
+    Bech32mVector data;
+
+    error_detection_result(detection_result _result, Bech32mVector _data) : result(_result), data(std::move(_data)) {}
+    explicit error_detection_result(detection_result _result) : result(_result), data() {}
 };
 
 /**
@@ -22,5 +27,5 @@ enum class check_result {
  * @return a pair, boolean indicating an error in the string, string containing the corrected input,
  * if the boolean is `false` the string contains the input
  */
-std::pair<bool, std::string> check(const std::string &bech32m_enc);
+error_detection_result detect_error(const std::string &bech32m_enc_hex, size_t idx_separator);
 #endif // BECH32M_BECH32M_ERROR_DETECTION_H
