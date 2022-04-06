@@ -44,6 +44,7 @@ jobs:
         
   CppCheck:
     runs-on: ubuntu-latest
+    needs: [Build-and-Test-Ubuntu, Build-and-Test-Windows]
     steps:
       - uses: actions/checkout@v2
       - name: Install cppcheck
@@ -68,7 +69,7 @@ jobs:
       - name: Make Coverity dir
         run: mkdir coverity
       - name: Extract coverity
-        run: tar xvf coverity_tool.tgz --strip 1 -C coverity/
+        run: tar xvf coverity_tool.tgz --strip 1 --directory coverity/
       - name: Generate build files
         run: mkdir build && cd build && cmake ..
       - name: Build project
@@ -89,3 +90,27 @@ jobs:
             --form version="Version" \
             --form description="Description" \
             https://scan.coverity.com/builds?project=${PROJECT_NAME}
+
+  Infer:
+    runs-on: ubuntu-latest
+    needs: [Build-and-Test-Ubuntu, Build-and-Test-Windows]
+    env:
+      VERSION: 1.1.0
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download infer
+        run: |
+          wget \
+            "https://github.com/facebook/infer/releases/download/v$VERSION/infer-linux64-v${VERSION}.tar.xz" \
+            --quiet \
+            --output-document infer.tar.xz
+      - name: Make Infer dir
+        run: mkdir infer
+      - name: Extract Infer
+        run: tar xvf infer.tar.xz --strip 1 --directory infer/
+      # A simple hack, since Infer does not work with cmake 
+      # https://github.com/facebook/infer/issues/909#issuecomment-402829290
+      - name: Generate build files
+        run: cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1
+      - name: Run Infer
+        run: infer/bin/infer run --compilation-database compile_commands.json 
