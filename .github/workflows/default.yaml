@@ -4,6 +4,7 @@ env:
   BINARY_NAME: app
   TEST_BINARY_NAME: Test
 jobs:
+
   Build-and-Test-Ubuntu:
     runs-on: ubuntu-latest
     name: Build & test (Ubuntu)
@@ -110,12 +111,11 @@ jobs:
         run: mkdir infer
       - name: Extract Infer
         run: tar xvf infer.tar.xz --strip 1 --directory infer/
-      # A simple hack, since Infer does not work with cmake 
-      # https://github.com/facebook/infer/issues/909#issuecomment-402829290
-      - name: Generate build files
-        run: cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_BUILD_TYPE=Release
+      - name: Create a compilation DB
+        run: cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_BUILD_TYPE=Release .
       - name: Run Infer
-        run: infer/bin/infer run --compilation-database compile_commands.json 
+        run: infer/bin/infer run --compilation-database compile_commands.json
+
   Valgrind-Memcheck:
     name: Valgrind memcheck
     runs-on: ubuntu-latest
@@ -134,3 +134,16 @@ jobs:
         run: chmod +x binaries/test/${TEST_BINARY_NAME}
       - name: Run memcheck
         run: valgrind --leak-check=full --track-origins=yes binaries/test/${TEST_BINARY_NAME}
+
+  Clang-Tidy:
+    runs-on: ubuntu-latest
+    name: Clang-tidy
+    needs: [Build-and-Test-Ubuntu, Build-and-Test-Windows]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Update indices
+        run: sudo apt-get update 
+      - name: Install clang-tidy
+        run: sudo apt-get install --assume-yes clang-tidy
+      - name: Run clang-tidy
+        run: clang-tidy -header-filter=.* {src,test}/*.cpp -- -std=c++17
