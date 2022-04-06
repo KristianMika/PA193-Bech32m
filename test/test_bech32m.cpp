@@ -1,4 +1,5 @@
 #include "../src/bech32m.h"
+#include "../src/bech32m_error_detection.h"
 #include "../src/bech32m_exception.h"
 #include "test_bit_storage.h"
 #include "test_macros.h"
@@ -44,7 +45,6 @@ void test_encode() {
                   "bc12ys8n0nx0muaewav2ksx99wwsu9swq5mlndjmn3gm9vl9q2mzmup0xqpy4uzg");
 }
 
-
 /**
  * Tests if invalid Bech32m codes can be identified
  */
@@ -64,6 +64,23 @@ void test_invalid_bech32m() {
     ASSERT_THROWS(decode("M1VUXWEZ"), Bech32mException);
     ASSERT_THROWS(decode("16plkw9"), Bech32mException);
     ASSERT_THROWS(decode("1p2gdwpf"), Bech32mException);
+}
+
+/**
+ * Some basic inputs without any substitutions
+ */ 
+void test_without_errors() {
+    ASSERT_EQUALS(check("A1LQFN3A").first, true);
+    ASSERT_EQUALS(check("a1lqfn3a").first, true);
+    ASSERT_EQUALS(
+        check("an83characterlonghumanreadablepartthatcontainsthetheexcludedcharactersbioandnumber11sg7hg6").first,
+        true);
+    ASSERT_EQUALS(check("abcdef1l7aum6echk45nj3s0wdvt2fg8x9yrzpqzd3ryx").first, true);
+    ASSERT_EQUALS(
+        check("11llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllludsr8").first,
+        true);
+    ASSERT_EQUALS(check("split1checkupstagehandshakeupstreamerranterredcaperredlc445v").first, true);
+    ASSERT_EQUALS(check("?1v759aa").first, true);
 }
 
 /**
