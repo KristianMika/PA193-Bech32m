@@ -45,7 +45,7 @@ void set_output_file(Program_args &args, const std::string &file) {
      } else if (!file.empty()) {
          // validation of the path if wanted
          args.outpu_file = file;
-         args.output = output::file;
+         args.output_type = output::file;
      } else {
          throw Bech32mException("Invalid argument parameter passed to program.\n");
      }
@@ -59,7 +59,7 @@ void set_input_file(Program_args &args, const std::string &file) {
      } else if (!file.empty()) {
          // validation of the path if wanted
          args.input_file = file;
-         args.input = input::file;
+         args.input_type = input::file;
      } else {
          throw Bech32mException("Invalid parameter " + file + " passed to argument --input-file.\n");
      }
@@ -73,7 +73,7 @@ void set_input_text(Program_args &args, const std::string &text) {
      } else if (!text.empty()) {
          // validation of the path if wanted
          args.input_text = text;
-         args.input = input::argument;
+         args.input_type = input::argument;
      } else {
          throw Bech32mException("Invalid parameter " + text + " passed to argument --input-text.\n");
      }
