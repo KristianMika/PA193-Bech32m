@@ -9,6 +9,8 @@
 #include "argument_parser.h"
 
 
+int read_write(const Program_args &arguments);
+
 int main(int argc, char** argv) {
 
     Parser parser = Parser();
