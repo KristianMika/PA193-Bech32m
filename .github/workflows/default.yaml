@@ -1,8 +1,9 @@
 name: Default CI
 on: [push]
 jobs:
-  Build-and-Test:
+  Build-and-Test-Ubuntu:
     runs-on: ubuntu-latest
+    name: run on Ubuntu
     steps:
       - uses: actions/checkout@v2
       - name: Make build directory
@@ -20,7 +21,22 @@ jobs:
         run: sudo apt-get install --assume-yes valgrind
       # Run memcheck only after the tests have passed 
       - name: Run memcheck
-        run: valgrind --leak-check=full --track-origins=yes build/test/Test 
+        run: valgrind --leak-check=full --track-origins=yes build/test/Test
+
+  Build-and-Test-Windows:
+    name: run on Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ilammy/msvc-dev-cmd@v1
+      - name: Make build directory
+        run: mkdir build
+      - name: Generate build files
+        run: cd build && cmake -G "NMake Makefiles" ..
+      - name: Build 
+        run: cd build && nmake
+      - name: Run the test binary
+        run: build\test\Test.exe
         
   CppCheck:
     runs-on: ubuntu-latest
