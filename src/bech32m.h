@@ -2,6 +2,7 @@
 #define BECH32M_BECH32M_H
 
 #include "bit_storage.h"
+#include "argument_parser.h"
 #include <algorithm>
 #include <string>
 #include <vector>
@@ -23,7 +24,7 @@ std::string encode(const std::string &hrp, const std::string &input);
  * @param code in bech32m
  * @return std::string decoded string
  */
-std::vector<Bech32mChar> decode(const std::string &code);
+std::vector<Bech32mChar> decode(const std::string &code, data_form output_format = data_form::hex);
 
 /**
  * Encodes the data part without the checksum

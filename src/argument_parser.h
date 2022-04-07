@@ -6,7 +6,8 @@
 #include "bech32m_exception.h"
 #include <iostream>
 
-
+#ifndef ARGUMENT_PARSER
+#define ARGUMENT_PARSER
 enum class program_mode { 
     encode, 
     decode };
@@ -113,3 +114,5 @@ class Parser {
     }
     Program_args parse(const int &argc, char **argv);
 };
+
+#endif // ARGUMENT_PARSER

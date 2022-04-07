@@ -142,7 +142,7 @@ bool verify_bech32m(const std::string &code) {
     return true;
 }
 
-Bech32mVector decode(const std::string &code, data_form output_format = data_form::hex) {
+Bech32mVector decode(const std::string &code, data_form output_format) {
     verify_bech32m(code);
 
     std::string lowered(code.size(), 0x00);
@@ -176,7 +176,7 @@ Bech32mVector decode(const std::string &code, data_form output_format = data_for
         throw Bech32mException("Sent data do not match the received data.");
     }
 
-    Bech32mBitStorage converter = Bech32mBitStorage(data);
+    // Bech32mBitStorage converter = Bech32mBitStorage(data);
     //std::string result;
 
     //switch (output_format) {
