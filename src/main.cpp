@@ -16,6 +16,7 @@ int main(int argc, char **argv) {
 
     Parser parser = Parser();
 
+    // clang-format off
     parser
         .add_argument(Argument()
                           .add_name("--input-format")
@@ -29,10 +30,20 @@ int main(int argc, char **argv) {
                           .add_param_value("hex")
                           .add_param_value("base64")
                           .add_handler(set_output_format))
-        .add_argument(Argument().add_name("--input-file").set_variable_param().add_handler(set_input_file))
-        .add_argument(
-            Argument().add_name("--input-text").add_name("-t").set_variable_param().add_handler(set_input_text))
-        .add_argument(Argument().add_name("--output-file").set_variable_param().add_handler(set_output_file));
+        .add_argument(Argument()
+                          .add_name("--input-file")
+                          .set_variable_param()
+                          .add_handler(set_input_file))
+        .add_argument(Argument()
+                          .add_name("--input-text")
+                          .add_name("-t")
+                          .set_variable_param()
+                          .add_handler(set_input_text))
+        .add_argument(Argument()
+                          .add_name("--output-file")
+                          .set_variable_param()
+                          .add_handler(set_output_file));
+    // clang-format on
 
     Program_args arguments;
     try {
