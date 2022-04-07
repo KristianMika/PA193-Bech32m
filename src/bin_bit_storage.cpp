@@ -1,6 +1,5 @@
 #include "bin_bit_storage.h"
 
-
 BinBitStorage::BinBitStorage(const std::string &in) {
     unsigned char mask = 0b10000000;
     for (const char ch : in) {

@@ -20,14 +20,14 @@ struct Program_args {
     program_mode mode = program_mode::encode;
 
     input input_type = input::stdinput;
-    std::string input_file = "";
-    std::string input_text = "";
+    std::string input_file;
+    std::string input_text;
 
     // used in encode mode
     data_form input_format = data_form::hex;
 
     output output_type = output::stdoutput;
-    std::string outpu_file = "";
+    std::string outpu_file;
     // used in decode mode
     data_form output_format = data_form::Bech32m;
 
@@ -37,56 +37,59 @@ struct Program_args {
 };
 
 class Argument {
+  public:
+    using HandlerType = std::function<void(Program_args &, std::string)>;
+
   private:
     // set of valid parameters for the argument
     std::set<std::string> valid_params;
     // set of valid names for the argument
-    std::set<std::string> names;
+    std::string name;
     // function pointer
-    std::function<void(Program_args &, const std::string &)> handler;
+    HandlerType handler;
+
     bool param = false;
     bool variable_parameter = false;
 
   public:
-    std::string key;
-    bool has_param() { return param; }
+    bool has_param() const { return param; }
 
-    Argument &set_variable_param() {
+    Argument set_variable_param() {
         param = true;
         variable_parameter = true;
         return *this;
     }
 
-    Argument &add_param_value(const std::string &param) {
-        valid_params.insert(param);
+    Argument add_param_value(std::string _param) {
+        valid_params.insert(std::move(_param));
         this->param = true;
         return *this;
     }
 
-    bool is_valid_param(const std::string &param) {
-        return variable_parameter || valid_params.find(param) != valid_params.end();
+    bool is_valid_param(const std::string &_param) {
+        return variable_parameter || valid_params.find(_param) != valid_params.end();
     }
 
-    Argument &add_name(const std::string &name) {
-        names.insert(name);
+    Argument set_name(std::string _name) {
+        name = std::move(_name);
         return *this;
     }
 
-    const std::set<std::string> all_names() { return names; }
+    std::string get_name() const { return name; }
 
-    Argument &add_handler(std::function<void(Program_args &, const std::string &)> handle) {
-        handler = handle;
+    Argument add_handler(HandlerType handle) {
+        handler = std::move(handle);
         return *this;
     }
 
-    void invoke_handler(Program_args &args, const std::string &param) { handler(args, param); }
+    void invoke_handler(Program_args &args, std::string _param) { handler(args, std::move(_param)); }
 };
 
-void set_output_format(Program_args &args, const std::string &output);
-void set_input_format(Program_args &args, const std::string &input);
-void set_output_file(Program_args &args, const std::string &file);
-void set_input_file(Program_args &args, const std::string &file);
-void set_input_text(Program_args &args, const std::string &text);
+void set_output_format(Program_args &args, std::string output);
+void set_input_format(Program_args &args, std::string input);
+void set_output_file(Program_args &args, std::string file);
+void set_input_file(Program_args &args, std::string file);
+void set_input_text(Program_args &args, std::string text);
 
 class Parser {
   private:
@@ -94,11 +97,8 @@ class Parser {
 
   public:
     // adding argument with all its names
-    Parser &add_argument(Argument argument) {
-        arguments.emplace(argument.key, argument);
-        for (const std::string &name : argument.all_names()) {
-            arguments.emplace(name, argument);
-        }
+    Parser add_argument(Argument argument) {
+        arguments.emplace(argument.get_name(), std::move(argument));
         return *this;
     }
     Program_args parse(const int &argc, char **argv);

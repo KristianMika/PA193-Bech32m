@@ -2,7 +2,7 @@
 
 // ./program --encode --from_bin
 
-void set_output_format(Program_args &args, const std::string &output) {
+void set_output_format(Program_args &args, std::string output) {
     if (args.oformat_set || args.iformat_set) {
         throw Bech32mException("Format for the program has been already specified.\n");
     }
@@ -21,7 +21,7 @@ void set_output_format(Program_args &args, const std::string &output) {
     args.mode = program_mode::decode;
 }
 
-void set_input_format(Program_args &args, const std::string &input) {
+void set_input_format(Program_args &args, std::string input) {
     if (args.oformat_set || args.iformat_set) {
         throw Bech32mException("Format for the program has been already specified.\n");
     }
@@ -39,44 +39,46 @@ void set_input_format(Program_args &args, const std::string &input) {
     args.iformat_set = true;
 }
 
-void set_output_file(Program_args &args, const std::string &file) {
-    if (args.outpu_file != "") {
+void set_output_file(Program_args &args, std::string file) {
+    if (!args.outpu_file.empty()) {
         throw Bech32mException("Output file already selected.\n");
-    } else if (!file.empty()) {
-        // validation of the path if wanted
-        args.outpu_file = file;
-        args.output_type = output::file;
-    } else {
+    }
+    if (file.empty()) {
         throw Bech32mException("Invalid argument parameter passed to program.\n");
     }
+    // validation of the path if wanted
+    args.outpu_file = std::move(file);
+    args.output_type = output::file;
 }
 
-void set_input_file(Program_args &args, const std::string &file) {
-    if (args.input_file != "") {
+void set_input_file(Program_args &args, std::string file) {
+    if (!args.input_file.empty()) {
         throw Bech32mException("Input file already selected.\n");
-    } else if (args.input_text != "") {
+    }
+    if (!args.input_text.empty()) {
         throw Bech32mException("Different input already selected.\n");
-    } else if (!file.empty()) {
-        // validation of the path if wanted
-        args.input_file = file;
-        args.input_type = input::file;
-    } else {
+    }
+    if (file.empty()) {
         throw Bech32mException("Invalid parameter " + file + " passed to argument --input-file.\n");
     }
+    // validation of the path if wanted
+    args.input_file = std::move(file);
+    args.input_type = input::file;
 }
 
-void set_input_text(Program_args &args, const std::string &text) {
-    if (args.input_file != "") {
+void set_input_text(Program_args &args, std::string text) {
+    if (!args.input_file.empty()) {
         throw Bech32mException("Different input already selected.\n");
-    } else if (args.input_text != "") {
+    }
+    if (!args.input_text.empty()) {
         throw Bech32mException("Input text already selected.\n");
-    } else if (!text.empty()) {
-        // validation of the path if wanted
-        args.input_text = text;
-        args.input_type = input::argument;
-    } else {
+    }
+    if (text.empty()) {
         throw Bech32mException("Invalid parameter " + text + " passed to argument --input-text.\n");
     }
+    // validation of the path if wanted
+    args.input_text = std::move(text);
+    args.input_type = input::argument;
 }
 
 Program_args Parser::parse(const int &argc, char **argv) {

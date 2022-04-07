@@ -53,9 +53,7 @@ Bech32mVector calculate_checksum(const Bech32mVector &combined) {
     return checksum;
 }
 
-std::string encode(const std::string &hrp, const std::string &input) { 
-    return encode(hrp, HexBitStorage(input)); 
-}
+std::string encode(const std::string &hrp, const std::string &input) { return encode(hrp, HexBitStorage(input)); }
 
 std::string encode(const std::string &hrp, const BitStorage &input) {
     // creating storage and converting to bitset vector
@@ -141,8 +139,7 @@ bool verify_bech32m(const std::string &code) {
     return true;
 }
 
-
-std::string storage_to_output(const Bech32mVector& data, data_form output_format) {
+std::string storage_to_output(const Bech32mVector &data, data_form output_format) {
     Bech32mBitStorage converter = Bech32mBitStorage(data);
     std::string result;
 
@@ -165,7 +162,6 @@ std::string storage_to_output(const Bech32mVector& data, data_form output_format
     return result;
 }
 
-
 std::string decode(const std::string &code, data_form output_format) {
     verify_bech32m(code);
 
@@ -179,7 +175,7 @@ std::string decode(const std::string &code, data_form output_format) {
         error_detection_result detection = detect_error(lowered, separator_i);
         if (detection.result == detection_result::ONE_CHAR_SUBST) {
             data = detection.data;
-            return storage_to_output(data, output_format); 
+            return storage_to_output(data, output_format);
         }
         throw Bech32mException("No separator of human readable part in the string to decode "
                                "+ another substitution error.");

@@ -20,7 +20,7 @@ Bech32mBitStorage::Bech32mBitStorage(const std::string &bech32m) {
 
 Bech32mBitStorage::Bech32mBitStorage(const Bech32mVector &bech32m) {
     for (const Bech32mChar bech_ch : bech32m) {
-        for (int i = BECH32M_CHAR_BIT_COUNT - 1; i >= 0 ; --i) {
+        for (int i = BECH32M_CHAR_BIT_COUNT - 1; i >= 0; --i) {
             value.set(length, bech_ch[i]);
             ++length;
         }

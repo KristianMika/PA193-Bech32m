@@ -10,39 +10,36 @@
 #include <iostream>
 #include <sstream>
 
-int read_write(const Program_args &arguments);
+void read_write(const Program_args &arguments);
 
 int main(int argc, char **argv) {
 
-    Parser parser = Parser();
-
     // clang-format off
-    parser
+    Parser parser = Parser()
         .add_argument(Argument()
-                          .add_name("--input-format")
-                          .add_param_value("bin")
-                          .add_param_value("hex")
-                          .add_param_value("base64")
-                          .add_handler(set_input_format))
+                              .set_name("--input-format")
+                              .add_param_value("bin")
+                              .add_param_value("hex")
+                              .add_param_value("base64")
+                              .add_handler(set_input_format))
         .add_argument(Argument()
-                          .add_name("--output-format")
-                          .add_param_value("bin")
-                          .add_param_value("hex")
-                          .add_param_value("base64")
-                          .add_handler(set_output_format))
+                              .set_name("--output-format")
+                              .add_param_value("bin")
+                              .add_param_value("hex")
+                              .add_param_value("base64")
+                              .add_handler(set_output_format))
+        .add_argument( Argument()
+                               .set_name("--input-file")
+                               .set_variable_param()
+                               .add_handler(set_input_file))
         .add_argument(Argument()
-                          .add_name("--input-file")
-                          .set_variable_param()
-                          .add_handler(set_input_file))
+                              .set_name("--input-text")
+                              .set_variable_param()
+                              .add_handler(set_input_text))
         .add_argument(Argument()
-                          .add_name("--input-text")
-                          .add_name("-t")
-                          .set_variable_param()
-                          .add_handler(set_input_text))
-        .add_argument(Argument()
-                          .add_name("--output-file")
-                          .set_variable_param()
-                          .add_handler(set_output_file));
+                              .set_name("--output-file")
+                              .set_variable_param()
+                              .add_handler(set_output_file));
     // clang-format on
 
     Program_args arguments;
@@ -95,13 +92,11 @@ std::string presentation_layer(const Program_args &arguments, const std::string 
         } catch (const Bech32mException &e) {
             std::cout << "Decode error." << std::endl << e.what() << std::endl;
         }
-        
     }
     return input;
 }
 
-int read_write(const Program_args &arguments) {
-    std::string input = "";
+void read_write(const Program_args &arguments) {
     std::string result;
     std::ofstream output_file;
     std::ifstream input_file;
@@ -118,7 +113,7 @@ int read_write(const Program_args &arguments) {
         } catch (const std::ios_base::failure &e) {
             output_file.close();
             std::cout << "Something went wrong when handling the output file." << std::endl << e.what() << std::endl;
-            return 1;
+            exit(1);
         }
     }
 
@@ -136,7 +131,7 @@ int read_write(const Program_args &arguments) {
         } catch (const std::ios_base::failure &e) {
             input_file.close();
             std::cout << "Something went wrong when handling the output file." << std::endl << e.what() << std::endl;
-            return 1;
+            exit(1);
         }
     }
 
@@ -151,7 +146,7 @@ int read_write(const Program_args &arguments) {
         source.read(&in[0], max_read);
         if (source) {
             std::cout << "More than max amount of bytes in the file." << std::endl;
-            return 1;
+            exit(1);
         }
 
         result = presentation_layer(arguments, in);
@@ -171,11 +166,12 @@ int read_write(const Program_args &arguments) {
             }
         }
     }
+
     // comented out, based on cppreference the ofstream and ifstream .close() methods are called in destructor
-    /*if (arguments.output_type == output::file) {
-        output_file.close();
-    }
-    if (arguments.input_type == input::file) {
-        output_file.close();
-    }*/
+    //    if (arguments.output_type == output::file) {
+    //        output_file.close();
+    //    }
+    //    if (arguments.input_type == input::file) {
+    //        output_file.close();
+    //    }
 }
