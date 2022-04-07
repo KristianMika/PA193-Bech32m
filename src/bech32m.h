@@ -14,6 +14,8 @@ static const std::string BECH_SYMBOLS = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
  * @param input text as a hex string
  * @return std::string bech32m code of the input string
  **/
+std::string encode(const std::string &hrp, const BitStorage &input);
+
 std::string encode(const std::string &hrp, const std::string &input);
 
 /**
