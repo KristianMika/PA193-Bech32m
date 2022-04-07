@@ -1,11 +1,10 @@
 #include "bech32m.h"
 #include "argument_parser.h"
-#include "bech32m_bit_storage.h"
+#include "bitstorage/bech32m_bit_storage.h"
 #include "bech32m_error_detection.h"
 #include "bech32m_exception.h"
-#include "bin_bit_storage.h"
-#include "hex_bit_storage.h"
-#include <sstream>
+#include "bitstorage/bin_bit_storage.h"
+#include "bitstorage/hex_bit_storage.h"
 #include <vector>
 
 static const uint32_t GEN[5] = {0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3};
@@ -125,20 +124,20 @@ bool verify_bech32m(const std::string &code) {
     return true;
 }
 
-std::string storage_to_output(const Bech32mVector &data, data_form output_format) {
+std::string storage_to_output(const Bech32mVector &data, DataFormat output_format) {
     Bech32mBitStorage converter = Bech32mBitStorage(data);
     std::string result;
 
     switch (output_format) {
-    case data_form::hex:
+    case DataFormat::Hex:
         result = HexBitStorage(converter).to_string();
         break;
 
-    case data_form::bin:
+    case DataFormat::Bin:
         result = BinBitStorage(converter).to_string();
         break;
 
-    case data_form::base64:
+    case DataFormat::Base64:
         result = Base64BitStorage(converter).to_string();
         break;
 
@@ -148,7 +147,7 @@ std::string storage_to_output(const Bech32mVector &data, data_form output_format
     return result;
 }
 
-std::string decode(const std::string &code, data_form output_format) {
+std::string decode(const std::string &code, DataFormat output_format) {
     verify_bech32m(code);
 
     std::string lowered(code.size(), 0x00);
@@ -158,8 +157,8 @@ std::string decode(const std::string &code, data_form output_format) {
 
     size_t separator_i = lowered.rfind(BECH_32M_SEPARATOR);
     if (separator_i == std::string::npos) {
-        error_detection_result detection = detect_error(lowered, separator_i);
-        if (detection.result == detection_result::ONE_CHAR_SUBST) {
+        ErrorDetectionResult detection = detect_error(lowered, separator_i);
+        if (detection.result == DetectionResult::OneCharSubs) {
             data = detection.data;
             return storage_to_output(data, output_format);
         }
@@ -179,8 +178,8 @@ std::string decode(const std::string &code, data_form output_format) {
     data = reverse_code(static_cast<int>(hrp.length()) + 1, static_cast<int>(lowered.length()), lowered);
 
     if (!bech32_verify_checksum(hrp, data)) {
-        error_detection_result detection = detect_error(lowered, separator_i);
-        if (detection.result == detection_result::ONE_CHAR_SUBST) {
+        ErrorDetectionResult detection = detect_error(lowered, separator_i);
+        if (detection.result == DetectionResult::OneCharSubs) {
             data = detection.data;
         } else {
             throw Bech32mException("Sent data do not match the received data.");
@@ -188,41 +187,4 @@ std::string decode(const std::string &code, data_form output_format) {
     }
     Bech32mVector wout_checksum(data.begin(), data.end() - BECH32M_CHECKSUM_LENGTH);
     return storage_to_output(wout_checksum, output_format);
-}
-
-template <unsigned long T> std::bitset<T> reverse(std::bitset<T> in) {
-    for (int i = 0; i < T; ++i) {
-        auto tmp = in[i];
-        in[i] = in[T - 1 - i];
-        in[T - 1 - i] = tmp;
-    }
-    return in;
-}
-
-inline char encodeBechChar(const Bech32mChar chr) { return BECH_SYMBOLS[chr.to_ulong()]; }
-
-// std::string encodeDataPart(const BitStorage &storage) {
-//     std::vector<char> out;
-//
-//     for (const auto &b_set : storage) {
-//         out.push_back(encodeBechChar(b_set));
-//     }
-//     return {out.begin(), out.end()};
-// }
-
-// TODO: support multiple output formats
-// std::string decode_data_part(const std::string &bech) {
-//    Bech32mBitStorage storage(bech);
-//    std::stringstream out;
-//    auto it = storage.begin<4>();
-//    std::cout << std::endl;
-//    while (it != storage.end<4>()) {
-//        out << std::hex << (*it).to_ulong();
-//        ++it;
-//    }
-//    return out.str();
-//}
-
-template <uint16_t T> void encode_hex(BitStorage::Iterator<T> it, std::stringstream &out) {
-    return out << std::hex << (*it).to_ulong();
 }

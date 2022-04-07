@@ -66,47 +66,12 @@ class BitStorage {
         };
     };
 
-    static int get_iterator_step() { return 5; }
-
     int compute_padding(const int char_length) const { return (char_length - (length % char_length)) % char_length; }
-    // TODO: check length + padding bounds
-    //    template <uint16_t T = 5> BitStorage::Iterator<T> begin() const { return Iterator<T>(value, 0); }
-    //    template <uint16_t T = 5> BitStorage::Iterator<T> begin() { return Iterator<T>(value, 0); }
-    //    template <uint16_t T = 5> BitStorage::Iterator<T> end() const { return Iterator<T>(value, compute_padding(T) +
-    //    length); } template <uint16_t T = 5> BitStorage::Iterator<T> end() { return Iterator<T>(value,
-    //    compute_padding(T) + length); }
 
     /**
      * @return the bitlength of the internal value (not the size of the static bitset)
      */
     uint16_t size() const { return length; }
-
-    template <unsigned long T> void insert(size_t index, std::bitset<T> data) {
-        if (length + T > BECH32M_MAX_BITSET_LENGTH) {
-            throw std::out_of_range("Data is too large.");
-        }
-
-        if (index > length) {
-            throw std::out_of_range("Invalid index.");
-        }
-
-        // TODO: somehow improve the following section
-        const int shift_by = T;
-        for (int i = 0; i < length - index; ++i) {
-            const int src_i = length - i - 1;
-            const int dest_i = src_i + T;
-            value.set(dest_i, value[src_i]);
-            value.set(src_i, false);
-        }
-
-        // insert
-        // TODO: somehow learn endianity
-        for (int i = 0; i < T; ++i) {
-            value.set(index + i, data[T - 1 - i]);
-        }
-
-        length += T;
-    }
 
     BitStorage &operator=(const BitStorage &other) = default;
 };

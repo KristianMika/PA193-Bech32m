@@ -2,7 +2,7 @@
 #include "bech32m.h"
 #include <utility>
 
-error_detection_result detect_error(const std::string &bech32m_enc_hex, size_t idx_separator) {
+ErrorDetectionResult detect_error(const std::string &bech32m_enc_hex, size_t idx_separator) {
     std::string cpy = bech32m_enc_hex;
     std::string hrp = bech32m_enc_hex.substr(0, idx_separator);
 
@@ -10,7 +10,7 @@ error_detection_result detect_error(const std::string &bech32m_enc_hex, size_t i
 
     if (bech32_verify_checksum(hrp, init_attempt)) {
         // no substitution necessary
-        return error_detection_result(detection_result::VALID, init_attempt);
+        return ErrorDetectionResult(DetectionResult::Valid, init_attempt);
     }
 
     if (idx_separator == std::string::npos) {
@@ -22,10 +22,10 @@ error_detection_result detect_error(const std::string &bech32m_enc_hex, size_t i
 
             if (bech32_verify_checksum(hrp, data)) {
                 // the substitution was in the separator character
-                return error_detection_result(detection_result::ONE_CHAR_SUBST, data);
+                return ErrorDetectionResult(DetectionResult::OneCharSubs, data);
             }
         }
-        return error_detection_result(detection_result::INVALID);
+        return ErrorDetectionResult(DetectionResult::Invalid);
     }
 
     // check hrp
@@ -45,7 +45,7 @@ error_detection_result detect_error(const std::string &bech32m_enc_hex, size_t i
 
             if (bech32_verify_checksum(hrp, data)) {
                 // the substitution was in the hrp
-                return error_detection_result(detection_result::ONE_CHAR_SUBST, data);
+                return ErrorDetectionResult(DetectionResult::OneCharSubs, data);
             }
         }
         hrp[i] = c;
@@ -62,10 +62,10 @@ error_detection_result detect_error(const std::string &bech32m_enc_hex, size_t i
 
             if (bech32_verify_checksum(hrp, data)) {
                 // the substitution was in the checksum
-                return error_detection_result(detection_result::ONE_CHAR_SUBST, data);
+                return ErrorDetectionResult(DetectionResult::OneCharSubs, data);
             }
         }
         cpy[i] = c;
     }
-    return error_detection_result(detection_result::INVALID);
+    return ErrorDetectionResult(DetectionResult::Invalid);
 }
