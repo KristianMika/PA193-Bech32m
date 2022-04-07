@@ -17,10 +17,9 @@ using Bech32mChar = std::bitset<BECH32M_CHAR_BIT_COUNT>;
 using Bech32mVector = std::vector<Bech32mChar>;
 
 /**
- * Represents a base class for all type of inputs.
+ * Represents a base class for all types of inputs.
  * Its main function is to provide a unified access to input data using an iterator.
  */
-
 class BitStorage {
   protected:
     Bech32mBitset value{};

@@ -1,8 +1,12 @@
 #include "../src/bech32m.h"
+#include "../src/bech32m_bit_storage.h"
+#include "../src/bech32m_error_detection.h"
 #include "../src/bech32m_exception.h"
-#include "test_bit_storage.h"
 #include "test_macros.h"
+#include "test_bit_storage.h"
+#include <algorithm>
 #include <iostream>
+#include <string>
 
 // counter for failed errors
 long errors_count = 0;
@@ -44,7 +48,6 @@ void test_encode() {
                   "bc12ys8n0nx0muaewav2ksx99wwsu9swq5mlndjmn3gm9vl9q2mzmup0xqpy4uzg");
 }
 
-
 /**
  * Tests if invalid Bech32m codes can be identified
  */
@@ -66,9 +69,34 @@ void test_invalid_bech32m() {
     ASSERT_THROWS(decode("1p2gdwpf"), Bech32mException);
 }
 
+// std::string detected_str(const std::string &in) {
+//     size_t idx_separator = in.rfind('1');
+//     return to_hex(Bech32mBitStorage(detect_error(in, idx_separator).data));
+// }
+/**
+ * Some basic inputs without any substitutions
+ */
+void test_without_errors() {
+    // std::string str = to_hex(Bech32mBitStorage(detect_error("aaaaaaaaaaa14242424259sqyag70hggh0", 11).data));
+
+    const auto storage = HexBitStorage(Bech32mBitStorage(detect_error("aaaaaaaaaaa14242424259sqyag70hggh0", 11).data));
+    std::string str_pls = std::string(90, '_');
+    size_t idx = 0;
+    for(const auto& bs : storage) {
+        str_pls[idx++] = static_cast<char>(bs.to_ulong());
+    }
+    std::stringstream stream{};
+    stream << std::hex << storage.begin() << std::endl;
+    std::string plsss = stream.str();
+//    std::transform(storage.begin(), storage.end(), str_pls,
+//                   [](std::bitset<4> it) -> char { return static_cast<char>(it.to_ulong()); });
+    std::cout << plsss << std::endl;
+    // ASSERT_EQUALS(detected_str("aaaaaaaaaaa14242424259sqyag70hggh0"), "aaaaaaaaaaa14242424259sqyag70hggh0")
+}
+
 /**
  * Prints the results of the tests
- * @return 0 if all tests have passed successfullt, 1 otherwise
+ * @return 0 if all tests have passed successfully, 1 otherwise
  */
 int interpret_test_results() {
     std::cout << std::endl << "***** Test results *****" << std::endl;
@@ -88,11 +116,13 @@ int interpret_test_results() {
  * @return Either 0 or 1, based on the number of failed tests.
  */
 int main() {
+    RUN_TEST(test_without_errors);
 
     RUN_TEST(test_basic);
     RUN_TEST(test_encode);
+    RUN_TEST(test_without_errors);
     RUN_TEST(test_invalid_bech32m);
-    RUN_TEST(test_bit_storage);
+    RUN_TEST(test_bit_storage)
 
     return interpret_test_results();
 }

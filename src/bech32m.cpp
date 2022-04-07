@@ -1,5 +1,6 @@
 #include "bech32m.h"
 #include "bech32m_bit_storage.h"
+#include "bech32m_error_detection.h"
 #include "bech32m_exception.h"
 #include "hex_bit_storage.h"
 #include <sstream>
@@ -76,8 +77,6 @@ std::string encode(const std::string &hrp, const std::string &input) {
     return result;
 }
 
-std::string encode(const std::string &input) { return input; }
-
 bool bech32_verify_checksum(std::string const &hrp, const Bech32mVector &data) {
     Bech32mVector combined = expand_hrp(hrp);
     combined.insert(combined.end(), data.begin(), data.end());
@@ -114,27 +113,6 @@ std::string bytes_to_hex(std::vector<uint8_t> &in) {
     return ret;
 }
 
-std::vector<uint8_t> _5to8(Bech32mVector in) {
-    // TODO convert this to use the BitStorage class
-    int accumulator = 0;
-    int bits = 0;
-    std::vector<uint8_t> ret = {};
-    int max_val = (1 << 8) - 1;
-    int max_acc = (1 << 12) - 1;
-    for (const auto &val : in) {
-        accumulator = ((accumulator << 5) | static_cast<uint8_t>(val.to_ulong())) & max_acc;
-        bits += 5;
-        while (bits >= 8) {
-            bits -= 8;
-            ret.push_back((accumulator >> bits) & max_val);
-        }
-    }
-    if (bits >= 5 || ((accumulator << (8 - bits)) & max_val)) {
-        throw Bech32mException("Invalid alignment!");
-    }
-    return ret;
-}
-
 bool verify_bech32m(const std::string &code) {
     bool has_upper = false;
     bool has_lower = false;
@@ -166,7 +144,12 @@ Bech32mVector decode(const std::string &code) {
 
     size_t separator_i = lowered.rfind(BECH_32M_SEPARATOR);
     if (separator_i == std::string::npos) {
-        throw Bech32mException("No separator of human readable part in the string to decode.");
+        error_detection_result detection = detect_error(lowered, separator_i);
+        if (detection.result == detection_result::ONE_CHAR_SUBST) {
+            return detection.data;
+        }
+        throw Bech32mException("No separator of human readable part in the string to decode "
+                               "+ another substitution error.");
     }
     if (separator_i > lowered.length() - BECH32M_CHECKSUM_LENGTH) {
         throw Bech32mException("Data part is shorter than 6 symbols");
@@ -180,13 +163,16 @@ Bech32mVector decode(const std::string &code) {
     Bech32mVector data = reverse_code(hrp.length() + 1, lowered.length(), lowered);
 
     if (!bech32_verify_checksum(hrp, data)) {
+        error_detection_result detection = detect_error(lowered, separator_i);
+        if (detection.result == detection_result::ONE_CHAR_SUBST) {
+            return detection.data;
+        }
         throw Bech32mException("Sent data do not match the received data.");
     }
     return data;
 }
 
-template <unsigned long T>
-std::bitset<T> reverse(std::bitset<T> in) {
+template <unsigned long T> std::bitset<T> reverse(std::bitset<T> in) {
     for (int i = 0; i < T; ++i) {
         auto tmp = in[i];
         in[i] = in[T - 1 - i];
@@ -197,17 +183,17 @@ std::bitset<T> reverse(std::bitset<T> in) {
 
 inline char encodeBechChar(const Bech32mChar chr) { return BECH_SYMBOLS[chr.to_ulong()]; }
 
-//std::string encodeDataPart(const BitStorage &storage) {
-//    std::vector<char> out;
+// std::string encodeDataPart(const BitStorage &storage) {
+//     std::vector<char> out;
 //
-//    for (const auto &b_set : storage) {
-//        out.push_back(encodeBechChar(b_set));
-//    }
-//    return {out.begin(), out.end()};
-//}
+//     for (const auto &b_set : storage) {
+//         out.push_back(encodeBechChar(b_set));
+//     }
+//     return {out.begin(), out.end()};
+// }
 
 // TODO: support multiple output formats
-//std::string decode_data_part(const std::string &bech) {
+// std::string decode_data_part(const std::string &bech) {
 //    Bech32mBitStorage storage(bech);
 //    std::stringstream out;
 //    auto it = storage.begin<4>();
@@ -219,8 +205,6 @@ inline char encodeBechChar(const Bech32mChar chr) { return BECH_SYMBOLS[chr.to_u
 //    return out.str();
 //}
 
-template <uint16_t T>
-void encode_hex(BitStorage::Iterator<T> it, std::stringstream &out) {
+template <uint16_t T> void encode_hex(BitStorage::Iterator<T> it, std::stringstream &out) {
     return out << std::hex << (*it).to_ulong();
 }
-
