@@ -1,8 +1,8 @@
 #include "argument_parser.h"
-#include "base64_bit_storage.h"
+#include "bitstorage/base64_bit_storage.h"
 #include "bech32m.h"
-#include "bin_bit_storage.h"
-#include "hex_bit_storage.h"
+#include "bitstorage/bin_bit_storage.h"
+#include "bitstorage/hex_bit_storage.h"
 
 #include <cmath>
 #include <fstream>

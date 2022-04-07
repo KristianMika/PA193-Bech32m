@@ -1,5 +1,5 @@
 #include "base64_bit_storage.h"
-#include "bech32m_exception.h"
+#include "../bech32m_exception.h"
 
 static const std::string BASE64_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                         "abcdefghijklmnopqrstuvwxyz"

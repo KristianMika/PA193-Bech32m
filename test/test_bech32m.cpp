@@ -1,5 +1,5 @@
 #include "../src/bech32m.h"
-#include "../src/bech32m_bit_storage.h"
+#include "../src/bitstorage/bech32m_bit_storage.h"
 #include "../src/bech32m_error_detection.h"
 #include "test_bit_storage.h"
 #include "test_macros.h"

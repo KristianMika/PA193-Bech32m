@@ -1,7 +1,7 @@
-#include "../src/base64_bit_storage.h"
-#include "../src/bech32m_bit_storage.h"
+#include "../src/bitstorage/base64_bit_storage.h"
+#include "../src/bitstorage/bech32m_bit_storage.h"
 #include "../src/bech32m_exception.h"
-#include "../src/bin_bit_storage.h"
+#include "../src/bitstorage/bin_bit_storage.h"
 #include "test_macros.h"
 
 // counter for failed errors

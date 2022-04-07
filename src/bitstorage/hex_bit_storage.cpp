@@ -1,5 +1,5 @@
 #include "hex_bit_storage.h"
-#include "bech32m_exception.h"
+#include "../bech32m_exception.h"
 
 /**
  * Converts a hex character into its numeric form

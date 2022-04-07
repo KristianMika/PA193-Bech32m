@@ -1,6 +1,6 @@
 #ifndef BECH32M_BECH32M_ERROR_DETECTION_H
 #define BECH32M_BECH32M_ERROR_DETECTION_H
-#include "bit_storage.h"
+#include "bitstorage/bit_storage.h"
 #include <string>
 #include <utility>
 

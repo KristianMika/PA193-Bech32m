@@ -2,7 +2,7 @@
 #define BECH32M_BECH32M_H
 
 #include "argument_parser.h"
-#include "bit_storage.h"
+#include "bitstorage/bit_storage.h"
 #include <algorithm>
 #include <string>
 #include <vector>

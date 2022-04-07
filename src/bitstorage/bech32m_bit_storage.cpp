@@ -1,6 +1,6 @@
 #include "bech32m_bit_storage.h"
-#include "bech32m.h"
-#include "bech32m_exception.h"
+#include "../bech32m.h"
+#include "../bech32m_exception.h"
 #include "bit_storage.h"
 
 Bech32mBitStorage::Bech32mBitStorage(const std::string &bech32m) {

@@ -1,10 +1,10 @@
 #include "bech32m.h"
 #include "argument_parser.h"
-#include "bech32m_bit_storage.h"
+#include "bitstorage/bech32m_bit_storage.h"
 #include "bech32m_error_detection.h"
 #include "bech32m_exception.h"
-#include "bin_bit_storage.h"
-#include "hex_bit_storage.h"
+#include "bitstorage/bin_bit_storage.h"
+#include "bitstorage/hex_bit_storage.h"
 #include <vector>
 
 static const uint32_t GEN[5] = {0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3};
