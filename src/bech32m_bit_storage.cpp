@@ -31,6 +31,8 @@ char to_char(const Bech32mChar &val) { return BECH_SYMBOLS[val.to_ulong()]; }
 
 std::string Bech32mBitStorage::to_string() const {
     std::string out;
-    std::transform(begin(), end(), std::back_inserter(out), to_char);
+    for (const auto &val : *this) {
+        out.push_back(to_char(val));
+    }
     return out;
 }

@@ -1,6 +1,5 @@
 #include "hex_bit_storage.h"
 #include "bech32m_exception.h"
-#include <algorithm>
 
 /**
  * Converts a hex character into its numeric form
@@ -61,6 +60,8 @@ char to_char(const HexChar val) { return HEX_CHARS[val.to_ulong()]; }
 
 std::string HexBitStorage::to_string() const {
     std::string out;
-    std::transform(begin(), end(), std::back_inserter(out), to_char);
+    for (const auto &val : *this) {
+        out.push_back(to_char(val));
+    }
     return out;
 }
