@@ -2,10 +2,12 @@
 #include "bech32m.h"
 #include "hex_bit_storage.h"
 #include "bech32m_bit_storage.h"
+#include "bin_bit_storage.h"
 
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <cmath>
 #include "argument_parser.h"
 
 
@@ -57,27 +59,39 @@ int main(int argc, char** argv) {
 }
 
 std::string presentation_layer(const Program_args &arguments, const std::string& input) {
+    std::string result;
+    std::string hrp;
+    std::string data;
     BitStorage storage;
+
+    size_t separator = input.find(':');
+    if (separator == std::string::npos) {
+        data = input;
+    } else {
+        hrp = input.substr(0, separator);
+        data = input.substr(separator + 1, input.size() - separator);
+    }
+
+
     switch (arguments.input_format) {
-    case data_form::Bech32m:
-        storage = Bech32mBitStorage(input);
-        break;
     case data_form::base64:
-        storage = Base64BitStorage(input);
+        storage = Base64BitStorage(data);
         break;
     case data_form::hex:
-        storage = HexBitStorage(input);
+        storage = HexBitStorage(data);
         break;
     case data_form::bin:
-        storage = HexBitStorage(input);
+        storage = BinBitStorage(data);
         break;
     default:
         break;
     }
 
-
-
-
+    if (arguments.mode == program_mode::encode) {
+        return encode(hrp, storage);
+    } else {
+        Bech32mVector result = decode(input);
+    }
     return input;
 }
 
@@ -92,7 +106,11 @@ int read_write(const Program_args& arguments) {
     // try to open output file if needed
     if (arguments.output_type == output::file) {
         try {
-            output_file.open(arguments.outpu_file, std::ios::out | std::ios::app);
+            if (arguments.output_format == data_form::bin) {
+                output_file.open(arguments.outpu_file, std::ios::out | std::ios::app | std::ios::binary);
+            } else {
+                output_file.open(arguments.outpu_file, std::ios::out | std::ios::app);
+            }
         } catch (const std::ios_base::failure &e) {
             output_file.close();
             std::cout << "Something went wrong when handling the output file." << std::endl << e.what() << std::endl;
@@ -106,7 +124,11 @@ int read_write(const Program_args& arguments) {
     // try to open input file if needed
     if (arguments.input_type == input::file) {
         try {
-            input_file.open(arguments.input_file, std::ios::in);
+            if (arguments.input_format == data_form::bin) {
+                input_file.open(arguments.input_file, std::ios::in | std::ios::binary);
+            } else {
+                input_file.open(arguments.input_file, std::ios::in);
+            }           
         } catch (const std::ios_base::failure &e) {
             input_file.close();
             std::cout << "Something went wrong when handling the output file." << std::endl << e.what() << std::endl;
@@ -118,12 +140,33 @@ int read_write(const Program_args& arguments) {
                            arguments.input_type == input::argument ? input_string 
                                                                 : std::cin;
 
-    std::string line;
-    while (std::getline(source, line) && !std::all_of(line.begin(), line.end(), isspace)) {
-        result = presentation_layer(arguments, line);
-        target << result << std::endl;
-    }
+    if (arguments.input_format == data_form::bin) {
+        std::string in;
+        double max_read = std::ceil(BECH32M_MAX_BITSET_LENGTH / 8);
+        in.resize(max_read);
+        source.read(&in[0], max_read);
+        if (source) {
+            std::cout << "More than max amount of bytes in the file." << std::endl;
+            return 1;
+        }
 
+        result = presentation_layer(arguments, in);
+        if (arguments.output_format == data_form::bin) {
+            target.write(&result[0], result.size());
+        } else {
+            target << result << std::endl;
+        }
+    } else {
+        std::string line;
+        while (std::getline(source, line) && !std::all_of(line.begin(), line.end(), isspace)) {
+            result = presentation_layer(arguments, line);
+            if (arguments.output_format == data_form::bin) {
+                target.write(&result[0], result.size());
+            } else {
+                target << result << std::endl;
+            }
+        }
+    }
     // comented out, based on cppreference the ofstream and ifstream .close() methods are called in destructor
     /*if (arguments.output_type == output::file) {
         output_file.close();
