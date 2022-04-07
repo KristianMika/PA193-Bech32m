@@ -87,11 +87,11 @@ bool bech32_verify_checksum(std::string const &hrp, const Bech32mVector &data) {
     return polymod(combined) == BECH32M_CONSTANT;
 }
 
-Bech32mVector reverse_code(int begin, int end, const std::string &code) {
+Bech32mVector reverse_code(size_t begin, size_t end, const std::string &code) {
     Bech32mVector result;
     size_t index;
     char c;
-    for (int i = begin; i < end; i++) {
+    for (size_t i = begin; i < end; i++) {
         c = static_cast<char>(std::tolower(code[i]));
         index = BECH_SYMBOLS.find(c);
         if (index == std::string::npos) {

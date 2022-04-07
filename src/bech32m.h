@@ -54,7 +54,7 @@ std::string to_hex(const BitStorage &bech);
  * @param code the encoded string
  * @return intermediate representation of the checksum
  */
-Bech32mVector reverse_code(int begin, int end, const std::string &code);
+Bech32mVector reverse_code(size_t begin, size_t end, const std::string &code);
 
 /**
  * Verify the validity of the checksum against the human readable part

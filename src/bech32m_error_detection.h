@@ -13,13 +13,17 @@ enum class detection_result {
     INVALID
 };
 
+/**
+ * Contains the result of a detection. If the result is SINGLE_CHAR_SUBST,
+ * data contains the expected output for the corrected string
+ */
 class error_detection_result {
   public:
     detection_result result;
     Bech32mVector data;
 
     error_detection_result(detection_result _result, Bech32mVector _data) : result(_result), data(std::move(_data)) {}
-    explicit error_detection_result(detection_result _result) : result(_result), data() {}
+    explicit error_detection_result(detection_result _result) : result(_result) {}
 };
 
 /**

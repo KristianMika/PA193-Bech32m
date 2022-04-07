@@ -9,8 +9,8 @@ using HexChar = std::bitset<HEX_CHAR_BIT_COUNT>;
 class HexBitStorage : public BitStorage {
   public:
     explicit HexBitStorage(const std::string &hex_value);
+    explicit HexBitStorage(const BitStorage &storage) : BitStorage(storage) {}
     ~HexBitStorage() override = default;
-    HexBitStorage(const BitStorage &storage) : BitStorage(storage) {}
 
     std::string to_string() const;
     BitStorage::Iterator<HEX_CHAR_BIT_COUNT> begin() const { return Iterator<HEX_CHAR_BIT_COUNT>(value, 0); }

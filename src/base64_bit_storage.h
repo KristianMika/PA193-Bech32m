@@ -17,8 +17,9 @@ class Base64BitStorage : public BitStorage {
      * @param base64 Base64 string input
      */
     explicit Base64BitStorage(const std::string &base64);
-    Base64BitStorage(const BitStorage &storage) : BitStorage(storage) {}
+    explicit Base64BitStorage(const BitStorage &storage) : BitStorage(storage) {}
     ~Base64BitStorage() override = default;
+
     std::string to_string() const;
     BitStorage::Iterator<BASE64_CHAR_BIT_LENGTH> begin() const { return Iterator<BASE64_CHAR_BIT_LENGTH>(value, 0); }
     BitStorage::Iterator<BASE64_CHAR_BIT_LENGTH> end() const {
