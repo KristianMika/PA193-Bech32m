@@ -144,7 +144,12 @@ Bech32mVector decode(const std::string &code) {
 
     size_t separator_i = lowered.rfind(BECH_32M_SEPARATOR);
     if (separator_i == std::string::npos) {
-        throw Bech32mException("No separator of human readable part in the string to decode.");
+        error_detection_result detection = detect_error(lowered, separator_i);
+        if (detection.result == detection_result::ONE_CHAR_SUBST) {
+            return detection.data;
+        }
+        throw Bech32mException("No separator of human readable part in the string to decode "
+                               "+ another substitution error.");
     }
     if (separator_i > lowered.length() - BECH32M_CHECKSUM_LENGTH) {
         throw Bech32mException("Data part is shorter than 6 symbols");
