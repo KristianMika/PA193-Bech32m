@@ -3,6 +3,7 @@
 #include "../src/bech32m_error_detection.h"
 #include "../src/bech32m_exception.h"
 #include "test_macros.h"
+#include "test_bit_storage.h"
 #include <algorithm>
 #include <iostream>
 #include <string>
@@ -121,6 +122,7 @@ int main() {
     RUN_TEST(test_encode);
     RUN_TEST(test_without_errors);
     RUN_TEST(test_invalid_bech32m);
+    RUN_TEST(test_bit_storage)
 
     return interpret_test_results();
 }
