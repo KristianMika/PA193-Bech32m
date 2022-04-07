@@ -25,7 +25,7 @@ Bech32mChar hex_2_int(char ch) {
  */
 bool check_hex_string(const std::string &str) {
     static const std::string VALID_HEX_SYMBOLS = "0123456789ABCDEFabcdef";
-    return str.length() % 2 == 0 && str.find_first_not_of(VALID_HEX_SYMBOLS);
+    return str.length() % 2 == 0 && str.find_first_not_of(VALID_HEX_SYMBOLS) == std::string::npos;
 }
 
 /**
