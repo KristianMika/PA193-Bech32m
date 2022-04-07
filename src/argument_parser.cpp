@@ -87,11 +87,9 @@ Program_args Parser::parse(const int &argc, const char **argv) {
     int counter = 1;
     // iterating over all arguments
     while (counter < argc) {
-        std::cout << counter << std::endl;
         // loading the argument
         std::string arg = argv[counter];
-
-        std::cout << arg << std::endl;
+        
         // verifying that actual argument was specified as one of the valid ones
         if (arguments.find(arg) == arguments.end()) {
             throw Bech32mException("Program does not support the argument " + arg + ".");
@@ -102,7 +100,6 @@ Program_args Parser::parse(const int &argc, const char **argv) {
         // loading argument ass object
         Argument current_arg = arguments[arg];
         std::string param;
-        std::cout << current_arg.has_param() << std::endl;
 
         // checking if current argument should have parameters and if there is enough of the arguments provided
         if (current_arg.has_param() && counter >= argc) {
@@ -111,7 +108,6 @@ Program_args Parser::parse(const int &argc, const char **argv) {
         if (current_arg.has_param()) {
             // loading the parameter as string
             param = argv[counter];
-            std::cout << param << std::endl;
             // verifying that parameter is valid for current argument
             if (!current_arg.is_valid_param(param)) {
                 throw Bech32mException("Argument " + arg + " was given invalid parameter " + param + ".");
