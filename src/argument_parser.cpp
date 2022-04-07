@@ -16,6 +16,7 @@ void set_output_format(Program_args &args, const std::string &output) {
     } else {
         throw Bech32mException("Invalid parameter " + output + " passed to argumen --output-format.\n");
     }
+    args.input_format = data_form::Bech32m;
     args.oformat_set = true;
     args.mode = program_mode::decode;
 }

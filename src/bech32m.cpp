@@ -98,9 +98,8 @@ Bech32mVector reverse_code(int begin, int end, const std::string &code) {
         index = BECH_SYMBOLS.find(c);
         if (index == std::string::npos) {
             throw Bech32mException("Invalid character in the data part of the string to decode.");
-        } else {
-            result.push_back(index);
         }
+        result.push_back(index);
     }
     return result;
 }
@@ -205,7 +204,8 @@ std::string decode(const std::string &code, data_form output_format) {
             throw Bech32mException("Sent data do not match the received data.");
         }
     }
-    return storage_to_output(data, output_format);
+    Bech32mVector wout_checksum(data.begin(), data.end() - BECH32M_CHECKSUM_LENGTH);
+    return storage_to_output(wout_checksum, output_format);
 }
 
 template <unsigned long T> std::bitset<T> reverse(std::bitset<T> in) {
