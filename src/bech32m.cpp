@@ -102,20 +102,6 @@ Bech32mVector reverse_code(int begin, int end, const std::string &code) {
     return result;
 }
 
-std::string bytes_to_hex(std::vector<uint8_t> &in) {
-    char hex_chars[] = "0123456789abcdef";
-
-    std::string ret(in.size() * 2, '_');
-
-    char *buffer = const_cast<char *>(ret.data());
-
-    for (const auto &byte : in) {
-        *buffer++ = hex_chars[byte >> 4];
-        *buffer++ = hex_chars[byte & 0x0F];
-    }
-    return ret;
-}
-
 bool verify_bech32m(const std::string &code) {
     bool has_upper = false;
     bool has_lower = false;
