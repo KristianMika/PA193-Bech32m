@@ -79,7 +79,12 @@ std::string presentation_layer(const Program_args &arguments, const std::string 
     if (arguments.mode == program_mode::encode) {
         return encode(hrp, storage);
     } else {
-        Bech32mVector result = decode(input);
+        try {
+            return result = decode(input, arguments.output_format);
+        } catch (const Bech32mException &e) {
+            std::cout << "Decode error." << std::endl << e.what() << std::endl;
+        }
+        
     }
     return input;
 }
