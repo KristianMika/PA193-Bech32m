@@ -1,8 +1,8 @@
 #include "../src/base64_bit_storage.h"
 #include "../src/bech32m_bit_storage.h"
 #include "../src/bech32m_exception.h"
-#include "../src/hex_bit_storage.h"
 #include "../src/bin_bit_storage.h"
+#include "../src/hex_bit_storage.h"
 #include "test_macros.h"
 
 // counter for failed errors
@@ -99,7 +99,7 @@ void test_hex_iterator() {
     ASSERT_EQUALS(it, storage.end());
 }
 
-//void test_insert() {
+// void test_insert() {
 //    HexBitStorage storage = HexBitStorage("fa");
 //    storage.insert(4, std::bitset<4>(0xd));
 //
@@ -121,6 +121,19 @@ void test_bin_bit_storage() {
     ASSERT_EQUALS(it, storage.end());
 }
 
+void test_to_string() {
+    HexBitStorage hex_storage("ffaa");
+    ASSERT_EQUALS(hex_storage.to_string(), "ffaa");
+
+    Base64BitStorage base64_storage("4ag2");
+    ASSERT_EQUALS(base64_storage.to_string(), "4ag2");
+
+    Bech32mBitStorage bech32m_storage("tvdw");
+    ASSERT_EQUALS(bech32m_storage.to_string(), "tvdw");
+
+    BinBitStorage bin_storage(",./876");
+    ASSERT_EQUALS(bin_storage.to_string(), ",./876");
+}
 
 void test_bit_storage() {
     test_hex_bit_storage();
@@ -129,4 +142,5 @@ void test_bit_storage() {
     test_hex_iterator();
     // test_insert();
     test_bin_bit_storage();
+    test_to_string();
 }

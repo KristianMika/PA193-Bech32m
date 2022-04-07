@@ -16,6 +16,7 @@ class Bech32mBitStorage : public BitStorage {
 
     ~Bech32mBitStorage() override = default;
 
+    std::string to_string() const;
     // TODO: a possible duplicate
     BitStorage::Iterator<BECH32M_CHAR_BIT_COUNT> begin() const { return Iterator<BECH32M_CHAR_BIT_COUNT>(value, 0); }
     BitStorage::Iterator<BECH32M_CHAR_BIT_COUNT> end() const {

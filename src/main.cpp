@@ -1,64 +1,54 @@
 #include "base64_bit_storage.h"
 #include "bech32m.h"
-#include "hex_bit_storage.h"
 #include "bech32m_bit_storage.h"
 #include "bin_bit_storage.h"
+#include "hex_bit_storage.h"
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <cmath>
 #include "argument_parser.h"
-
+#include <cmath>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 
 int read_write(const Program_args &arguments);
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
 
     Parser parser = Parser();
 
     parser
         .add_argument(Argument()
-            .add_name("--input-format")
-            .add_param_value("bin")
-            .add_param_value("hex")
-            .add_param_value("base64")
-            .add_handler(set_input_format))
+                          .add_name("--input-format")
+                          .add_param_value("bin")
+                          .add_param_value("hex")
+                          .add_param_value("base64")
+                          .add_handler(set_input_format))
         .add_argument(Argument()
-            .add_name("--output-format")
-            .add_param_value("bin")
-            .add_param_value("hex")
-            .add_param_value("base64")
-            .add_handler(set_output_format))
-        .add_argument(Argument()
-            .add_name("--input-file")
-            .set_variable_param()
-            .add_handler(set_input_file))
-        .add_argument(Argument()
-            .add_name("--input-text")
-            .add_name("-t")
-            .set_variable_param()
-            .add_handler(set_input_text))
-        .add_argument(Argument()
-            .add_name("--output-file")
-            .set_variable_param()
-            .add_handler(set_output_file));
-    
+                          .add_name("--output-format")
+                          .add_param_value("bin")
+                          .add_param_value("hex")
+                          .add_param_value("base64")
+                          .add_handler(set_output_format))
+        .add_argument(Argument().add_name("--input-file").set_variable_param().add_handler(set_input_file))
+        .add_argument(
+            Argument().add_name("--input-text").add_name("-t").set_variable_param().add_handler(set_input_text))
+        .add_argument(Argument().add_name("--output-file").set_variable_param().add_handler(set_output_file));
+
     Program_args arguments;
     try {
         arguments = parser.parse(argc, argv);
-    } catch (const std::exception& e) {
+    } catch (const std::exception &e) {
         std::cout << e.what() << std::endl;
         return 1;
     }
-    
+
     std::cout << "Parsed" << std::endl;
 
     read_write(arguments);
     return 0;
 }
 
-std::string presentation_layer(const Program_args &arguments, const std::string& input) {
+std::string presentation_layer(const Program_args &arguments, const std::string &input) {
     std::string result;
     std::string hrp;
     std::string data;
@@ -71,7 +61,6 @@ std::string presentation_layer(const Program_args &arguments, const std::string&
         hrp = input.substr(0, separator);
         data = input.substr(separator + 1, input.size() - separator);
     }
-
 
     switch (arguments.input_format) {
     case data_form::base64:
@@ -95,8 +84,7 @@ std::string presentation_layer(const Program_args &arguments, const std::string&
     return input;
 }
 
-
-int read_write(const Program_args& arguments) {
+int read_write(const Program_args &arguments) {
     std::string input = "";
     std::string result;
     std::ofstream output_file;
@@ -119,7 +107,7 @@ int read_write(const Program_args& arguments) {
     }
 
     // set target as file or std::cout
-    std::ostream& target = arguments.output_type == output::file ? output_file : std::cout;
+    std::ostream &target = arguments.output_type == output::file ? output_file : std::cout;
 
     // try to open input file if needed
     if (arguments.input_type == input::file) {
@@ -128,7 +116,7 @@ int read_write(const Program_args& arguments) {
                 input_file.open(arguments.input_file, std::ios::in | std::ios::binary);
             } else {
                 input_file.open(arguments.input_file, std::ios::in);
-            }           
+            }
         } catch (const std::ios_base::failure &e) {
             input_file.close();
             std::cout << "Something went wrong when handling the output file." << std::endl << e.what() << std::endl;
@@ -136,9 +124,9 @@ int read_write(const Program_args& arguments) {
         }
     }
 
-    std::istream& source = arguments.input_type == input::file ? input_file : 
-                           arguments.input_type == input::argument ? input_string 
-                                                                : std::cin;
+    std::istream &source = arguments.input_type == input::file
+                               ? input_file
+                               : arguments.input_type == input::argument ? input_string : std::cin;
 
     if (arguments.input_format == data_form::bin) {
         std::string in;
@@ -175,4 +163,3 @@ int read_write(const Program_args& arguments) {
         output_file.close();
     }*/
 }
-

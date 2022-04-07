@@ -1,7 +1,7 @@
 #include "bech32m_bit_storage.h"
-#include "bit_storage.h"
 #include "bech32m.h"
 #include "bech32m_exception.h"
+#include "bit_storage.h"
 
 Bech32mBitStorage::Bech32mBitStorage(const std::string &bech32m) {
     for (const char bech_ch : bech32m) {
@@ -25,4 +25,12 @@ Bech32mBitStorage::Bech32mBitStorage(const Bech32mVector &bech32m) {
             ++length;
         }
     }
+}
+
+char to_char(const Bech32mChar &val) { return BECH_SYMBOLS[val.to_ulong()]; }
+
+std::string Bech32mBitStorage::to_string() const {
+    std::string out;
+    std::transform(begin(), end(), std::back_inserter(out), to_char);
+    return out;
 }
