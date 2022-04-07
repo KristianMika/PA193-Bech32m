@@ -2,6 +2,7 @@
 #include "../src/bech32m_bit_storage.h"
 #include "../src/bech32m_exception.h"
 #include "../src/hex_bit_storage.h"
+#include "../src/bin_bit_storage.h"
 #include "test_macros.h"
 
 // counter for failed errors
@@ -109,6 +110,16 @@ void test_hex_iterator() {
 //    ASSERT_EQUALS(it, storage.end<4>());
 //}
 
+void test_bin_bit_storage() {
+    BinBitStorage storage("AbC&");
+    ASSERT_EQUALS(storage.size(), 4 * 8);
+    auto it = storage.begin();
+    ASSERT_EQUALS(*(it++), std::bitset<8>('A'));
+    ASSERT_EQUALS(*(it++), std::bitset<8>('b'));
+    ASSERT_EQUALS(*(it++), std::bitset<8>('C'));
+    ASSERT_EQUALS(*(it++), std::bitset<8>('&'));
+    ASSERT_EQUALS(it, storage.end());
+}
 
 
 void test_bit_storage() {
@@ -117,4 +128,5 @@ void test_bit_storage() {
     test_bech32m_bit_storage();
     test_hex_iterator();
     // test_insert();
+    test_bin_bit_storage();
 }
