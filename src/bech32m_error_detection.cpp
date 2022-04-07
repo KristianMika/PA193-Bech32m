@@ -16,7 +16,7 @@ error_detection_result detect_error(const std::string &bech32m_enc_hex, size_t i
     if (idx_separator == std::string::npos) {
         // the separator can occur only at positions [1 - bech32m_enc_hex.length()-6)
         // but for safety we'll run through the whole string
-        for (int i = 0; i < bech32m_enc_hex.length(); ++i) {
+        for (size_t i = 0; i < bech32m_enc_hex.length(); ++i) {
             cpy[i] = '1';
             Bech32mVector data = reverse_code(hrp.length() + 1, cpy.length(), cpy);
 

@@ -12,7 +12,7 @@ static const uint16_t BASE64_CHAR_MOST_SIGNIFICANT_BIT_MASK = 0b100000;
  * @return the decoded variable as
  */
 uint8_t decode_base64_symbol(const char chr) {
-    int val = static_cast<int>(BASE64_CHARS.find(chr));
+    size_t val = BASE64_CHARS.find(chr);
     if (val == std::string::npos) {
         throw Bech32mException("Invalid Base64 symbol: " + std::string(1, chr));
     }
@@ -60,7 +60,7 @@ Base64BitStorage::Base64BitStorage(const std::string &base64) {
         throw(Bech32mException("Invalid base64 string: " + base64));
     }
 
-    for (int i = 0; i < trimmed_string.size(); ++i) {
+    for (size_t i = 0; i < trimmed_string.size(); ++i) {
         uint8_t curr = decode_base64_symbol(trimmed_string[i]);
         for (int j = 0; j < BASE64_CHAR_BIT_LENGTH; ++j) {
             bool bit = (curr & BASE64_CHAR_MOST_SIGNIFICANT_BIT_MASK >> j);

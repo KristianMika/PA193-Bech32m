@@ -43,7 +43,7 @@ HexBitStorage::HexBitStorage(const std::string &hex_value) {
     }
     static const int MOST_SIGNIFICANT_HEX_BIT_MASK = 0b1000;
 
-    for (int i = 0; i < hex_value.size(); ++i) {
+    for (size_t i = 0; i < hex_value.size(); ++i) {
         Bech32mChar curr = hex_2_int(hex_value[i]);
 
         for (int j = 0; j < HEX_CHAR_BIT_COUNT; ++j) {

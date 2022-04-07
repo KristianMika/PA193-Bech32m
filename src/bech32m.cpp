@@ -31,7 +31,7 @@ uint32_t polymod(const Bech32mVector &input) {
 Bech32mVector expand_hrp(const std::string &hrp) {
     Bech32mVector expanded;
     expanded.resize(hrp.length() * 2 + 1);
-    for (int i = 0; i < hrp.length(); ++i) {
+    for (size_t i = 0; i < hrp.length(); ++i) {
         expanded[i] = hrp[i] >> 5;
         expanded[hrp.length() + 1 + i] = hrp[i] & 0b11111;
     }
@@ -89,10 +89,10 @@ bool bech32_verify_checksum(std::string const &hrp, const Bech32mVector &data) {
 
 Bech32mVector reverse_code(int begin, int end, const std::string &code) {
     Bech32mVector result;
-    int index;
+    size_t index;
     char c;
     for (int i = begin; i < end; i++) {
-        c = std::tolower(code[i]);
+        c = static_cast<char>(std::tolower(code[i]));
         index = BECH_SYMBOLS.find(c);
         if (index == std::string::npos) {
             throw Bech32mException("Invalid character in the data part of the string to decode.");
@@ -176,7 +176,7 @@ std::string decode(const std::string &code, data_form output_format) {
         throw Bech32mException("Empty human readable part");
     }
 
-    data = reverse_code(hrp.length() + 1, lowered.length(), lowered);
+    data = reverse_code(static_cast<int>(hrp.length()) + 1, static_cast<int>(lowered.length()), lowered);
 
     if (!bech32_verify_checksum(hrp, data)) {
         error_detection_result detection = detect_error(lowered, separator_i);
