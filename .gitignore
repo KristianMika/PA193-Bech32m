@@ -43,4 +43,14 @@ out
 .idea
 cmake-build-debug-visual-studio
 
+# Windows junk
+*.ilk
+*.pdb
+*.cmake
+/src/Makefile
+Makefile
+CMakeCache.txt
+
+CmakeFiles
+
 CMakeSettings.json
