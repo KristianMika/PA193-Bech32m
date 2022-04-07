@@ -1,5 +1,6 @@
 #include "base64_bit_storage.h"
 #include "bech32m_exception.h"
+#include <algorithm>
 
 static const std::string BASE64_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                         "abcdefghijklmnopqrstuvwxyz"
@@ -68,5 +69,10 @@ Base64BitStorage::Base64BitStorage(const std::string &base64) {
         }
     }
     length = trimmed_string.size() * BASE64_CHAR_BIT_LENGTH;
-
+}
+char to_char(const Base64Char &val) { return BASE64_CHARS[val.to_ulong()]; }
+std::string Base64BitStorage::to_string() const {
+    std::string out;
+    std::transform(begin(), end(), std::back_inserter(out), to_char);
+    return {out.begin(), out.end()};
 }

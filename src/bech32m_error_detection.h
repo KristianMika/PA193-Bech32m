@@ -1,8 +1,8 @@
 #ifndef BECH32M_BECH32M_ERROR_DETECTION_H
 #define BECH32M_BECH32M_ERROR_DETECTION_H
+#include "bit_storage.h"
 #include <string>
 #include <utility>
-#include "bit_storage.h"
 
 enum class detection_result {
     // The input string was valid, no correction took place

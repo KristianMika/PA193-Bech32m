@@ -5,6 +5,7 @@
 #include "hex_bit_storage.h"
 
 static const uint16_t BASE64_CHAR_BIT_LENGTH = 6;
+using Base64Char = std::bitset<BASE64_CHAR_BIT_LENGTH>;
 
 /**
  * Represents a Base64 encoded input
@@ -18,7 +19,7 @@ class Base64BitStorage : public BitStorage {
     explicit Base64BitStorage(const std::string &base64);
     Base64BitStorage(const BitStorage &storage) : BitStorage(storage) {}
     ~Base64BitStorage() override = default;
-
+    std::string to_string() const;
     BitStorage::Iterator<BASE64_CHAR_BIT_LENGTH> begin() const { return Iterator<BASE64_CHAR_BIT_LENGTH>(value, 0); }
     BitStorage::Iterator<BASE64_CHAR_BIT_LENGTH> end() const {
         return Iterator<BASE64_CHAR_BIT_LENGTH>(value, compute_padding(BASE64_CHAR_BIT_LENGTH) + length);

@@ -1,29 +1,20 @@
-#include <string>
-#include <vector>
+#include "bech32m_exception.h"
+#include <functional>
+#include <iostream>
 #include <map>
 #include <set>
-#include <functional>
-#include "bech32m_exception.h"
-#include <iostream>
+#include <string>
+#include <vector>
 
 #ifndef ARGUMENT_PARSER
 #define ARGUMENT_PARSER
-enum class program_mode { 
-    encode, 
-    decode };
-enum class data_form { 
-    bin, 
-    hex, 
-    base64, 
-    Bech32m };
+enum class program_mode { encode, decode };
+enum class data_form { bin, hex, base64, Bech32m };
 enum class output {
     stdoutput,
     file,
 };
-enum class input { 
-    stdinput, 
-    file, 
-    argument };
+enum class input { stdinput, file, argument };
 
 struct Program_args {
     program_mode mode = program_mode::encode;
@@ -91,13 +82,11 @@ class Argument {
     void invoke_handler(Program_args &args, const std::string &param) { handler(args, param); }
 };
 
-
 void set_output_format(Program_args &args, const std::string &output);
 void set_input_format(Program_args &args, const std::string &input);
 void set_output_file(Program_args &args, const std::string &file);
 void set_input_file(Program_args &args, const std::string &file);
 void set_input_text(Program_args &args, const std::string &text);
-
 
 class Parser {
   private:

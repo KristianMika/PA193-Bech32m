@@ -1,12 +1,12 @@
 #include "bech32m.h"
+#include "argument_parser.h"
 #include "bech32m_bit_storage.h"
 #include "bech32m_error_detection.h"
 #include "bech32m_exception.h"
-#include "hex_bit_storage.h"
 #include "bin_bit_storage.h"
+#include "hex_bit_storage.h"
 #include <sstream>
 #include <vector>
-#include "argument_parser.h"
 
 static const uint32_t GEN[5] = {0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3};
 static const uint32_t BECH32M_CONSTANT = 0x2bc830a3;
@@ -53,11 +53,9 @@ Bech32mVector calculate_checksum(const Bech32mVector &combined) {
     return checksum;
 }
 
-std::string encode(const std::string &hrp, const std::string &input) { 
-    return encode(hrp, HexBitStorage(input)); 
-}
+std::string encode(const std::string &hrp, const std::string &input) { return encode(hrp, HexBitStorage(input)); }
 
-std::string encode(const std::string &hrp, const BitStorage& input) {
+std::string encode(const std::string &hrp, const BitStorage &input) {
     // creating storage and converting to bitset vector
     Bech32mBitStorage storage = input;
 
@@ -177,19 +175,19 @@ Bech32mVector decode(const std::string &code, data_form output_format) {
     }
 
     // Bech32mBitStorage converter = Bech32mBitStorage(data);
-    //std::string result;
+    // std::string result;
 
-    //switch (output_format) {
-    //case data_form::hex:
+    // switch (output_format) {
+    // case data_form::hex:
     //    break;
 
-    //case data_form::bin:
+    // case data_form::bin:
     //    break;
 
-    //case data_form::base64:
+    // case data_form::base64:
     //    break;
 
-    //default:
+    // default:
     //    break;
     //}
 

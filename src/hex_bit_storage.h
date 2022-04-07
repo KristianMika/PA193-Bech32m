@@ -11,6 +11,8 @@ class HexBitStorage : public BitStorage {
     explicit HexBitStorage(const std::string &hex_value);
     ~HexBitStorage() override = default;
     HexBitStorage(const BitStorage &storage) : BitStorage(storage) {}
+
+    std::string to_string() const;
     BitStorage::Iterator<HEX_CHAR_BIT_COUNT> begin() const { return Iterator<HEX_CHAR_BIT_COUNT>(value, 0); }
     BitStorage::Iterator<HEX_CHAR_BIT_COUNT> end() const {
         return Iterator<HEX_CHAR_BIT_COUNT>(value, compute_padding(HEX_CHAR_BIT_COUNT) + length);

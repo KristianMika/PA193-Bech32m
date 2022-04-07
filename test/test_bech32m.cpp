@@ -2,8 +2,8 @@
 #include "../src/bech32m_bit_storage.h"
 #include "../src/bech32m_error_detection.h"
 #include "../src/bech32m_exception.h"
-#include "test_macros.h"
 #include "test_bit_storage.h"
+#include "test_macros.h"
 #include <algorithm>
 #include <iostream>
 #include <string>
@@ -82,14 +82,14 @@ void test_without_errors() {
     const auto storage = HexBitStorage(Bech32mBitStorage(detect_error("aaaaaaaaaaa14242424259sqyag70hggh0", 11).data));
     std::string str_pls = std::string(90, '_');
     size_t idx = 0;
-    for(const auto& bs : storage) {
+    for (const auto &bs : storage) {
         str_pls[idx++] = static_cast<char>(bs.to_ulong());
     }
     std::stringstream stream{};
     stream << std::hex << storage.begin() << std::endl;
     std::string plsss = stream.str();
-//    std::transform(storage.begin(), storage.end(), str_pls,
-//                   [](std::bitset<4> it) -> char { return static_cast<char>(it.to_ulong()); });
+    //    std::transform(storage.begin(), storage.end(), str_pls,
+    //                   [](std::bitset<4> it) -> char { return static_cast<char>(it.to_ulong()); });
     std::cout << plsss << std::endl;
     // ASSERT_EQUALS(detected_str("aaaaaaaaaaa14242424259sqyag70hggh0"), "aaaaaaaaaaa14242424259sqyag70hggh0")
 }
