@@ -5,7 +5,6 @@
 #include "bech32m_exception.h"
 #include "bin_bit_storage.h"
 #include "hex_bit_storage.h"
-#include <sstream>
 #include <vector>
 
 static const uint32_t GEN[5] = {0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3};
@@ -190,39 +189,3 @@ std::string decode(const std::string &code, data_form output_format) {
     return storage_to_output(wout_checksum, output_format);
 }
 
-template <unsigned long T> std::bitset<T> reverse(std::bitset<T> in) {
-    for (int i = 0; i < T; ++i) {
-        auto tmp = in[i];
-        in[i] = in[T - 1 - i];
-        in[T - 1 - i] = tmp;
-    }
-    return in;
-}
-
-inline char encodeBechChar(const Bech32mChar chr) { return BECH_SYMBOLS[chr.to_ulong()]; }
-
-// std::string encodeDataPart(const BitStorage &storage) {
-//     std::vector<char> out;
-//
-//     for (const auto &b_set : storage) {
-//         out.push_back(encodeBechChar(b_set));
-//     }
-//     return {out.begin(), out.end()};
-// }
-
-// TODO: support multiple output formats
-// std::string decode_data_part(const std::string &bech) {
-//    Bech32mBitStorage storage(bech);
-//    std::stringstream out;
-//    auto it = storage.begin<4>();
-//    std::cout << std::endl;
-//    while (it != storage.end<4>()) {
-//        out << std::hex << (*it).to_ulong();
-//        ++it;
-//    }
-//    return out.str();
-//}
-
-template <uint16_t T> void encode_hex(BitStorage::Iterator<T> it, std::stringstream &out) {
-    return out << std::hex << (*it).to_ulong();
-}
