@@ -81,7 +81,7 @@ void set_input_text(Program_args &args, std::string text) {
     args.input_type = input::argument;
 }
 
-Program_args Parser::parse(const int &argc, char **argv) {
+Program_args Parser::parse(const int &argc, const char **argv) {
     Program_args result;
     // skipping the first argument containing the name of the program
     int counter = 1;
@@ -122,4 +122,34 @@ Program_args Parser::parse(const int &argc, char **argv) {
         current_arg.invoke_handler(result, param);
     }
     return result;
+}
+
+Parser get_default_parser() {
+    // clang-format off
+    return Parser()
+            .add_argument(Argument()
+                                  .set_name("--input-format")
+                                  .add_param_value("bin")
+                                  .add_param_value("hex")
+                                  .add_param_value("base64")
+                                  .add_handler(set_input_format))
+            .add_argument(Argument()
+                                  .set_name("--output-format")
+                                  .add_param_value("bin")
+                                  .add_param_value("hex")
+                                  .add_param_value("base64")
+                                  .add_handler(set_output_format))
+            .add_argument( Argument()
+                                   .set_name("--input-file")
+                                   .set_variable_param()
+                                   .add_handler(set_input_file))
+            .add_argument(Argument()
+                                  .set_name("--input-text")
+                                  .set_variable_param()
+                                  .add_handler(set_input_text))
+            .add_argument(Argument()
+                                  .set_name("--output-file")
+                                  .set_variable_param()
+                                  .add_handler(set_output_file));
+    // clang-format on
 }

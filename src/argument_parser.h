@@ -101,7 +101,13 @@ class Parser {
         arguments.emplace(argument.get_name(), std::move(argument));
         return *this;
     }
-    Program_args parse(const int &argc, char **argv);
+    Program_args parse(const int &argc, const char **argv);
 };
 
+
+/**
+ * Creates a default parser for the encoder
+ * @return a parser object
+ */
+Parser get_default_parser();
 #endif // ARGUMENT_PARSER

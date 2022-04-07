@@ -1,9 +1,9 @@
 #include "../src/bech32m.h"
 #include "../src/bech32m_bit_storage.h"
 #include "../src/bech32m_error_detection.h"
-#include "../src/bech32m_exception.h"
 #include "test_bit_storage.h"
 #include "test_macros.h"
+#include "test_parser.h"
 #include <algorithm>
 #include <iostream>
 #include <string>
@@ -87,10 +87,10 @@ void test_without_errors() {
     }
     std::stringstream stream{};
     stream << std::hex << storage.begin() << std::endl;
-    std::string plsss = stream.str();
+    // std::string plsss = stream.str();
     //    std::transform(storage.begin(), storage.end(), str_pls,
     //                   [](std::bitset<4> it) -> char { return static_cast<char>(it.to_ulong()); });
-    std::cout << plsss << std::endl;
+    // std::cout << plsss << std::endl;
     // ASSERT_EQUALS(detected_str("aaaaaaaaaaa14242424259sqyag70hggh0"), "aaaaaaaaaaa14242424259sqyag70hggh0")
 }
 
@@ -105,11 +105,10 @@ int interpret_test_results() {
     if (errors_count == 0) {
         std::cout << " ✓ "
                   << "All tests have passed successfully." << std::endl;
-        return 0;
-    } else {
-        std ::cout << " ✘ " << errors_count << " check(s) failed." << std::endl;
-        return 1;
+        return EXIT_SUCCESS;
     }
+    std ::cout << " ✘ " << errors_count << " check(s) failed." << std::endl;
+    return EXIT_FAILURE;
 }
 /**
  * Runs all tests.
@@ -123,6 +122,7 @@ int main() {
     RUN_TEST(test_without_errors);
     RUN_TEST(test_invalid_bech32m);
     RUN_TEST(test_bit_storage)
+    RUN_TEST(test_parser)
 
     return interpret_test_results();
 }

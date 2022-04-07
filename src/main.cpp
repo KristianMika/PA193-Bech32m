@@ -10,41 +10,8 @@
 
 void read_write(const Program_args &arguments);
 
-/**
- * Creates a default parser for the encoder
- * @return a parser object
- */
-Parser get_default_parser() {
-    // clang-format off
-    return Parser()
-            .add_argument(Argument()
-                                  .set_name("--input-format")
-                                  .add_param_value("bin")
-                                  .add_param_value("hex")
-                                  .add_param_value("base64")
-                                  .add_handler(set_input_format))
-            .add_argument(Argument()
-                                  .set_name("--output-format")
-                                  .add_param_value("bin")
-                                  .add_param_value("hex")
-                                  .add_param_value("base64")
-                                  .add_handler(set_output_format))
-            .add_argument( Argument()
-                                   .set_name("--input-file")
-                                   .set_variable_param()
-                                   .add_handler(set_input_file))
-            .add_argument(Argument()
-                                  .set_name("--input-text")
-                                  .set_variable_param()
-                                  .add_handler(set_input_text))
-            .add_argument(Argument()
-                                  .set_name("--output-file")
-                                  .set_variable_param()
-                                  .add_handler(set_output_file));
-    // clang-format on
-}
 
-int main(int argc, char **argv) {
+int main(int argc, const char **argv) {
     Parser parser = get_default_parser();
     Program_args arguments;
     try {
