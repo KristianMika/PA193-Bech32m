@@ -7,18 +7,18 @@ void set_output_format(Program_args &args, const std::string &output) {
         throw Bech32mException("Format for the program has been already specified.");
     }
 
-    if (output == "bin") {
-        args.output_format = data_form::bin;
-    } else if (output == "hex") {
-        args.output_format = data_form::hex;
-    } else if (output == "base64") {
-        args.output_format = data_form::base64;
+    if (output == BIN_STRING) {
+        args.output_format = DataFormat::Bin;
+    } else if (output == HEX_STRING) {
+        args.output_format = DataFormat::Hex;
+    } else if (output == BASE64_STRING) {
+        args.output_format = DataFormat::Base64;
     } else {
-        throw Bech32mException("Invalid parameter " + output + " passed to argumen --output-format.");
+        throw Bech32mException("Invalid parameter " + output + " passed to argument --output-format.");
     }
-    args.input_format = data_form::Bech32m;
+    args.input_format = DataFormat::Bech32m;
     args.oformat_set = true;
-    args.mode = program_mode::decode;
+    args.mode = Mode::Decode;
 }
 
 void set_input_format(Program_args &args, const std::string &input) {
@@ -26,14 +26,14 @@ void set_input_format(Program_args &args, const std::string &input) {
         throw Bech32mException("Format for the program has been already specified.");
     }
 
-    if (input == "bin") {
-        args.input_format = data_form::bin;
-    } else if (input == "hex") {
-        args.input_format = data_form::hex;
-    } else if (input == "base64") {
-        args.input_format = data_form::base64;
+    if (input == BIN_STRING) {
+        args.input_format = DataFormat::Bin;
+    } else if (input == HEX_STRING) {
+        args.input_format = DataFormat::Hex;
+    } else if (input == BASE64_STRING) {
+        args.input_format = DataFormat::Base64;
     } else {
-        throw Bech32mException("Invalid parameter " + input + " passed to argumen --input-format.");
+        throw Bech32mException("Invalid parameter " + input + " passed to argument --input-format.");
     }
 
     args.iformat_set = true;
@@ -48,7 +48,7 @@ void set_output_file(Program_args &args, std::string file) {
     }
     // validation of the path if wanted
     args.outpu_file = std::move(file);
-    args.output_type = output::file;
+    args.output_type = Output::File;
 }
 
 void set_input_file(Program_args &args, std::string file) {
@@ -63,7 +63,7 @@ void set_input_file(Program_args &args, std::string file) {
     }
     // validation of the path if wanted
     args.input_file = std::move(file);
-    args.input_type = input::file;
+    args.input_type = Input::File;
 }
 
 void set_input_text(Program_args &args, std::string text) {
@@ -78,7 +78,7 @@ void set_input_text(Program_args &args, std::string text) {
     }
     // validation of the path if wanted
     args.input_text = std::move(text);
-    args.input_type = input::argument;
+    args.input_type = Input::Argument;
 }
 
 Program_args Parser::parse(const int &argc, const char **argv) {
@@ -92,7 +92,7 @@ Program_args Parser::parse(const int &argc, const char **argv) {
         std::string arg = argv[counter];
 
         std::cout << arg << std::endl;
-        // veryfying that actual argument was specified as one of the valid ones
+        // verifying that actual argument was specified as one of the valid ones
         if (arguments.find(arg) == arguments.end()) {
             throw Bech32mException("Program does not support the argument " + arg + ".");
         }
@@ -104,7 +104,7 @@ Program_args Parser::parse(const int &argc, const char **argv) {
         std::string param;
         std::cout << current_arg.has_param() << std::endl;
 
-        // checking if current argument should have parameters and if there is enaught of the arguments provided
+        // checking if current argument should have parameters and if there is enough of the arguments provided
         if (current_arg.has_param() && counter >= argc) {
             throw Bech32mException("Argument requiring parameter passed to program without parameter.");
         }
@@ -112,7 +112,7 @@ Program_args Parser::parse(const int &argc, const char **argv) {
             // loading the parameter as string
             param = argv[counter];
             std::cout << param << std::endl;
-            // veryfing that parameter is valid for current argument
+            // verifying that parameter is valid for current argument
             if (!current_arg.is_valid_param(param)) {
                 throw Bech32mException("Argument " + arg + " was given invalid parameter " + param + ".");
             }
@@ -129,15 +129,15 @@ Parser get_default_parser() {
     return Parser()
             .add_argument(Argument()
                                   .set_name("--input-format")
-                                  .add_param_value("bin")
-                                  .add_param_value("hex")
-                                  .add_param_value("base64")
+                                  .add_param_value(BIN_STRING)
+                                  .add_param_value(HEX_STRING)
+                                  .add_param_value(BASE64_STRING)
                                   .add_handler(set_input_format))
             .add_argument(Argument()
                                   .set_name("--output-format")
-                                  .add_param_value("bin")
-                                  .add_param_value("hex")
-                                  .add_param_value("base64")
+                                  .add_param_value(BIN_STRING)
+                                  .add_param_value(HEX_STRING)
+                                  .add_param_value(BASE64_STRING)
                                   .add_handler(set_output_format))
             .add_argument( Argument()
                                    .set_name("--input-file")

@@ -24,7 +24,7 @@ std::string encode(const std::string &hrp, const std::string &input);
  * @param code in bech32m
  * @return std::string decoded string
  */
-std::string decode(const std::string &code, data_form output_format = data_form::hex);
+std::string decode(const std::string &code, DataFormat output_format = DataFormat::Hex);
 
 /**
  * Remaps the input checksum string to the bech32m alphabet

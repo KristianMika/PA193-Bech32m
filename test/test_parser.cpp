@@ -9,18 +9,18 @@ extern long success_count;
 /**
  * operator<<, required only for tests
  */
-inline std::ostream &operator<<(std::ostream &os, const data_form &data) {
+inline std::ostream &operator<<(std::ostream &os, const DataFormat &data) {
     switch (data) {
-    case data_form::base64:
+    case DataFormat::Base64:
         return os << "Base64";
 
-    case data_form::Bech32m:
+    case DataFormat::Bech32m:
         return os << "Bech32m";
 
-    case data_form::bin:
+    case DataFormat::Bin:
         return os << "bin";
 
-    case data_form::hex:
+    case DataFormat::Hex:
         return os << "hex";
     }
     throw std::runtime_error("Unreachable code");
@@ -37,7 +37,7 @@ void test_simple_parse() {
     int argc = 3;
     ASSERT_DOES_NOT_THROW(arguments = parser.parse(argc, argv));
 
-    ASSERT_EQUALS(arguments.input_format, data_form::base64);
+    ASSERT_EQUALS(arguments.input_format, DataFormat::Base64);
 }
 
 void test_parser() { test_simple_parse(); }

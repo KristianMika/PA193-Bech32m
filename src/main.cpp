@@ -10,7 +10,6 @@
 
 void read_write(const Program_args &arguments);
 
-
 int main(int argc, const char **argv) {
     Parser parser = get_default_parser();
     Program_args arguments;
@@ -44,20 +43,20 @@ std::string presentation_layer(const Program_args &arguments, const std::string 
     }
 
     switch (arguments.input_format) {
-    case data_form::base64:
+    case DataFormat::Base64:
         storage = Base64BitStorage(data);
         break;
-    case data_form::hex:
+    case DataFormat::Hex:
         storage = HexBitStorage(data);
         break;
-    case data_form::bin:
+    case DataFormat::Bin:
         storage = BinBitStorage(data);
         break;
     default:
         break;
     }
 
-    if (arguments.mode == program_mode::encode) {
+    if (arguments.mode == Mode::Encode) {
         return encode(hrp, storage);
     }
     try {
@@ -77,9 +76,9 @@ void read_write(const Program_args &arguments) {
     std::istringstream input_string(arguments.input_text);
 
     // try to open output file if needed
-    if (arguments.output_type == output::file) {
+    if (arguments.output_type == Output::File) {
         try {
-            if (arguments.output_format == data_form::bin) {
+            if (arguments.output_format == DataFormat::Bin) {
                 output_file.open(arguments.outpu_file, std::ios::out | std::ios::app | std::ios::binary);
             } else {
                 output_file.open(arguments.outpu_file, std::ios::out | std::ios::app);
@@ -90,12 +89,12 @@ void read_write(const Program_args &arguments) {
     }
 
     // set target as file or std::cout
-    std::ostream &target = arguments.output_type == output::file ? output_file : std::cout;
+    std::ostream &target = arguments.output_type == Output::File ? output_file : std::cout;
 
     // try to open input file if needed
-    if (arguments.input_type == input::file) {
+    if (arguments.input_type == Input::File) {
         try {
-            if (arguments.input_format == data_form::bin) {
+            if (arguments.input_format == DataFormat::Bin) {
                 input_file.open(arguments.input_file, std::ios::in | std::ios::binary);
             } else {
                 input_file.open(arguments.input_file, std::ios::in);
@@ -105,11 +104,11 @@ void read_write(const Program_args &arguments) {
         }
     }
 
-    std::istream &source = arguments.input_type == input::file
+    std::istream &source = arguments.input_type == Input::File
                                ? input_file
-                               : arguments.input_type == input::argument ? input_string : std::cin;
+                               : arguments.input_type == Input::Argument ? input_string : std::cin;
 
-    if (arguments.input_format == data_form::bin) {
+    if (arguments.input_format == DataFormat::Bin) {
         std::string in;
         int64_t max_byte_count = std::floor(BECH32M_MAX_BITSET_LENGTH / BYTE_BIT_COUNT);
         in.resize(max_byte_count);
@@ -119,7 +118,7 @@ void read_write(const Program_args &arguments) {
         }
 
         result = presentation_layer(arguments, in);
-        if (arguments.output_format == data_form::bin) {
+        if (arguments.output_format == DataFormat::Bin) {
             target.write(&result[0], static_cast<int64_t>(result.size()));
         } else {
             target << result << std::endl;
@@ -128,7 +127,7 @@ void read_write(const Program_args &arguments) {
         std::string line;
         while (std::getline(source, line) && !std::all_of(line.begin(), line.end(), isspace)) {
             result = presentation_layer(arguments, line);
-            if (arguments.output_format == data_form::bin) {
+            if (arguments.output_format == DataFormat::Bin) {
                 target.write(&result[0], static_cast<int64_t>(result.size()));
             } else {
                 target << result << std::endl;

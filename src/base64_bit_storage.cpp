@@ -14,7 +14,7 @@ static const uint16_t BASE64_CHAR_MOST_SIGNIFICANT_BIT_MASK = 0b100000;
 uint8_t decode_base64_symbol(const char chr) {
     size_t val = BASE64_CHARS.find(chr);
     if (val == std::string::npos) {
-        throw Bech32mException("Invalid Base64 symbol: " + std::string(1, chr));
+        throw Bech32mException("Invalid base64 symbol: " + std::string(1, chr));
     }
     return val;
 }

@@ -8,28 +8,33 @@
 
 #ifndef ARGUMENT_PARSER
 #define ARGUMENT_PARSER
-enum class program_mode { encode, decode };
-enum class data_form { bin, hex, base64, Bech32m };
-enum class output {
-    stdoutput,
-    file,
+enum class Mode { Encode, Decode };
+enum class DataFormat { Bin, Hex, Base64, Bech32m };
+enum class Output {
+    Stdout,
+    File,
 };
-enum class input { stdinput, file, argument };
+enum class Input { Stdin, File, Argument };
+
+const char *const BIN_STRING = "bin";
+const char *const HEX_STRING = "hex";
+const char *const BASE64_STRING = "base64";
+const char *const BECH32M_STRING = "bech32m";
 
 struct Program_args {
-    program_mode mode = program_mode::encode;
+    Mode mode = Mode::Encode;
 
-    input input_type = input::stdinput;
+    Input input_type = Input::Stdin;
     std::string input_file;
     std::string input_text;
 
-    // used in encode mode
-    data_form input_format = data_form::hex;
+    // used in Encode mode
+    DataFormat input_format = DataFormat::Hex;
 
-    output output_type = output::stdoutput;
+    Output output_type = Output::Stdout;
     std::string outpu_file;
-    // used in decode mode
-    data_form output_format = data_form::Bech32m;
+    // used in Decode mode
+    DataFormat output_format = DataFormat::Bech32m;
 
     // flags to prevent setting both formats or one format repeatably
     bool oformat_set = false;
@@ -104,10 +109,10 @@ class Parser {
     Program_args parse(const int &argc, const char **argv);
 };
 
-
 /**
  * Creates a default parser for the encoder
  * @return a parser object
  */
 Parser get_default_parser();
+
 #endif // ARGUMENT_PARSER
