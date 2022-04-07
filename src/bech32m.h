@@ -61,4 +61,11 @@ Bech32mVector reverse_code(int begin, int end, const std::string &code);
  */
 bool bech32_verify_checksum(std::string const &hrp, const Bech32mVector &data);
 
+/**
+ * Validates the input string to conform to the bech32m specification
+ * @param code the bech32m string
+ * @return true if length and character set are valid, false otherwise
+ */
+bool verify_bech32m(const std::string &code);
+
 #endif // BECH32M_BECH32M_H

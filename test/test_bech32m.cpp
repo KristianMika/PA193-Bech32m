@@ -64,8 +64,7 @@ void test_invalid_bech32m() {
     ASSERT_THROWS(decode("in1muywd"), Bech32mException);
     ASSERT_THROWS(decode("mm1crxm3i"), Bech32mException);
     ASSERT_THROWS(decode("au1s5cgom"), Bech32mException);
-    // this test passes due to the error correction in place as M1vuxwez is a valid hrp + checksum but not really
-    //ASSERT_THROWS(decode("M1VUXWEZ"), Bech32mException);
+    ASSERT_THROWS(decode("M1VUXWEZ"), Bech32mException);
     ASSERT_THROWS(decode("16plkw9"), Bech32mException);
     ASSERT_THROWS(decode("1p2gdwpf"), Bech32mException);
 }

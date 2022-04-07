@@ -38,6 +38,9 @@ error_detection_result detect_error(const std::string &bech32m_enc_hex, size_t i
             }
             cpy[i] = valid_char;
             hrp[i] = valid_char;
+
+            verify_bech32m(cpy);
+
             Bech32mVector data = reverse_code(hrp.length() + 1, cpy.length(), cpy);
 
             if (bech32_verify_checksum(hrp, data)) {
