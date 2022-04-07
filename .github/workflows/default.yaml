@@ -1,30 +1,35 @@
 name: Default CI
 on: [push]
+env:
+  BINARY_NAME: app
+  TEST_BINARY_NAME: Test
 jobs:
+
   Build-and-Test-Ubuntu:
     runs-on: ubuntu-latest
-    name: run on Ubuntu
+    name: Build & test (Ubuntu)
     steps:
       - uses: actions/checkout@v2
       - name: Make build directory
         run: mkdir build/
       - name: Generate build files
-        run: cd build && cmake ..
+        working-directory: build/
+        run: cmake -DCMAKE_BUILD_TYPE=Release ..
       - name: Compile binaries
-        run: cd build && cmake --build .
+        working-directory: build/
+        run: cmake --build .
+      - name: Push the binaries
+        uses: actions/upload-artifact@v2
+        with:
+          name: linux-binaries
+          path: |
+            build/src/${{ env.BINARY_NAME }}
+            build/test/${{ env.TEST_BINARY_NAME }}
       - name: Run the test binary
-        run: build/test/Test
-      # TODO: make a different stage for valgrind
-      - name: Update indices
-        run: sudo apt-get update  
-      - name: Install memcheck   
-        run: sudo apt-get install --assume-yes valgrind
-      # Run memcheck only after the tests have passed 
-      - name: Run memcheck
-        run: valgrind --leak-check=full --track-origins=yes build/test/Test
+        run: build/test/${TEST_BINARY_NAME}
 
   Build-and-Test-Windows:
-    name: run on Windows
+    name: Build & test (Windows)
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
@@ -32,17 +37,113 @@ jobs:
       - name: Make build directory
         run: mkdir build
       - name: Generate build files
-        run: cd build && cmake -G "NMake Makefiles" ..
+        working-directory: build\
+        run: cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release ..
       - name: Build 
-        run: cd build && nmake
+        working-directory: build\
+        run: nmake
       - name: Run the test binary
-        run: build\test\Test.exe
+        run: build\test\${{ env.TEST_BINARY_NAME }}.exe
         
   CppCheck:
     runs-on: ubuntu-latest
+    needs: [Build-and-Test-Ubuntu, Build-and-Test-Windows]
     steps:
       - uses: actions/checkout@v2
       - name: Install cppcheck
         run: sudo apt-get install --assume-yes cppcheck
       - name: Run cppcheck
         run: cppcheck --enable=all ./src/ ./test/      
+
+  Coverity:
+    env:
+      PROJECT_NAME: KristianMika%2FPA193-Bech32m
+      TOKEN: ${{ secrets.COVERITY_TOKEN }}
+    runs-on: ubuntu-latest
+    needs: [Build-and-Test-Ubuntu, Build-and-Test-Windows]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download coverity
+        run: |
+          wget https://scan.coverity.com/download/linux64 \
+            --quiet \
+            --post-data "token=${TOKEN}&project=${PROJECT_NAME}" \
+            --output-document coverity_tool.tgz
+      - name: Make Coverity dir
+        run: mkdir coverity
+      - name: Extract coverity
+        run: tar xvf coverity_tool.tgz --strip 1 --directory coverity/
+      - name: Generate build files
+        run: mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release ..
+      - name: Build project
+        working-directory: build/
+        run: ../coverity/bin/cov-build --dir cov-int cmake --build .
+      - name: Display build log
+        working-directory: build/
+        run: tail cov-int/build-log.txt
+      - name: Create archive
+        working-directory: build/
+        run: tar czvf bech32m.tgz cov-int
+      - name: Upload results
+        working-directory: build/
+        run: |
+          curl --form token=${TOKEN} \
+            --form email=kristian.mika@protonmail.com \
+            --form file=@bech32m.tgz \
+            --form version="Version" \
+            --form description="Description" \
+            https://scan.coverity.com/builds?project=${PROJECT_NAME}
+
+  Infer:
+    runs-on: ubuntu-latest
+    needs: [Build-and-Test-Ubuntu, Build-and-Test-Windows]
+    env:
+      VERSION: 1.1.0
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download infer
+        run: |
+          wget \
+            "https://github.com/facebook/infer/releases/download/v$VERSION/infer-linux64-v${VERSION}.tar.xz" \
+            --quiet \
+            --output-document infer.tar.xz
+      - name: Make Infer dir
+        run: mkdir infer
+      - name: Extract Infer
+        run: tar xvf infer.tar.xz --strip 1 --directory infer/
+      - name: Create a compilation DB
+        run: cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_BUILD_TYPE=Release .
+      - name: Run Infer
+        run: infer/bin/infer run --compilation-database compile_commands.json
+
+  Valgrind-Memcheck:
+    name: Valgrind memcheck
+    runs-on: ubuntu-latest
+    needs: [Build-and-Test-Ubuntu, Build-and-Test-Windows]
+    steps:
+      - name: Get the binary
+        uses: actions/download-artifact@v2
+        with:
+          name: linux-binaries
+          path: ./binaries/
+      - name: Update indices
+        run: sudo apt-get update  
+      - name: Install Valgrind   
+        run: sudo apt-get install --assume-yes valgrind
+      - name: Set permisions
+        run: chmod +x binaries/test/${TEST_BINARY_NAME}
+      - name: Run memcheck
+        run: valgrind --leak-check=full --track-origins=yes binaries/test/${TEST_BINARY_NAME}
+
+  Clang-Tidy:
+    runs-on: ubuntu-latest
+    name: Clang-tidy
+    needs: [Build-and-Test-Ubuntu, Build-and-Test-Windows]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Update indices
+        run: sudo apt-get update 
+      - name: Install clang-tidy
+        run: sudo apt-get install --assume-yes clang-tidy
+      - name: Run clang-tidy
+        run: clang-tidy -header-filter=.* {src,test}/*.cpp -- -std=c++17
