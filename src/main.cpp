@@ -1,59 +1,64 @@
+#include "argument_parser.h"
 #include "base64_bit_storage.h"
 #include "bech32m.h"
-#include "bech32m_bit_storage.h"
 #include "bin_bit_storage.h"
 #include "hex_bit_storage.h"
 
-#include "argument_parser.h"
 #include <cmath>
 #include <fstream>
 #include <iostream>
-#include <sstream>
 
 void read_write(const Program_args &arguments);
 
-int main(int argc, char **argv) {
-
+/**
+ * Creates a default parser for the encoder
+ * @return a parser object
+ */
+Parser get_default_parser() {
     // clang-format off
-    Parser parser = Parser()
-        .add_argument(Argument()
-                              .set_name("--input-format")
-                              .add_param_value("bin")
-                              .add_param_value("hex")
-                              .add_param_value("base64")
-                              .add_handler(set_input_format))
-        .add_argument(Argument()
-                              .set_name("--output-format")
-                              .add_param_value("bin")
-                              .add_param_value("hex")
-                              .add_param_value("base64")
-                              .add_handler(set_output_format))
-        .add_argument( Argument()
-                               .set_name("--input-file")
-                               .set_variable_param()
-                               .add_handler(set_input_file))
-        .add_argument(Argument()
-                              .set_name("--input-text")
-                              .set_variable_param()
-                              .add_handler(set_input_text))
-        .add_argument(Argument()
-                              .set_name("--output-file")
-                              .set_variable_param()
-                              .add_handler(set_output_file));
+    return Parser()
+            .add_argument(Argument()
+                                  .set_name("--input-format")
+                                  .add_param_value("bin")
+                                  .add_param_value("hex")
+                                  .add_param_value("base64")
+                                  .add_handler(set_input_format))
+            .add_argument(Argument()
+                                  .set_name("--output-format")
+                                  .add_param_value("bin")
+                                  .add_param_value("hex")
+                                  .add_param_value("base64")
+                                  .add_handler(set_output_format))
+            .add_argument( Argument()
+                                   .set_name("--input-file")
+                                   .set_variable_param()
+                                   .add_handler(set_input_file))
+            .add_argument(Argument()
+                                  .set_name("--input-text")
+                                  .set_variable_param()
+                                  .add_handler(set_input_text))
+            .add_argument(Argument()
+                                  .set_name("--output-file")
+                                  .set_variable_param()
+                                  .add_handler(set_output_file));
     // clang-format on
+}
 
+int main(int argc, char **argv) {
+    Parser parser = get_default_parser();
     Program_args arguments;
     try {
         arguments = parser.parse(argc, argv);
+    } catch (const Bech32mException &e) {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
     } catch (const std::exception &e) {
-        std::cout << e.what() << std::endl;
-        return 1;
+        std::cerr << "An error occurred: " << e.what() << std::endl;
+        return EXIT_FAILURE;
     }
 
-    std::cout << "Parsed" << std::endl;
-
     read_write(arguments);
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 std::string presentation_layer(const Program_args &arguments, const std::string &input) {
@@ -61,8 +66,9 @@ std::string presentation_layer(const Program_args &arguments, const std::string 
     std::string hrp;
     std::string data;
     BitStorage storage;
+    const char INPUT_HRP_SEPARATOR = ':';
 
-    size_t separator = input.find(':');
+    size_t separator = input.find(INPUT_HRP_SEPARATOR);
     if (separator == std::string::npos) {
         data = input;
     } else {
@@ -86,14 +92,15 @@ std::string presentation_layer(const Program_args &arguments, const std::string 
 
     if (arguments.mode == program_mode::encode) {
         return encode(hrp, storage);
-    } else {
-        try {
-            return result = decode(input, arguments.output_format);
-        } catch (const Bech32mException &e) {
-            std::cout << "Decode error." << std::endl << e.what() << std::endl;
-        }
     }
-    return input;
+    try {
+        return decode(input, arguments.output_format);
+    } catch (const Bech32mException &e) {
+        // std::cerr << "Decode error." << std::endl << e.what() << std::endl;
+        // TODO: where do we want to log error messages?
+        // rethrow for now
+        throw;
+    }
 }
 
 void read_write(const Program_args &arguments) {
@@ -111,9 +118,7 @@ void read_write(const Program_args &arguments) {
                 output_file.open(arguments.outpu_file, std::ios::out | std::ios::app);
             }
         } catch (const std::ios_base::failure &e) {
-            output_file.close();
-            std::cout << "Something went wrong when handling the output file." << std::endl << e.what() << std::endl;
-            exit(1);
+            throw Bech32mException("Something went wrong when handling the output file");
         }
     }
 
@@ -129,9 +134,7 @@ void read_write(const Program_args &arguments) {
                 input_file.open(arguments.input_file, std::ios::in);
             }
         } catch (const std::ios_base::failure &e) {
-            input_file.close();
-            std::cout << "Something went wrong when handling the output file." << std::endl << e.what() << std::endl;
-            exit(1);
+            throw Bech32mException("Something went wrong when handling the output file");
         }
     }
 
@@ -141,17 +144,16 @@ void read_write(const Program_args &arguments) {
 
     if (arguments.input_format == data_form::bin) {
         std::string in;
-        double max_read = std::ceil(BECH32M_MAX_BITSET_LENGTH / 8);
-        in.resize(max_read);
-        source.read(&in[0], max_read);
+        int64_t max_byte_count = std::floor(BECH32M_MAX_BITSET_LENGTH / BYTE_BIT_COUNT);
+        in.resize(max_byte_count);
+        source.read(&in[0], max_byte_count);
         if (source) {
-            std::cout << "More than max amount of bytes in the file." << std::endl;
-            exit(1);
+            throw Bech32mException("More than max amount of bytes in the file.");
         }
 
         result = presentation_layer(arguments, in);
         if (arguments.output_format == data_form::bin) {
-            target.write(&result[0], result.size());
+            target.write(&result[0], static_cast<int64_t>(result.size()));
         } else {
             target << result << std::endl;
         }
@@ -160,18 +162,10 @@ void read_write(const Program_args &arguments) {
         while (std::getline(source, line) && !std::all_of(line.begin(), line.end(), isspace)) {
             result = presentation_layer(arguments, line);
             if (arguments.output_format == data_form::bin) {
-                target.write(&result[0], result.size());
+                target.write(&result[0], static_cast<int64_t>(result.size()));
             } else {
                 target << result << std::endl;
             }
         }
     }
-
-    // comented out, based on cppreference the ofstream and ifstream .close() methods are called in destructor
-    //    if (arguments.output_type == output::file) {
-    //        output_file.close();
-    //    }
-    //    if (arguments.input_type == input::file) {
-    //        output_file.close();
-    //    }
 }

@@ -85,8 +85,8 @@ class Argument {
     void invoke_handler(Program_args &args, std::string _param) { handler(args, std::move(_param)); }
 };
 
-void set_output_format(Program_args &args, std::string output);
-void set_input_format(Program_args &args, std::string input);
+void set_output_format(Program_args &args, const std::string &output);
+void set_input_format(Program_args &args, const std::string &input);
 void set_output_file(Program_args &args, std::string file);
 void set_input_file(Program_args &args, std::string file);
 void set_input_text(Program_args &args, std::string text);

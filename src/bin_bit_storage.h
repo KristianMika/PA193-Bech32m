@@ -2,8 +2,8 @@
 #define BECH32M_BIN_BIT_STORAGE_H
 
 #include "bit_storage.h"
+static const uint16_t BYTE_BIT_COUNT = 8;
 class BinBitStorage : public BitStorage {
-    static const uint16_t BYTE_BIT_COUNT = 8;
 
   public:
     explicit BinBitStorage(const std::string &);
