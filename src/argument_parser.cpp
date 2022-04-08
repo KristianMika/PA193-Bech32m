@@ -6,6 +6,12 @@ void set_output_format(ProgramArgs &args, const std::string &output) {
     if (args.oformat_set || args.iformat_set) {
         throw Bech32mException("Format for the program has been already specified.");
     }
+    if (args.allow_empty_hrp) {
+        throw Bech32mException("Empty hrp can not be allowed for decoding.");
+    }
+    if (!args.hrp.empty()) {
+        throw Bech32mException("Default hrp can not be set for decoding.");
+    }
 
     if (output == BIN_STRING) {
         args.output_format = DataFormat::Bin;
@@ -85,6 +91,41 @@ void set_help(ProgramArgs &args, std::string) {
     args.print_help = true;
 }
 
+void set_defualt_hrp(ProgramArgs& args, std::string hrp) { 
+    // validate hrp
+
+    if (hrp.empty()) {
+        throw Bech32mException("Invalid parameter " + hrp + " passed to argument --hrp.");
+    }
+    if (!args.hrp.empty()) {
+        throw Bech32mException("Default hrp was already set.");
+    }
+    if (args.allow_empty_hrp) {
+        throw Bech32mException("Can not use default hrp if empty hrp is allowed.");
+    }
+    if (args.output_format != DataFormat::Bech32m) {
+        throw Bech32mException("Default hrp can not be set for decoding.");
+    }
+    args.hrp = std::move(hrp);
+}
+
+void allow_empty_hrp(ProgramArgs &args, std::string _) {
+
+    if (!args.hrp.empty()) {
+        throw Bech32mException("Default hrp was already set.");
+    }
+    if (args.allow_empty_hrp) {
+        throw Bech32mException("Empty hrp was already allowed.");
+    }
+    if (args.output_format != DataFormat::Bech32m) {
+        throw Bech32mException("Empty hrp can not be set for decoding.");
+    }
+
+    args.allow_empty_hrp = true;
+}
+
+
+
 ProgramArgs Parser::parse(const int &argc, const char **argv) {
     ProgramArgs result;
     // skipping the first argument containing the name of the program
@@ -133,14 +174,16 @@ Parser get_default_parser() {
                                   .add_param_value(HEX_STRING)
                                   .add_param_value(BASE64_STRING)
                                   .add_handler(set_input_format)
-                                  .set_description("The format of input data. Encoding selected-format -> Bech32m."))
+                                  .set_description("The format of input data. Encoding selected-format -> Bech32m."
+                                                   "Mutually exclusive with --output-text."))
             .add_argument(Argument()
                                   .set_name("--output-format")
                                   .add_param_value(BIN_STRING)
                                   .add_param_value(HEX_STRING)
                                   .add_param_value(BASE64_STRING)
                                   .add_handler(set_output_format)
-                                  .set_description("The format of output data. Decoding Bech32m -> selected-format"))
+                                  .set_description("The format of output data. Decoding Bech32m -> selected-format"
+                                                   "Mutually exclusive with --input-text, --hrp and ----allow-empty-hrp."))
             .add_argument( Argument()
                                    .set_name("--input-file")
                                    .set_variable_param()
@@ -160,6 +203,15 @@ Parser get_default_parser() {
             .add_argument(Argument()
                                    .set_name("--help")
                                    .set_description("Prints this help.")
+                                   .add_handler(set_help))
+            .add_argument(Argument()
+                                   .set_name("--hrp")
+                                   .set_variable_param()
+                                   .set_description("Default hrp. Mutually exclusive with --allow-empty-hrp and --output-format.")
+                                   .add_handler(set_defualt_hrp))
+            .add_argument(Argument()
+                                   .set_name("--allow-empty-hrp")
+                                   .set_description("Allows usage of empty hrp. Mutually exclusive with --hrp and --output-format.")
                                    .add_handler(set_help));
     // clang-format on
 }
