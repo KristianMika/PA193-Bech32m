@@ -1,7 +1,7 @@
 name: Default CI
 on: [push]
 env:
-  BINARY_NAME: app
+  BINARY_NAME: bech32m
   TEST_BINARY_NAME: Test
 jobs:
 
