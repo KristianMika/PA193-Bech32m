@@ -171,8 +171,6 @@ std::string decode(const std::string &code, DataFormat output_format) {
     std::string hrp;
     if (separator_i > 0) {
         hrp = lowered.substr(0, separator_i);
-    } else {
-        throw Bech32mException("Empty human readable part");
     }
 
     data = reverse_code(static_cast<int>(hrp.length()) + 1, static_cast<int>(lowered.length()), lowered);

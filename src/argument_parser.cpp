@@ -6,9 +6,6 @@ void set_output_format(ProgramArgs &args, const std::string &output) {
     if (args.oformat_set || args.iformat_set) {
         throw Bech32mException("Format for the program has been already specified.");
     }
-    if (args.allow_empty_hrp) {
-        throw Bech32mException("Empty hrp can not be allowed for decoding.");
-    }
     if (!args.hrp.empty()) {
         throw Bech32mException("Default hrp can not be set for decoding.");
     }
@@ -116,9 +113,6 @@ void allow_empty_hrp(ProgramArgs &args, std::string _) {
     }
     if (args.allow_empty_hrp) {
         throw Bech32mException("Empty hrp was already allowed.");
-    }
-    if (args.output_format != DataFormat::Bech32m) {
-        throw Bech32mException("Empty hrp can not be set for decoding.");
     }
 
     args.allow_empty_hrp = true;
