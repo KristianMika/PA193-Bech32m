@@ -5,6 +5,7 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <sstream>
 
 #ifndef ARGUMENT_PARSER
 #define ARGUMENT_PARSER
@@ -21,7 +22,7 @@ const char *const HEX_STRING = "hex";
 const char *const BASE64_STRING = "base64";
 const char *const BECH32M_STRING = "bech32m";
 
-struct Program_args {
+struct ProgramArgs {
     Mode mode = Mode::Encode;
 
     Input input_type = Input::Stdin;
@@ -36,6 +37,8 @@ struct Program_args {
     // used in Decode mode
     DataFormat output_format = DataFormat::Bech32m;
 
+    bool print_help = false;
+
     // flags to prevent setting both formats or one format repeatably
     bool oformat_set = false;
     bool iformat_set = false;
@@ -43,21 +46,25 @@ struct Program_args {
 
 class Argument {
   public:
-    using HandlerType = std::function<void(Program_args &, std::string)>;
+    using HandlerType = std::function<void(ProgramArgs &, std::string)>;
 
   private:
     // set of valid parameters for the argument
     std::set<std::string> valid_params;
     // set of valid names for the argument
     std::string name;
+    // description of the argument
+    std::string description = "No description provided.";
     // function pointer
     HandlerType handler;
+
 
     bool param = false;
     bool variable_parameter = false;
 
   public:
     bool has_param() const { return param; }
+    bool has_variable_param() const { return variable_parameter; }
 
     Argument set_variable_param() {
         param = true;
@@ -87,14 +94,26 @@ class Argument {
         return *this;
     }
 
-    void invoke_handler(Program_args &args, std::string _param) { handler(args, std::move(_param)); }
+    Argument set_description(std::string _description) { 
+        description = std::move(_description);
+        return *this;
+    }
+
+    std::set<std::string> get_valid_params() const { 
+        return valid_params;
+    }
+
+    std::string get_description() const { return description; }
+
+    void invoke_handler(ProgramArgs &args, std::string _param) { handler(args, std::move(_param)); }
 };
 
-void set_output_format(Program_args &args, const std::string &output);
-void set_input_format(Program_args &args, const std::string &input);
-void set_output_file(Program_args &args, std::string file);
-void set_input_file(Program_args &args, std::string file);
-void set_input_text(Program_args &args, std::string text);
+void set_output_format(ProgramArgs &args, const std::string &output);
+void set_input_format(ProgramArgs &args, const std::string &input);
+void set_output_file(ProgramArgs &args, std::string file);
+void set_input_file(ProgramArgs &args, std::string file);
+void set_input_text(ProgramArgs &args, std::string text);
+void set_help(ProgramArgs &args, std::string);
 
 class Parser {
   private:
@@ -106,7 +125,28 @@ class Parser {
         arguments.emplace(argument.get_name(), std::move(argument));
         return *this;
     }
-    Program_args parse(const int &argc, const char **argv);
+    ProgramArgs parse(const int &argc, const char **argv);
+
+    std::string usage() {
+        const std::string alignment_space = "    ";
+        std::stringstream result;
+        result << std::string("Usage:") << std::endl;
+        for (auto const &[key, argument] : arguments) {
+            result << key << std::endl << alignment_space << argument.get_description() << std::endl;
+            result << alignment_space << "Possible parameters: ";
+            if (argument.has_variable_param()) {
+                result << "Arbitrary value.";
+            } else if (argument.has_param()) {
+                for (const std::string &parameter : argument.get_valid_params()) {
+                    result << parameter << ", ";
+                }
+            } else {
+                result << "No parameters.";
+            }
+            result << std::endl << std::endl;
+        }
+        return result.str();
+    }
 };
 
 /**

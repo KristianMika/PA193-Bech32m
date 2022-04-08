@@ -2,7 +2,7 @@
 
 // ./program --encode --from_bin
 
-void set_output_format(Program_args &args, const std::string &output) {
+void set_output_format(ProgramArgs &args, const std::string &output) {
     if (args.oformat_set || args.iformat_set) {
         throw Bech32mException("Format for the program has been already specified.");
     }
@@ -21,7 +21,7 @@ void set_output_format(Program_args &args, const std::string &output) {
     args.mode = Mode::Decode;
 }
 
-void set_input_format(Program_args &args, const std::string &input) {
+void set_input_format(ProgramArgs &args, const std::string &input) {
     if (args.oformat_set || args.iformat_set) {
         throw Bech32mException("Format for the program has been already specified.");
     }
@@ -39,7 +39,7 @@ void set_input_format(Program_args &args, const std::string &input) {
     args.iformat_set = true;
 }
 
-void set_output_file(Program_args &args, std::string file) {
+void set_output_file(ProgramArgs &args, std::string file) {
     if (!args.outpu_file.empty()) {
         throw Bech32mException("Output file already selected.");
     }
@@ -51,7 +51,7 @@ void set_output_file(Program_args &args, std::string file) {
     args.output_type = Output::File;
 }
 
-void set_input_file(Program_args &args, std::string file) {
+void set_input_file(ProgramArgs &args, std::string file) {
     if (!args.input_file.empty()) {
         throw Bech32mException("Input file already selected.");
     }
@@ -66,7 +66,7 @@ void set_input_file(Program_args &args, std::string file) {
     args.input_type = Input::File;
 }
 
-void set_input_text(Program_args &args, std::string text) {
+void set_input_text(ProgramArgs &args, std::string text) {
     if (!args.input_file.empty()) {
         throw Bech32mException("Different input already selected.");
     }
@@ -81,8 +81,12 @@ void set_input_text(Program_args &args, std::string text) {
     args.input_type = Input::Argument;
 }
 
-Program_args Parser::parse(const int &argc, const char **argv) {
-    Program_args result;
+void set_help(ProgramArgs &args, std::string) {
+    args.print_help = true;
+}
+
+ProgramArgs Parser::parse(const int &argc, const char **argv) {
+    ProgramArgs result;
     // skipping the first argument containing the name of the program
     int counter = 1;
     // iterating over all arguments
@@ -128,24 +132,34 @@ Parser get_default_parser() {
                                   .add_param_value(BIN_STRING)
                                   .add_param_value(HEX_STRING)
                                   .add_param_value(BASE64_STRING)
-                                  .add_handler(set_input_format))
+                                  .add_handler(set_input_format)
+                                  .set_description("The format of input data. Encoding selected-format -> Bech32m."))
             .add_argument(Argument()
                                   .set_name("--output-format")
                                   .add_param_value(BIN_STRING)
                                   .add_param_value(HEX_STRING)
                                   .add_param_value(BASE64_STRING)
-                                  .add_handler(set_output_format))
+                                  .add_handler(set_output_format)
+                                  .set_description("The format of output data. Decoding Bech32m -> selected-format"))
             .add_argument( Argument()
                                    .set_name("--input-file")
                                    .set_variable_param()
-                                   .add_handler(set_input_file))
+                                   .add_handler(set_input_file)
+                                   .set_description("File with the inputs. Mutually exclusive with --input-text."))
             .add_argument(Argument()
                                   .set_name("--input-text")
                                   .set_variable_param()
-                                  .add_handler(set_input_text))
+                                  .add_handler(set_input_text)
+                                  .set_description("Next CLI argument will be interpreted as the program input."
+                                                   "Mutually exclusive with --input-text."))
             .add_argument(Argument()
                                   .set_name("--output-file")
                                   .set_variable_param()
-                                  .add_handler(set_output_file));
+                                  .add_handler(set_output_file)
+                                  .set_description("The file into which the program outputs will be written."))
+            .add_argument(Argument()
+                                   .set_name("--help")
+                                   .set_description("Prints this help.")
+                                   .add_handler(set_help));
     // clang-format on
 }
