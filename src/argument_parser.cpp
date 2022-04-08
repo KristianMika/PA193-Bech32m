@@ -212,6 +212,6 @@ Parser get_default_parser() {
             .add_argument(Argument()
                                    .set_name("--allow-empty-hrp")
                                    .set_description("Allows usage of empty hrp. Mutually exclusive with --hrp and --output-format.")
-                                   .add_handler(set_help));
+                                   .add_handler(allow_empty_hrp));
     // clang-format on
 }
