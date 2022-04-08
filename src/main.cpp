@@ -8,11 +8,11 @@
 #include <fstream>
 #include <iostream>
 
-void read_write(const Program_args &arguments);
+void read_write(const ProgramArgs &arguments);
 
 int main(int argc, const char **argv) {
     Parser parser = get_default_parser();
-    Program_args arguments;
+    ProgramArgs arguments;
     try {
         arguments = parser.parse(argc, argv);
     } catch (const Bech32mException &e) {
@@ -32,7 +32,7 @@ int main(int argc, const char **argv) {
     return EXIT_SUCCESS;
 }
 
-std::string presentation_layer(const Program_args &arguments, const std::string &input) {
+std::string presentation_layer(const ProgramArgs &arguments, const std::string &input) {
     std::string result;
     std::string hrp;
     std::string data;
@@ -74,7 +74,7 @@ std::string presentation_layer(const Program_args &arguments, const std::string 
     }
 }
 
-void read_write(const Program_args &arguments) {
+void read_write(const ProgramArgs &arguments) {
     std::string result;
     std::ofstream output_file;
     std::ifstream input_file;

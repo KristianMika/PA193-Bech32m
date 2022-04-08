@@ -2,7 +2,7 @@
 
 // ./program --encode --from_bin
 
-void set_output_format(Program_args &args, const std::string &output) {
+void set_output_format(ProgramArgs &args, const std::string &output) {
     if (args.oformat_set || args.iformat_set) {
         throw Bech32mException("Format for the program has been already specified.");
     }
@@ -21,7 +21,7 @@ void set_output_format(Program_args &args, const std::string &output) {
     args.mode = Mode::Decode;
 }
 
-void set_input_format(Program_args &args, const std::string &input) {
+void set_input_format(ProgramArgs &args, const std::string &input) {
     if (args.oformat_set || args.iformat_set) {
         throw Bech32mException("Format for the program has been already specified.");
     }
@@ -39,7 +39,7 @@ void set_input_format(Program_args &args, const std::string &input) {
     args.iformat_set = true;
 }
 
-void set_output_file(Program_args &args, std::string file) {
+void set_output_file(ProgramArgs &args, std::string file) {
     if (!args.outpu_file.empty()) {
         throw Bech32mException("Output file already selected.");
     }
@@ -51,7 +51,7 @@ void set_output_file(Program_args &args, std::string file) {
     args.output_type = Output::File;
 }
 
-void set_input_file(Program_args &args, std::string file) {
+void set_input_file(ProgramArgs &args, std::string file) {
     if (!args.input_file.empty()) {
         throw Bech32mException("Input file already selected.");
     }
@@ -66,7 +66,7 @@ void set_input_file(Program_args &args, std::string file) {
     args.input_type = Input::File;
 }
 
-void set_input_text(Program_args &args, std::string text) {
+void set_input_text(ProgramArgs &args, std::string text) {
     if (!args.input_file.empty()) {
         throw Bech32mException("Different input already selected.");
     }
@@ -81,12 +81,12 @@ void set_input_text(Program_args &args, std::string text) {
     args.input_type = Input::Argument;
 }
 
-void set_help(Program_args &args, std::string) {
+void set_help(ProgramArgs &args, std::string) {
     args.print_help = true;
 }
 
-Program_args Parser::parse(const int &argc, const char **argv) {
-    Program_args result;
+ProgramArgs Parser::parse(const int &argc, const char **argv) {
+    ProgramArgs result;
     // skipping the first argument containing the name of the program
     int counter = 1;
     // iterating over all arguments

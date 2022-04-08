@@ -30,7 +30,7 @@ const std::string argv0 = "bech32m";
 
 void test_simple_parse() {
     Parser parser = get_default_parser();
-    Program_args arguments;
+    ProgramArgs arguments;
     std::string argv1("--input-format");
     std::string argv2("base64");
     const char *argv[] = {argv0.c_str(), argv1.c_str(), argv2.c_str()};

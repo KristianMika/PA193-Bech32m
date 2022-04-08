@@ -22,7 +22,7 @@ const char *const HEX_STRING = "hex";
 const char *const BASE64_STRING = "base64";
 const char *const BECH32M_STRING = "bech32m";
 
-struct Program_args {
+struct ProgramArgs {
     Mode mode = Mode::Encode;
 
     Input input_type = Input::Stdin;
@@ -46,7 +46,7 @@ struct Program_args {
 
 class Argument {
   public:
-    using HandlerType = std::function<void(Program_args &, std::string)>;
+    using HandlerType = std::function<void(ProgramArgs &, std::string)>;
 
   private:
     // set of valid parameters for the argument
@@ -105,15 +105,15 @@ class Argument {
 
     std::string get_description() const { return description; }
 
-    void invoke_handler(Program_args &args, std::string _param) { handler(args, std::move(_param)); }
+    void invoke_handler(ProgramArgs &args, std::string _param) { handler(args, std::move(_param)); }
 };
 
-void set_output_format(Program_args &args, const std::string &output);
-void set_input_format(Program_args &args, const std::string &input);
-void set_output_file(Program_args &args, std::string file);
-void set_input_file(Program_args &args, std::string file);
-void set_input_text(Program_args &args, std::string text);
-void set_help(Program_args &args, std::string);
+void set_output_format(ProgramArgs &args, const std::string &output);
+void set_input_format(ProgramArgs &args, const std::string &input);
+void set_output_file(ProgramArgs &args, std::string file);
+void set_input_file(ProgramArgs &args, std::string file);
+void set_input_text(ProgramArgs &args, std::string text);
+void set_help(ProgramArgs &args, std::string);
 
 class Parser {
   private:
@@ -125,7 +125,7 @@ class Parser {
         arguments.emplace(argument.get_name(), std::move(argument));
         return *this;
     }
-    Program_args parse(const int &argc, const char **argv);
+    ProgramArgs parse(const int &argc, const char **argv);
 
     std::string usage() {
         const std::string alignment_space = "    ";
