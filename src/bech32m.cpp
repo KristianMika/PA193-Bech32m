@@ -182,8 +182,7 @@ std::string decode(const std::string &code, DataFormat output_format) {
             data = detection.data;
             Bech32mVector without_checksum(data.begin(), data.end() - BECH32M_CHECKSUM_LENGTH);
             return storage_to_output(without_checksum, output_format);
-        }		
-        throw Bech32mException("Empty human readable part");
+        }
     }
 
     data = reverse_code(static_cast<int>(hrp.length()) + 1, static_cast<int>(lowered.length()), lowered);
