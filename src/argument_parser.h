@@ -120,10 +120,12 @@ void set_input_text(ProgramArgs &args, std::string text);
 void set_help(ProgramArgs &args, std::string);
 void set_defualt_hrp(ProgramArgs &args, std::string);
 void allow_empty_hrp(ProgramArgs &args, std::string);
+void set_mode_decode(ProgramArgs &args, std::string);
 
 class Parser {
   private:
     std::map<std::string, Argument> arguments;
+    void postprocess(const ProgramArgs &args);
 
   public:
     // adding argument with all its names
