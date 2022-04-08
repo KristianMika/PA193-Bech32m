@@ -141,6 +141,10 @@ std::string storage_to_output(const Bech32mVector &data, DataFormat output_forma
         result = Base64BitStorage(converter).to_string();
         break;
 
+    case DataFormat::Bech32m:
+        result = converter.to_string();
+        break;
+
     default:
         break;
     }
