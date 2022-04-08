@@ -160,7 +160,8 @@ std::string decode(const std::string &code, DataFormat output_format) {
         ErrorDetectionResult detection = detect_error(lowered, separator_i);
         if (detection.result == DetectionResult::OneCharSubs) {
             data = detection.data;
-            return storage_to_output(data, output_format);
+            Bech32mVector without_checksum(data.begin(), data.end() - BECH32M_CHECKSUM_LENGTH);
+            return storage_to_output(without_checksum, output_format);
         }
         throw Bech32mException("No separator of human readable part in the string to decode "
                                "+ another substitution error.");
@@ -172,6 +173,12 @@ std::string decode(const std::string &code, DataFormat output_format) {
     if (separator_i > 0) {
         hrp = lowered.substr(0, separator_i);
     } else {
+        ErrorDetectionResult detection = detect_error(lowered, separator_i);
+        if (detection.result == DetectionResult::OneCharSubs) {
+            data = detection.data;
+            Bech32mVector without_checksum(data.begin(), data.end() - BECH32M_CHECKSUM_LENGTH);
+            return storage_to_output(without_checksum, output_format);
+        }		
         throw Bech32mException("Empty human readable part");
     }
 

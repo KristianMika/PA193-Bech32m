@@ -4,6 +4,27 @@
 
 ErrorDetectionResult detect_error(const std::string &bech32m_enc_hex, size_t idx_separator) {
     std::string cpy = bech32m_enc_hex;
+
+    if (idx_separator == std::string::npos || idx_separator == 0) {
+        // the separator can occur only at positions [1 - bech32m_enc_hex.length()-6)
+        // but for safety we'll run to the end of the string
+        for (size_t i = 1; i < bech32m_enc_hex.length(); ++i) {
+            char original = cpy[i];
+            cpy[i] = '1';
+
+            std::string hrp = cpy.substr(0, i);
+
+            Bech32mVector data = reverse_code(hrp.length() + 1, cpy.length(), cpy);
+
+            if (bech32_verify_checksum(hrp, data)) {
+                // the substitution was in the separator character
+                return ErrorDetectionResult(DetectionResult::OneCharSubs, data);
+            }
+            cpy[i] = original;
+        }
+        return ErrorDetectionResult(DetectionResult::Invalid);
+    }
+
     std::string hrp = bech32m_enc_hex.substr(0, idx_separator);
 
     Bech32mVector init_attempt = reverse_code(hrp.length() + 1, cpy.length(), cpy);
@@ -11,21 +32,6 @@ ErrorDetectionResult detect_error(const std::string &bech32m_enc_hex, size_t idx
     if (bech32_verify_checksum(hrp, init_attempt)) {
         // no substitution necessary
         return ErrorDetectionResult(DetectionResult::Valid, init_attempt);
-    }
-
-    if (idx_separator == std::string::npos) {
-        // the separator can occur only at positions [1 - bech32m_enc_hex.length()-6)
-        // but for safety we'll run through the whole string
-        for (size_t i = 0; i < bech32m_enc_hex.length(); ++i) {
-            cpy[i] = '1';
-            Bech32mVector data = reverse_code(hrp.length() + 1, cpy.length(), cpy);
-
-            if (bech32_verify_checksum(hrp, data)) {
-                // the substitution was in the separator character
-                return ErrorDetectionResult(DetectionResult::OneCharSubs, data);
-            }
-        }
-        return ErrorDetectionResult(DetectionResult::Invalid);
     }
 
     // check hrp
@@ -36,16 +42,23 @@ ErrorDetectionResult detect_error(const std::string &bech32m_enc_hex, size_t idx
             if (c == valid_char) {
                 continue;
             }
+            if (valid_char >= 'A' && valid_char <= 'Z') {
+                continue;
+            }
             cpy[i] = valid_char;
             hrp[i] = valid_char;
 
-            verify_bech32m(cpy);
+            try {
+                verify_bech32m(cpy);
 
-            Bech32mVector data = reverse_code(hrp.length() + 1, cpy.length(), cpy);
+                Bech32mVector data = reverse_code(hrp.length() + 1, cpy.length(), cpy);
 
-            if (bech32_verify_checksum(hrp, data)) {
-                // the substitution was in the hrp
-                return ErrorDetectionResult(DetectionResult::OneCharSubs, data);
+                if (bech32_verify_checksum(hrp, data)) {
+                    // the substitution was in the hrp
+                    return ErrorDetectionResult(DetectionResult::OneCharSubs, data);
+                }
+            } catch (Bech32mException _) {
+                // continue with the next character
             }
         }
         hrp[i] = c;
