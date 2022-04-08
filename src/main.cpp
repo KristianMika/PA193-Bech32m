@@ -53,17 +53,21 @@ std::string presentation_layer(const ProgramArgs &arguments, const std::string &
     if (separator == std::string::npos) {
         if (arguments.allow_empty_hrp) {
             data = input;
+        } else if (!arguments.hrp.empty()) {
+            data = input;
             hrp = arguments.hrp;
         } else {
-            throw Bech32mException("No hrp provided.");
+            throw Bech32mException("No hrp to be used.");
         }
     // separator is present but at the index 0
     } else if (separator == 0) {
         if (arguments.allow_empty_hrp) {
-            hrp = arguments.hrp;
             data = input.substr(separator + 1, input.size() - separator);
+        } else if (!arguments.hrp.empty()) {
+            data = input.substr(separator + 1, input.size() - separator);
+            hrp = arguments.hrp;
         } else {
-            throw Bech32mException("No hrp provided.");
+            throw Bech32mException("No hrp to be used.");
         }
     // separator is present
     } else {
