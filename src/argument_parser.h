@@ -42,6 +42,10 @@ struct ProgramArgs {
     // flags to prevent setting both formats or one format repeatably
     bool oformat_set = false;
     bool iformat_set = false;
+
+    // hrp handling
+    bool allow_empty_hrp = false;
+    std::string hrp;
 };
 
 class Argument {
@@ -114,6 +118,8 @@ void set_output_file(ProgramArgs &args, std::string file);
 void set_input_file(ProgramArgs &args, std::string file);
 void set_input_text(ProgramArgs &args, std::string text);
 void set_help(ProgramArgs &args, std::string);
+void set_defualt_hrp(ProgramArgs &args, std::string);
+void allow_empty_hrp(ProgramArgs &args, std::string);
 
 class Parser {
   private:
