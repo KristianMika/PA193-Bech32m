@@ -16,7 +16,8 @@ int main(int argc, const char **argv) {
     try {
         arguments = parser.parse(argc, argv);
     } catch (const Bech32mException &e) {
-        std::cerr << e.what() << std::endl;
+        std::cerr << e.what() << std::endl << std::endl;
+        std::cout << parser.usage();
         return EXIT_FAILURE;
     } catch (const std::exception &e) {
         std::cerr << "An error occurred: " << e.what() << std::endl;

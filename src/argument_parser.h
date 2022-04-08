@@ -5,6 +5,7 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <sstream>
 
 #ifndef ARGUMENT_PARSER
 #define ARGUMENT_PARSER
@@ -50,6 +51,8 @@ class Argument {
     std::set<std::string> valid_params;
     // set of valid names for the argument
     std::string name;
+    // description of the argument
+    std::string description = "No description provided.";
     // function pointer
     HandlerType handler;
 
@@ -58,6 +61,7 @@ class Argument {
 
   public:
     bool has_param() const { return param; }
+    bool has_variable_param() const { return variable_parameter; }
 
     Argument set_variable_param() {
         param = true;
@@ -87,6 +91,17 @@ class Argument {
         return *this;
     }
 
+    Argument set_description(std::string _description) { 
+        description = std::move(_description);
+        return *this;
+    }
+
+    std::set<std::string> get_valid_params() const { 
+        return valid_params;
+    }
+
+    std::string get_description() const { return description; }
+
     void invoke_handler(Program_args &args, std::string _param) { handler(args, std::move(_param)); }
 };
 
@@ -107,6 +122,26 @@ class Parser {
         return *this;
     }
     Program_args parse(const int &argc, const char **argv);
+
+    std::string usage() {
+        std::stringstream result;
+        result << std::string("Usage:") << std::endl;
+        for (auto const &[key, argument] : arguments) {
+            result << key << std::endl << argument.get_description() << std::endl;
+            result << "     Possible parameters: ";
+            if (argument.has_variable_param()) {
+                result << "Arbitrary value.";
+            } else if (argument.has_param()) {
+                for (const std::string &parameter : argument.get_valid_params()) {
+                    result << parameter << ", ";
+                }
+            } else {
+                result << "No parameters.";
+            }
+            result << std::endl;
+        }
+        return result.str();
+    }
 };
 
 /**
