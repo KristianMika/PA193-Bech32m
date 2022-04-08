@@ -4,7 +4,7 @@
 
 void set_output_format(ProgramArgs &args, const std::string &output) {
     if (args.oformat_set || args.iformat_set) {
-        throw Bech32mException("Format for the program has been already specified.");
+        throw Bech32mException("Format for the input or output data has been already specified.");
     }
     if (!args.hrp.empty()) {
         throw Bech32mException("Default hrp can not be set for decoding.");
@@ -19,14 +19,15 @@ void set_output_format(ProgramArgs &args, const std::string &output) {
     } else {
         throw Bech32mException("Invalid parameter " + output + " passed to argument --output-format.");
     }
-    args.input_format = DataFormat::Bech32m;
     args.oformat_set = true;
-    args.mode = Mode::Decode;
 }
 
 void set_input_format(ProgramArgs &args, const std::string &input) {
     if (args.oformat_set || args.iformat_set) {
-        throw Bech32mException("Format for the program has been already specified.");
+        throw Bech32mException("Format for the input or output data has been already specified.");
+    }
+    if (args.mode == Mode::Decode) {
+        throw Bech32mException("Input format can be set only for encoding.");
     }
 
     if (input == BIN_STRING) {
@@ -38,7 +39,6 @@ void set_input_format(ProgramArgs &args, const std::string &input) {
     } else {
         throw Bech32mException("Invalid parameter " + input + " passed to argument --input-format.");
     }
-
     args.iformat_set = true;
 }
 
@@ -103,10 +103,13 @@ void set_defualt_hrp(ProgramArgs& args, std::string hrp) {
     if (args.output_format != DataFormat::Bech32m) {
         throw Bech32mException("Default hrp can not be set for decoding.");
     }
+    if (args.mode == Mode::Decode) {
+        throw Bech32mException("Default hrp can not be set for decoding.");
+    }
     args.hrp = std::move(hrp);
 }
 
-void allow_empty_hrp(ProgramArgs &args, std::string _) {
+void allow_empty_hrp(ProgramArgs &args, std::string) {
 
     if (!args.hrp.empty()) {
         throw Bech32mException("Default hrp was already set.");
@@ -118,7 +121,69 @@ void allow_empty_hrp(ProgramArgs &args, std::string _) {
     args.allow_empty_hrp = true;
 }
 
+void set_mode_decode(ProgramArgs& args, std::string) { 
+    if (args.mode == Mode::Decode) {
+        throw Bech32mException("Decoding was already set.");
+    }
+    if (args.iformat_set) {
+        throw Bech32mException("Input format was already specified, which is invalid for decoding.");
+    }
+    if (!args.hrp.empty()) {
+        throw Bech32mException("Default hrp was set. Invalid for decoding.");
+    }
 
+    args.input_format = DataFormat::Bech32m;
+    args.mode = Mode::Decode;
+
+}
+
+void Parser::postprocess(const ProgramArgs& args) { 
+    if (args.mode == Mode::Encode) {
+        if (args.output_format != DataFormat::Bech32m) {
+            throw Bech32mException("Output format changed for encoding.");
+        }
+        if (args.input_format == DataFormat::Bech32m) {
+            throw Bech32mException("Invalid input format set for encoding.");
+        }
+    }
+
+    if (args.mode == Mode::Decode) {
+        if (args.output_format == DataFormat::Bech32m) {
+            throw Bech32mException("No output format set for decoding.");
+        }
+        if (args.input_format != DataFormat::Bech32m) {
+            throw Bech32mException("Input format changed for decoding.");
+        }
+        if (!args.hrp.empty()) {
+            throw Bech32mException("Default hrp set for decoding.");
+        }
+    }
+
+    if (!args.hrp.empty() && args.allow_empty_hrp) {
+        throw Bech32mException("Default hrp set and empty hrp allowed at the same time.");
+    }
+
+    if (args.iformat_set && args.oformat_set) {
+        throw Bech32mException("Both input and output formats has been changed.");
+    }
+
+    if (!args.input_file.empty() && !args.input_text.empty()) {
+        throw Bech32mException("Both input text and input files has been selected.");
+    }
+
+    if (args.input_type == Input::File && args.input_file.empty()) {
+        throw Bech32mException("Empty name for input file.");
+    }
+
+    if (args.output_type == Output::File && args.outpu_file.empty()) {
+        throw Bech32mException("Empty name for output file.");
+    }
+
+    if (args.input_type == Input::Argument && args.input_text.empty()) {
+        throw Bech32mException("Empty input text given as argument.");
+    }
+
+}
 
 ProgramArgs Parser::parse(const int &argc, const char **argv) {
     ProgramArgs result;
@@ -151,11 +216,15 @@ ProgramArgs Parser::parse(const int &argc, const char **argv) {
             if (!current_arg.is_valid_param(param)) {
                 throw Bech32mException("Argument " + arg + " was given invalid parameter " + param + ".");
             }
+            if (!param.empty() && param[0] == '-') {
+                throw Bech32mException("Argument " + arg + " expected argument and was given None or one starting with '-' symbol.");
+            }
             // continuing to next argument
             counter++;
         }
         current_arg.invoke_handler(result, param);
     }
+    postprocess(result);
     return result;
 }
 
@@ -169,7 +238,7 @@ Parser get_default_parser() {
                                   .add_param_value(BASE64_STRING)
                                   .add_handler(set_input_format)
                                   .set_description("The format of input data. Encoding selected-format -> Bech32m."
-                                                   "Mutually exclusive with --output-text."))
+                                                   "Mutually exclusive with --decode and --output-format."))
             .add_argument(Argument()
                                   .set_name("--output-format")
                                   .add_param_value(BIN_STRING)
@@ -177,7 +246,7 @@ Parser get_default_parser() {
                                   .add_param_value(BASE64_STRING)
                                   .add_handler(set_output_format)
                                   .set_description("The format of output data. Decoding Bech32m -> selected-format"
-                                                   "Mutually exclusive with --input-text, --hrp and ----allow-empty-hrp."))
+                                                   "Mutually exclusive with --input-format and --hrp."))
             .add_argument( Argument()
                                    .set_name("--input-file")
                                    .set_variable_param()
@@ -188,7 +257,7 @@ Parser get_default_parser() {
                                   .set_variable_param()
                                   .add_handler(set_input_text)
                                   .set_description("Next CLI argument will be interpreted as the program input."
-                                                   "Mutually exclusive with --input-text."))
+                                                   "Mutually exclusive with --input-file."))
             .add_argument(Argument()
                                   .set_name("--output-file")
                                   .set_variable_param()
@@ -201,11 +270,16 @@ Parser get_default_parser() {
             .add_argument(Argument()
                                    .set_name("--hrp")
                                    .set_variable_param()
-                                   .set_description("Default hrp. Mutually exclusive with --allow-empty-hrp and --output-format.")
+                                   .set_description("Default hrp. Mutually exclusive with --allow-empty-hrp, --decode and --output-format.")
                                    .add_handler(set_defualt_hrp))
             .add_argument(Argument()
                                    .set_name("--allow-empty-hrp")
-                                   .set_description("Allows usage of empty hrp. Mutually exclusive with --hrp and --output-format.")
-                                   .add_handler(allow_empty_hrp));
+                                   .set_description("Allows usage of empty hrp. Mutually exclusive with --hrp.")
+                                   .add_handler(allow_empty_hrp))
+            .add_argument(Argument()
+                                   .set_name("--decode")
+                                   .set_description("Changes program mode to decode. Output format has to be specified."
+                                                    "Mutually exclusive with --input-format and --hrp.")
+                                   .add_handler(set_mode_decode));
     // clang-format on
 }
