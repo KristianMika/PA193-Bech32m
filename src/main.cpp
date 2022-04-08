@@ -23,6 +23,10 @@ int main(int argc, const char **argv) {
         std::cerr << "An error occurred: " << e.what() << std::endl;
         return EXIT_FAILURE;
     }
+    if (arguments.print_help) {
+        std::cout << parser.usage() << std::endl;
+        return 0;
+    }
 
     read_write(arguments);
     return EXIT_SUCCESS;

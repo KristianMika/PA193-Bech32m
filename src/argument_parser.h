@@ -37,6 +37,8 @@ struct Program_args {
     // used in Decode mode
     DataFormat output_format = DataFormat::Bech32m;
 
+    bool print_help = false;
+
     // flags to prevent setting both formats or one format repeatably
     bool oformat_set = false;
     bool iformat_set = false;
@@ -55,6 +57,7 @@ class Argument {
     std::string description = "No description provided.";
     // function pointer
     HandlerType handler;
+
 
     bool param = false;
     bool variable_parameter = false;
@@ -110,6 +113,7 @@ void set_input_format(Program_args &args, const std::string &input);
 void set_output_file(Program_args &args, std::string file);
 void set_input_file(Program_args &args, std::string file);
 void set_input_text(Program_args &args, std::string text);
+void set_help(Program_args &args, std::string);
 
 class Parser {
   private:
@@ -124,11 +128,12 @@ class Parser {
     Program_args parse(const int &argc, const char **argv);
 
     std::string usage() {
+        const std::string alignment_space = "    ";
         std::stringstream result;
         result << std::string("Usage:") << std::endl;
         for (auto const &[key, argument] : arguments) {
-            result << key << std::endl << argument.get_description() << std::endl;
-            result << "     Possible parameters: ";
+            result << key << std::endl << alignment_space << argument.get_description() << std::endl;
+            result << alignment_space << "Possible parameters: ";
             if (argument.has_variable_param()) {
                 result << "Arbitrary value.";
             } else if (argument.has_param()) {
@@ -138,7 +143,7 @@ class Parser {
             } else {
                 result << "No parameters.";
             }
-            result << std::endl;
+            result << std::endl << std::endl;
         }
         return result.str();
     }
