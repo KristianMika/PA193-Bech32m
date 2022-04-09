@@ -33,7 +33,7 @@ struct ProgramArgs {
     DataFormat input_format = DataFormat::Hex;
 
     Output output_type = Output::Stdout;
-    std::string outpu_file;
+    std::string output_file;
     // used in Decode mode
     DataFormat output_format = DataFormat::Bech32m;
 

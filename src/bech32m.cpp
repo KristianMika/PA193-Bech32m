@@ -1,8 +1,8 @@
 #include "bech32m.h"
 #include "argument_parser.h"
-#include "bitstorage/bech32m_bit_storage.h"
 #include "bech32m_error_detection.h"
 #include "bech32m_exception.h"
+#include "bitstorage/bech32m_bit_storage.h"
 #include "bitstorage/bin_bit_storage.h"
 #include "bitstorage/hex_bit_storage.h"
 #include <vector>
@@ -183,6 +183,7 @@ std::string decode(const std::string &code, DataFormat output_format, bool trim)
             Bech32mVector without_checksum(data.begin(), data.end() - BECH32M_CHECKSUM_LENGTH);
             return storage_to_output(without_checksum, output_format, trim);
         }
+        throw Bech32mException("Human readable part is empty");
     }
 
     data = reverse_code(static_cast<int>(hrp.length()) + 1, static_cast<int>(lowered.length()), lowered);

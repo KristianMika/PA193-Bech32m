@@ -43,14 +43,14 @@ void set_input_format(ProgramArgs &args, const std::string &input) {
 }
 
 void set_output_file(ProgramArgs &args, std::string file) {
-    if (!args.outpu_file.empty()) {
+    if (!args.output_file.empty()) {
         throw Bech32mException("Output file already selected.");
     }
     if (file.empty()) {
         throw Bech32mException("Invalid argument parameter passed to program.");
     }
     // validation of the path if wanted
-    args.outpu_file = std::move(file);
+    args.output_file = std::move(file);
     args.output_type = Output::File;
 }
 
@@ -183,7 +183,7 @@ void Parser::postprocess(const ProgramArgs& args) {
         throw Bech32mException("Empty name for input file.");
     }
 
-    if (args.output_type == Output::File && args.outpu_file.empty()) {
+    if (args.output_type == Output::File && args.output_file.empty()) {
         throw Bech32mException("Empty name for output file.");
     }
 
