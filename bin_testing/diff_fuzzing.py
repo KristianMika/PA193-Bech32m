@@ -184,6 +184,7 @@ def indexes_to_string(indexes):
 
 
 def process(hrp, hex_str, base64_str):
+    success = True
     try:
         our_res = hex_encode(hrp, hex_str)
         our_res_64 = base64_encode(hrp, base64_str)
@@ -202,6 +203,7 @@ def process(hrp, hex_str, base64_str):
                 our_res_64 != our_res or \
                 our_res != external_res or \
                 (our_res != node_res and not node_enc_err):
+            success = False
             print("ERROR: Our ENCODED result does not match reference result:")
             print(f"HRP: {hrp}")
             print(f"HEX: {hex_str}")
@@ -225,6 +227,7 @@ def process(hrp, hex_str, base64_str):
                 f.write(f"  Node result:\t\t{node_res}\n")
                 f.write("\n")
         if dec_ext not in extract_our or (dec_our != dec_node and not node_dec_err):
+            success = False
             print("ERROR: Our DECODED result does not match node result:")
             print(f"  Our result:\t\t{dec_our}")
             if dec_ext not in extract_our:
@@ -238,11 +241,13 @@ def process(hrp, hex_str, base64_str):
                 f.write(f"  Node result:\t\t{dec_node}\n")
                 f.write("\n")
     except Exception as e:
+        success = False
         print(e)
         with open("fuzzing_results.txt", "a") as f:
             f.write(f"{hrp}\n")
             f.write(f"{e}\n")
             f.write("\n")
+    return success
 
 
 if __name__ == '__main__':
@@ -257,10 +262,12 @@ if __name__ == '__main__':
 
     process('a', 'ff', to_base64('FF'))
 
+    fail_count = 0
     for _ in range(0, FUZZ_ITERATIONS):
-        process(_hrp, _hex_str, _b64_str)
+        if not process(_hrp, _hex_str, _b64_str): fail_count += 1
         _hrp = generate_hrp()
         _hex_str = generate_hex(_hrp)
         _b64_str = to_base64(_hex_str.upper())
 
     print("DONE")
+    sys.exit(fail_count)
