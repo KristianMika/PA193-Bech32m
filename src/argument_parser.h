@@ -46,6 +46,8 @@ struct ProgramArgs {
     // hrp handling
     bool allow_empty_hrp = false;
     std::string hrp;
+
+    bool trim_trailing_zeros = false;
 };
 
 class Argument {
@@ -121,6 +123,7 @@ void set_help(ProgramArgs &args, std::string);
 void set_defualt_hrp(ProgramArgs &args, std::string);
 void allow_empty_hrp(ProgramArgs &args, std::string);
 void set_mode_decode(ProgramArgs &args, std::string);
+void set_trimming(ProgramArgs &args, std::string);
 
 class Parser {
   private:

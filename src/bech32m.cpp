@@ -124,8 +124,8 @@ bool verify_bech32m(const std::string &code) {
     return true;
 }
 
-std::string storage_to_output(const Bech32mVector &data, DataFormat output_format) {
-    Bech32mBitStorage converter = Bech32mBitStorage(data);
+std::string storage_to_output(const Bech32mVector &data, DataFormat output_format, bool trim) {
+    Bech32mBitStorage converter = Bech32mBitStorage(data, trim);
     std::string result;
 
     switch (output_format) {
@@ -151,7 +151,7 @@ std::string storage_to_output(const Bech32mVector &data, DataFormat output_forma
     return result;
 }
 
-std::string decode(const std::string &code, DataFormat output_format) {
+std::string decode(const std::string &code, DataFormat output_format, bool trim) {
     verify_bech32m(code);
 
     std::string lowered(code.size(), 0x00);
@@ -165,7 +165,7 @@ std::string decode(const std::string &code, DataFormat output_format) {
         if (detection.result == DetectionResult::OneCharSubs) {
             data = detection.data;
             Bech32mVector without_checksum(data.begin(), data.end() - BECH32M_CHECKSUM_LENGTH);
-            return storage_to_output(without_checksum, output_format);
+            return storage_to_output(without_checksum, output_format, trim);
         }
         throw Bech32mException("No separator of human readable part in the string to decode "
                                "+ another substitution error.");
@@ -181,7 +181,7 @@ std::string decode(const std::string &code, DataFormat output_format) {
         if (detection.result == DetectionResult::OneCharSubs) {
             data = detection.data;
             Bech32mVector without_checksum(data.begin(), data.end() - BECH32M_CHECKSUM_LENGTH);
-            return storage_to_output(without_checksum, output_format);
+            return storage_to_output(without_checksum, output_format, trim);
         }
     }
 
@@ -196,5 +196,5 @@ std::string decode(const std::string &code, DataFormat output_format) {
         }
     }
     Bech32mVector wout_checksum(data.begin(), data.end() - BECH32M_CHECKSUM_LENGTH);
-    return storage_to_output(wout_checksum, output_format);
+    return storage_to_output(wout_checksum, output_format, trim);
 }

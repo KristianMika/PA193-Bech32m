@@ -37,7 +37,7 @@ inline bool check_length(const std::string &hex_string) {
     return hex_string.length() * HEX_CHAR_BIT_COUNT <= BECH32M_MAX_BITSET_LENGTH;
 }
 
-HexBitStorage::HexBitStorage(const std::string &hex_value) {
+HexBitStorage::HexBitStorage(const std::string &hex_value, bool _trim) {
     if (!check_hex_string(hex_value) || !check_length(hex_value)) {
         throw(Bech32mException("Invalid hex string."));
     }
@@ -52,6 +52,7 @@ HexBitStorage::HexBitStorage(const std::string &hex_value) {
         }
     }
     length = hex_value.size() * HEX_CHAR_BIT_COUNT;
+    trim = _trim;
 }
 
 static const std::string HEX_CHARS = "0123456789abcdef";

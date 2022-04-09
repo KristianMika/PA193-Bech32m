@@ -24,6 +24,7 @@ class BitStorage {
   protected:
     Bech32mBitset value{};
     uint16_t length = 0;
+    bool trim = false;
 
   public:
     virtual ~BitStorage() = default;

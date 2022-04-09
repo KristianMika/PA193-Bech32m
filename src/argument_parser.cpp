@@ -137,6 +137,14 @@ void set_mode_decode(ProgramArgs& args, std::string) {
 
 }
 
+void set_trimming(ProgramArgs &args, std::string) { 
+    if (args.iformat_set) {
+        throw Bech32mException("Trimming zeros is not avaliable in encode mode.");
+    }
+
+    args.trim_trailing_zeros = true;
+}
+
 void Parser::postprocess(const ProgramArgs& args) { 
     if (args.mode == Mode::Encode) {
         if (args.output_format != DataFormat::Bech32m) {
@@ -181,6 +189,10 @@ void Parser::postprocess(const ProgramArgs& args) {
 
     if (args.input_type == Input::Argument && args.input_text.empty()) {
         throw Bech32mException("Empty input text given as argument.");
+    }
+
+    if (args.trim_trailing_zeros && args.mode == Mode::Encode) {
+        throw Bech32mException("Cutting trailing zeroes set for encoding mode.");
     }
 
 }
@@ -280,6 +292,11 @@ Parser get_default_parser() {
                                    .set_name("--decode")
                                    .set_description("Changes program mode to decode. Output format has to be specified."
                                                     "Mutually exclusive with --input-format and --hrp.")
-                                   .add_handler(set_mode_decode));
+                                   .add_handler(set_mode_decode))
+            .add_argument(Argument()
+                                   .set_name("--trim")
+                                   .set_description("Sets the trimming of the trailing zero in decode mode."
+                                                    "Avaliable only in decode mode.")
+                                   .add_handler(set_trimming));
     // clang-format on
 }
