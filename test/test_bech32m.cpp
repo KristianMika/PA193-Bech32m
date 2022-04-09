@@ -1,6 +1,4 @@
 #include "../src/bech32m.h"
-#include "../src/bitstorage/bech32m_bit_storage.h"
-#include "../src/bech32m_error_detection.h"
 #include "test_bit_storage.h"
 #include "test_macros.h"
 #include "test_parser.h"
@@ -69,29 +67,109 @@ void test_invalid_bech32m() {
     ASSERT_THROWS(decode("1p2gdwpf"), Bech32mException);
 }
 
-// std::string detected_str(const std::string &in) {
-//     size_t idx_separator = in.rfind('1');
-//     return to_hex(Bech32mBitStorage(detect_error(in, idx_separator).data));
-// }
 /**
- * Some basic inputs without any substitutions
+ * Basic decode without any substitutions
  */
-void test_without_errors() {
-    // std::string str = to_hex(Bech32mBitStorage(detect_error("aaaaaaaaaaa14242424259sqyag70hggh0", 11).data));
+void test_without_substitutions() {
+    const auto DATA1 = "00000000000000000000";
+    const auto CODE1 = "0123456789abcdef1qqqqqqqqqqqqqqqqlaltj2";
 
-    const auto storage = HexBitStorage(Bech32mBitStorage(detect_error("aaaaaaaaaaa14242424259sqyag70hggh0", 11).data));
-    std::string str_pls = std::string(90, '_');
-    size_t idx = 0;
-    for (const auto &bs : storage) {
-        str_pls[idx++] = static_cast<char>(bs.to_ulong());
-    }
-    std::stringstream stream{};
-    stream << std::hex << storage.begin() << std::endl;
-    // std::string plsss = stream.str();
-    //    std::transform(storage.begin(), storage.end(), str_pls,
-    //                   [](std::bitset<4> it) -> char { return static_cast<char>(it.to_ulong()); });
-    // std::cout << plsss << std::endl;
-    // ASSERT_EQUALS(detected_str("aaaaaaaaaaa14242424259sqyag70hggh0"), "aaaaaaaaaaa14242424259sqyag70hggh0")
+	ASSERT_EQUALS(decode(CODE1, DataFormat::Hex), DATA1)
+
+	const auto DATA2 = "11111111111111111111";
+	const auto CODE2 = "helloworld1zyg3zyg3zyg3zyg33k9kks";
+
+	ASSERT_EQUALS(decode(CODE2, DataFormat::Hex), DATA2)
+
+	const auto DATA3 = "222222222222";
+	const auto CODE3 = "haskellisthebest1yg3zyg3zyg0yf0ga";
+
+	ASSERT_EQUALS(decode(CODE3, DataFormat::Hex), DATA3)
+
+	const auto DATA4 = "42";
+	const auto CODE4 = "whatisthemeaninigoflife1gg3769yz";
+
+	ASSERT_EQUALS(decode(CODE4, DataFormat::Hex), DATA4)
+
+	const auto DATA5 = "00";
+	const auto CODE5 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1qq9cyytg";
+
+	ASSERT_EQUALS(decode(CODE5, DataFormat::Hex), DATA5)
+
+	const auto DATA6 = "00";
+	const auto CODE6 = "11qq56x0sh";
+
+	ASSERT_EQUALS(decode(CODE6, DataFormat::Hex), DATA6)
+
+	const auto DATA7 = "1234567890";
+	const auto CODE7 = "qwerty1zg69v7ysaucy29";
+
+	ASSERT_EQUALS(decode(CODE7, DataFormat::Hex), DATA7)
+
+	const auto DATA8 = "1234567890";
+	const auto CODE8 = "?werty1zg69v7ys9qza3r";
+
+	ASSERT_EQUALS(decode(CODE7, DataFormat::Hex), DATA8)
+}
+
+
+/**
+ * Decode with 1 char substitution
+ */
+void test_with_substitutions() {
+    const auto DATA1 = "00000000000000000000";
+    const auto CODE1 =      "0123456789abcdef1qqqqqqqqqqqqqqqqlaltj2";
+    const auto CODE1SUBST = "a123456789abcdef1qqqqqqqqqqqqqqqqlaltj2";
+
+	ASSERT_EQUALS(decode(CODE1SUBST, DataFormat::Hex), DATA1)
+
+	const auto DATA2 = "11111111111111111111";
+	const auto CODE2 =      "helloworld1zyg3zyg3zyg3zyg33k9kks";
+	const auto CODE2SUBST = "helloworld1zyg3zyg3zyg3zyg33k9kkw";
+
+	ASSERT_EQUALS(decode(CODE2SUBST, DataFormat::Hex), DATA2)
+
+	const auto DATA3 = "222222222222";
+	const auto CODE3 =      "haskellisthebest1yg3zyg3zyg0yf0ga";
+	const auto CODE3SUBST = "haskellisthebest1zg3zyg3zyg0yf0ga";
+
+	ASSERT_EQUALS(decode(CODE3SUBST, DataFormat::Hex), DATA3)
+
+	const auto DATA4 = "42";
+	const auto CODE4 =      "whatisthemeaninigoflife1gg3769yz";
+	const auto CODE4SUBST = "whatisthemeaninigofliff1gg3769yz";
+
+	ASSERT_EQUALS(decode(CODE4SUBST, DataFormat::Hex), DATA4)
+
+	const auto DATA5 = "00";
+	const auto CODE5 =      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1qq9cyytg";
+	const auto CODE5SUBST = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1qq9cyytg";
+
+	ASSERT_EQUALS(decode(CODE5SUBST, DataFormat::Hex), DATA5)
+
+	const auto DATA6 = "00";
+	const auto CODE6 =      "11qq56x0sh";
+	const auto CODE6SUBST = "10qq56x0sh";
+
+	ASSERT_EQUALS(decode(CODE6SUBST, DataFormat::Hex), DATA6)
+
+	const auto DATA7 = "00";
+	const auto CODE7 =      "11qq56x0sh";
+	const auto CODE7SUBST = "01qq56x0sh";
+
+	ASSERT_EQUALS(decode(CODE7SUBST, DataFormat::Hex), DATA7)
+
+	const auto DATA8 = "1234567890";
+	const auto CODE8 =      "qwerty1zg69v7ysaucy29";
+	const auto CODE8SUBST = "qwerty0zg69v7ysaucy29";
+
+	ASSERT_EQUALS(decode(CODE8SUBST, DataFormat::Hex), DATA8)
+
+    const auto DATA9 = "1234567890";
+    const auto CODE9 =      "?werty1zg69v7ys9qza3r";
+    const auto CODE9SUBST = "0werty1zg69v7ys9qza3r";
+
+    ASSERT_EQUALS(decode(CODE9SUBST, DataFormat::Hex), DATA9)
 }
 
 /**
@@ -115,11 +193,10 @@ int interpret_test_results() {
  * @return Either 0 or 1, based on the number of failed tests.
  */
 int main() {
-    RUN_TEST(test_without_errors);
-
     RUN_TEST(test_basic);
     RUN_TEST(test_encode);
-    RUN_TEST(test_without_errors);
+    RUN_TEST(test_without_substitutions);
+    RUN_TEST(test_with_substitutions);
     RUN_TEST(test_invalid_bech32m);
     RUN_TEST(test_bit_storage)
     RUN_TEST(test_parser)
