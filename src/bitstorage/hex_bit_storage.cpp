@@ -64,5 +64,9 @@ std::string HexBitStorage::to_string() const {
     for (const auto &val : *this) {
         out.push_back(to_char(val));
     }
+    // if trimming is enabled and the last 4 bits were 0
+    if (trim && out[out.size() - 1] == '0') {
+        out.pop_back();
+    }
     return out;
 }
