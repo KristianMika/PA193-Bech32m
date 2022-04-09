@@ -78,26 +78,6 @@ const std::string text_input("asddfasdfasdf");
 const std::string default_hrp("testhrp");
 const std::string file_out("filenameout");
 
-
-int to_argv(std::string args, char** argv) { 
-    int word_counter = 0;
-    int letter_counter = 0;
-    for (const char &c : args) {
-        if (c == ' ') {
-            argv[word_counter][letter_counter] = '\0';
-            word_counter++;
-            letter_counter = 0;
-        } else {
-            argv[word_counter][letter_counter] = 'c';
-        }     
-    }
-    if (args[args.size() - 1] != ' ') {
-        argv[word_counter][letter_counter] = '\0';
-    }
-    return word_counter;
-
- }
-
 void test_simple_parse() {
     Parser parser = get_default_parser();
     ProgramArgs arguments;
