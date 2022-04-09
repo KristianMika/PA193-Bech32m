@@ -46,7 +46,7 @@ std::string presentation_layer(const ProgramArgs &arguments, const std::string &
     std::string hrp;
     std::string data;
     BitStorage storage;
-    const char INPUT_HRP_SEPARATOR = ':';
+    const char INPUT_HRP_SEPARATOR = arguments.mode == Mode::Encode ? ':' : '1';
 
     size_t separator = input.find(INPUT_HRP_SEPARATOR);
     // separator is not present
