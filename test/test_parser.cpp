@@ -66,7 +66,7 @@ const std::string argv0 = "bech32m";
 
 const std::string input_format("--input-format");
 const std::string output_format("--output-format");
-const std::string help("--output-format");
+const std::string help("--help");
 const std::string decode("--decode");
 const std::string input_file("--input-file");
 const std::string input_text("--input-text");
@@ -114,20 +114,42 @@ void test_parse_invalid() {
     Parser parser = get_default_parser();
     ProgramArgs arguments;
 
-    const char *argv[] = {argv0.c_str(), input_format.c_str(), "hex", decode.c_str()};
+    const char *argv[] = {argv0.c_str(), input_format.c_str(), "bin", decode.c_str()};
     ASSERT_THROWS(arguments = parser.parse(4, argv), Bech32mException);
 
     const char *argv1[] = {argv0.c_str(), "hex", decode.c_str()};
     ASSERT_THROWS(arguments = parser.parse(3, argv1), Bech32mException);
 
-    const char *argv2[] = {argv0.c_str(), decode.c_str(), hrp.c_str(), default_hrp.c_str()};
-    ASSERT_THROWS(arguments = parser.parse(4, argv2), Bech32mException);
+    const char *argv2[] = {argv0.c_str(), decode.c_str(), output_format.c_str(), "hex", hrp.c_str(), default_hrp.c_str()};
+    ASSERT_THROWS(arguments = parser.parse(6, argv2), Bech32mException);
 
     const char *argv3[] = {argv0.c_str(), empty_hrp.c_str(), hrp.c_str()};
-    ASSERT_THROWS(arguments = parser.parse(3, argv2), Bech32mException);
+    ASSERT_THROWS(arguments = parser.parse(3, argv3), Bech32mException);
 
     const char *argv4[] = {argv0.c_str(), input_file.c_str(), file_in.c_str(), input_text.c_str(), text_input.c_str()};
-    ASSERT_THROWS(arguments = parser.parse(5, argv2), Bech32mException);
+    ASSERT_THROWS(arguments = parser.parse(5, argv4), Bech32mException);
+
+    const char *argv5[] = {argv0.c_str(), input_file.c_str(), file_in.c_str(), input_file.c_str(), file_in.c_str()};
+    ASSERT_THROWS(arguments = parser.parse(5, argv5), Bech32mException);
+
+    const char *argv6[] = {argv0.c_str(), input_file.c_str(), file_in.c_str(), input_file.c_str(), file_in.c_str()};
+    ASSERT_THROWS(arguments = parser.parse(5, argv6), Bech32mException);
+
+    const char *argv7[] = {argv0.c_str(), "asdfghhjkl"};
+    ASSERT_THROWS(arguments = parser.parse(2, argv7), Bech32mException);
+
+    const char *argv8[] = {argv0.c_str(), output_format.c_str(), "asdfghhjkl"};
+    ASSERT_THROWS(arguments = parser.parse(3, argv8), Bech32mException);
+
+    const char *argv9[] = {argv0.c_str(), input_format.c_str(), "asdfghhjkl"};
+    ASSERT_THROWS(arguments = parser.parse(3, argv9), Bech32mException);
+
+    const char *argv10[] = {argv0.c_str(), decode.c_str()};
+    ASSERT_THROWS(arguments = parser.parse(2, argv10), Bech32mException);
+
+    const char *argv11[] = {argv0.c_str(), decode.c_str(), hrp.c_str(), default_hrp.c_str()};
+    ASSERT_THROWS(arguments = parser.parse(4, argv11), Bech32mException);
+
 }
 
 
@@ -135,9 +157,6 @@ void test_parse() {
     //argc = to_argv(arguments, argv);
     Parser parser = get_default_parser();
     ProgramArgs arguments;
-
-    
-    
 
     const char *argv1[] = {argv0.c_str(), input_format.c_str(), "hex", input_file.c_str(), file_in.c_str()};
     ASSERT_DOES_NOT_THROW(arguments = parser.parse(5, argv1));
@@ -155,26 +174,200 @@ void test_parse() {
     ASSERT_EQUALS(arguments.output_format, DataFormat::Bech32m);
 
 
-    const char *argv2[] = {argv0.c_str(), input_format.c_str(), "hex", decode.c_str()};
+    const char *argv2[] = {argv0.c_str(), input_format.c_str(), "hex", input_text.c_str(), text_input.c_str(),
+                           output_file.c_str(), file_out.c_str()};
+    ASSERT_DOES_NOT_THROW(arguments = parser.parse(7, argv2));
+    
+    ASSERT_EQUALS(arguments.mode, Mode::Encode);
+    ASSERT_EQUALS(arguments.allow_empty_hrp, false);
+    ASSERT_EQUALS(arguments.hrp, "");
+    ASSERT_EQUALS(arguments.output_type, Output::File);
+    ASSERT_EQUALS(arguments.input_type, Input::Argument);
+    ASSERT_EQUALS(arguments.print_help, false);
+    ASSERT_EQUALS(arguments.input_text, text_input);
+    ASSERT_EQUALS(arguments.outpu_file, file_out);
+    ASSERT_EQUALS(arguments.input_file, "");
+    ASSERT_EQUALS(arguments.input_format, DataFormat::Hex);
+    ASSERT_EQUALS(arguments.output_format, DataFormat::Bech32m);
     
     
-    
-    
-    const char *argv3[] = {argv0.c_str(), input_format.c_str(), "hex", decode.c_str()};
-    const char *argv4[] = {argv0.c_str(), input_format.c_str(), "hex", decode.c_str()};
-    const char *argv5[] = {argv0.c_str(), input_format.c_str(), "hex", decode.c_str()};
-    const char *argv6[] = {argv0.c_str(), input_format.c_str(), "hex", decode.c_str()};
-    const char *argv7[] = {argv0.c_str(), input_format.c_str(), "hex", decode.c_str()};
-    const char *argv8[] = {argv0.c_str(), input_format.c_str(), "hex", decode.c_str()};
-    const char *argv9[] = {argv0.c_str(), input_format.c_str(), "hex", decode.c_str()};
-    const char *argv10[] = {argv0.c_str(), input_format.c_str(), "hex", decode.c_str()};
-    const char *argv11[] = {argv0.c_str(), input_format.c_str(), "hex", decode.c_str()};
-    const char *argv12[] = {argv0.c_str(), input_format.c_str(), "hex", decode.c_str()};
-    const char *argv13[] = {argv0.c_str(), input_format.c_str(), "hex", decode.c_str()};
-    const char *argv14[] = {argv0.c_str(), input_format.c_str(), "hex", decode.c_str()};
-    const char *argv15[] = {argv0.c_str(), input_format.c_str(), "hex", decode.c_str()};
-    const char *argv16[] = {argv0.c_str(), input_format.c_str(), "hex", decode.c_str()};
-    const char *argv17[] = {argv0.c_str(), input_format.c_str(), "hex", decode.c_str()};
+    const char *argv3[] = {argv0.c_str(), input_format.c_str(), "bin", input_file.c_str(), file_in.c_str()};
+    ASSERT_DOES_NOT_THROW(arguments = parser.parse(5, argv3));
+
+    ASSERT_EQUALS(arguments.mode, Mode::Encode);
+    ASSERT_EQUALS(arguments.allow_empty_hrp, false);
+    ASSERT_EQUALS(arguments.hrp, "");
+    ASSERT_EQUALS(arguments.output_type, Output::Stdout);
+    ASSERT_EQUALS(arguments.input_type, Input::File);
+    ASSERT_EQUALS(arguments.print_help, false);
+    ASSERT_EQUALS(arguments.input_text, "");
+    ASSERT_EQUALS(arguments.outpu_file, "");
+    ASSERT_EQUALS(arguments.input_file, file_in);
+    ASSERT_EQUALS(arguments.input_format, DataFormat::Bin);
+    ASSERT_EQUALS(arguments.output_format, DataFormat::Bech32m);
+
+
+    const char *argv4[] = {argv0.c_str(), output_format.c_str(), "hex", decode.c_str()};
+    ASSERT_DOES_NOT_THROW(arguments = parser.parse(4, argv4));
+
+    ASSERT_EQUALS(arguments.mode, Mode::Decode);
+    ASSERT_EQUALS(arguments.allow_empty_hrp, false);
+    ASSERT_EQUALS(arguments.hrp, "");
+    ASSERT_EQUALS(arguments.output_type, Output::Stdout);
+    ASSERT_EQUALS(arguments.input_type, Input::Stdin);
+    ASSERT_EQUALS(arguments.print_help, false);
+    ASSERT_EQUALS(arguments.input_text, "");
+    ASSERT_EQUALS(arguments.outpu_file, "");
+    ASSERT_EQUALS(arguments.input_file, "");
+    ASSERT_EQUALS(arguments.input_format, DataFormat::Bech32m);
+    ASSERT_EQUALS(arguments.output_format, DataFormat::Hex);
+
+    const char *argv5[] = {argv0.c_str(), decode.c_str(), output_format.c_str(), "bin", empty_hrp.c_str()};
+    ASSERT_DOES_NOT_THROW(arguments = parser.parse(5, argv5));
+
+    ASSERT_EQUALS(arguments.mode, Mode::Decode);
+    ASSERT_EQUALS(arguments.allow_empty_hrp, true);
+    ASSERT_EQUALS(arguments.hrp, "");
+    ASSERT_EQUALS(arguments.output_type, Output::Stdout);
+    ASSERT_EQUALS(arguments.input_type, Input::Stdin);
+    ASSERT_EQUALS(arguments.print_help, false);
+    ASSERT_EQUALS(arguments.input_text, "");
+    ASSERT_EQUALS(arguments.outpu_file, "");
+    ASSERT_EQUALS(arguments.input_file, "");
+    ASSERT_EQUALS(arguments.input_format, DataFormat::Bech32m);
+    ASSERT_EQUALS(arguments.output_format, DataFormat::Bin);
+
+
+    const char *argv6[] = {argv0.c_str(), input_format.c_str(), "base64", hrp.c_str(), default_hrp.c_str(), output_file.c_str(), file_out.c_str()};
+    ASSERT_DOES_NOT_THROW(arguments = parser.parse(7, argv6));
+
+    ASSERT_EQUALS(arguments.mode, Mode::Encode);
+    ASSERT_EQUALS(arguments.allow_empty_hrp, false);
+    ASSERT_EQUALS(arguments.hrp, default_hrp);
+    ASSERT_EQUALS(arguments.output_type, Output::File);
+    ASSERT_EQUALS(arguments.input_type, Input::Stdin);
+    ASSERT_EQUALS(arguments.print_help, false);
+    ASSERT_EQUALS(arguments.input_text, "");
+    ASSERT_EQUALS(arguments.outpu_file, file_out.c_str());
+    ASSERT_EQUALS(arguments.input_file, "");
+    ASSERT_EQUALS(arguments.input_format, DataFormat::Base64);
+    ASSERT_EQUALS(arguments.output_format, DataFormat::Bech32m);
+
+
+    const char *argv7[] = {argv0.c_str(), help.c_str()};
+    ASSERT_DOES_NOT_THROW(arguments = parser.parse(2, argv7));
+    ASSERT_EQUALS(arguments.print_help, true);
+
+
+    const char *argv8[] = {argv0.c_str(), input_format.c_str(), "base64", output_file.c_str(), file_out.c_str(), hrp.c_str(), default_hrp.c_str()};
+    ASSERT_DOES_NOT_THROW(arguments = parser.parse(7, argv8));
+
+    ASSERT_EQUALS(arguments.mode, Mode::Encode);
+    ASSERT_EQUALS(arguments.allow_empty_hrp, false);
+    ASSERT_EQUALS(arguments.hrp, default_hrp);
+    ASSERT_EQUALS(arguments.output_type, Output::File);
+    ASSERT_EQUALS(arguments.input_type, Input::Stdin);
+    ASSERT_EQUALS(arguments.print_help, false);
+    ASSERT_EQUALS(arguments.input_text, "");
+    ASSERT_EQUALS(arguments.outpu_file, file_out.c_str());
+    ASSERT_EQUALS(arguments.input_file, "");
+    ASSERT_EQUALS(arguments.input_format, DataFormat::Base64);
+    ASSERT_EQUALS(arguments.output_format, DataFormat::Bech32m);
+
+
+    const char *argv9[] = {argv0.c_str(), output_format.c_str(), "base64", decode.c_str(), input_file.c_str(), file_in.c_str()};
+    ASSERT_DOES_NOT_THROW(arguments = parser.parse(6, argv9));
+
+    ASSERT_EQUALS(arguments.mode, Mode::Decode);
+    ASSERT_EQUALS(arguments.allow_empty_hrp, false);
+    ASSERT_EQUALS(arguments.hrp, "");
+    ASSERT_EQUALS(arguments.output_type, Output::Stdout);
+    ASSERT_EQUALS(arguments.input_type, Input::File);
+    ASSERT_EQUALS(arguments.print_help, false);
+    ASSERT_EQUALS(arguments.input_text, "");
+    ASSERT_EQUALS(arguments.outpu_file, "");
+    ASSERT_EQUALS(arguments.input_file, file_in.c_str());
+    ASSERT_EQUALS(arguments.input_format, DataFormat::Bech32m);
+    ASSERT_EQUALS(arguments.output_format, DataFormat::Base64);
+
+
+    const char *argv10[] = {argv0.c_str(), empty_hrp.c_str(), input_format.c_str(), "bin", input_text.c_str(), text_input.c_str()};
+    ASSERT_DOES_NOT_THROW(arguments = parser.parse(6, argv10));
+
+    ASSERT_EQUALS(arguments.mode, Mode::Encode);
+    ASSERT_EQUALS(arguments.allow_empty_hrp, true);
+    ASSERT_EQUALS(arguments.hrp, "");
+    ASSERT_EQUALS(arguments.output_type, Output::Stdout);
+    ASSERT_EQUALS(arguments.input_type, Input::Argument);
+    ASSERT_EQUALS(arguments.print_help, false);
+    ASSERT_EQUALS(arguments.input_text, text_input);
+    ASSERT_EQUALS(arguments.outpu_file, "");
+    ASSERT_EQUALS(arguments.input_file, "");
+    ASSERT_EQUALS(arguments.input_format, DataFormat::Bin);
+    ASSERT_EQUALS(arguments.output_format, DataFormat::Bech32m);
+
+
+    const char *argv11[] = {argv0.c_str(),    decode.c_str(),        output_file.c_str(),
+                            file_out.c_str(), output_format.c_str(), "hex"};
+    ASSERT_DOES_NOT_THROW(arguments = parser.parse(6, argv11));
+
+    ASSERT_EQUALS(arguments.mode, Mode::Decode);
+    ASSERT_EQUALS(arguments.allow_empty_hrp, false);
+    ASSERT_EQUALS(arguments.hrp, "");
+    ASSERT_EQUALS(arguments.output_type, Output::File);
+    ASSERT_EQUALS(arguments.input_type, Input::Stdin);
+    ASSERT_EQUALS(arguments.print_help, false);
+    ASSERT_EQUALS(arguments.input_text, "");
+    ASSERT_EQUALS(arguments.outpu_file, file_out.c_str());
+    ASSERT_EQUALS(arguments.input_file, "");
+    ASSERT_EQUALS(arguments.input_format, DataFormat::Bech32m);
+    ASSERT_EQUALS(arguments.output_format, DataFormat::Hex);
+
+    const char *argv12[] = {argv0.c_str(), input_format.c_str(), "bin", hrp.c_str(), default_hrp.c_str()};
+    ASSERT_DOES_NOT_THROW(arguments = parser.parse(5, argv12));
+
+    ASSERT_EQUALS(arguments.mode, Mode::Encode);
+    ASSERT_EQUALS(arguments.allow_empty_hrp, false);
+    ASSERT_EQUALS(arguments.hrp, default_hrp);
+    ASSERT_EQUALS(arguments.output_type, Output::Stdout);
+    ASSERT_EQUALS(arguments.input_type, Input::Stdin);
+    ASSERT_EQUALS(arguments.print_help, false);
+    ASSERT_EQUALS(arguments.input_text, "");
+    ASSERT_EQUALS(arguments.outpu_file, "");
+    ASSERT_EQUALS(arguments.input_file, "");
+    ASSERT_EQUALS(arguments.input_format, DataFormat::Bin);
+    ASSERT_EQUALS(arguments.output_format, DataFormat::Bech32m);
+
+
+    const char *argv13[] = {argv0.c_str(), input_format.c_str(), "base64"};
+    ASSERT_DOES_NOT_THROW(arguments = parser.parse(3, argv13));
+
+    ASSERT_EQUALS(arguments.mode, Mode::Encode);
+    ASSERT_EQUALS(arguments.allow_empty_hrp, false);
+    ASSERT_EQUALS(arguments.hrp, "");
+    ASSERT_EQUALS(arguments.output_type, Output::Stdout);
+    ASSERT_EQUALS(arguments.input_type, Input::Stdin);
+    ASSERT_EQUALS(arguments.print_help, false);
+    ASSERT_EQUALS(arguments.input_text, "");
+    ASSERT_EQUALS(arguments.outpu_file, "");
+    ASSERT_EQUALS(arguments.input_file, "");
+    ASSERT_EQUALS(arguments.input_format, DataFormat::Base64);
+    ASSERT_EQUALS(arguments.output_format, DataFormat::Bech32m);
+
+    const char *argv14[] = {argv0.c_str(), input_file.c_str(), file_in.c_str(), output_format.c_str(), "hex", decode.c_str(), empty_hrp.c_str()};
+    ASSERT_DOES_NOT_THROW(arguments = parser.parse(7, argv14));
+
+    ASSERT_EQUALS(arguments.mode, Mode::Decode);
+    ASSERT_EQUALS(arguments.allow_empty_hrp, true);
+    ASSERT_EQUALS(arguments.hrp, "");
+    ASSERT_EQUALS(arguments.output_type, Output::Stdout);
+    ASSERT_EQUALS(arguments.input_type, Input::File);
+    ASSERT_EQUALS(arguments.print_help, false);
+    ASSERT_EQUALS(arguments.input_text, "");
+    ASSERT_EQUALS(arguments.outpu_file, "");
+    ASSERT_EQUALS(arguments.input_file, file_in.c_str());
+    ASSERT_EQUALS(arguments.input_format, DataFormat::Bech32m);
+    ASSERT_EQUALS(arguments.output_format, DataFormat::Hex);
 
 }
 
