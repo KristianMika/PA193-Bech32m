@@ -7,6 +7,8 @@ BinBitStorage::BinBitStorage(const std::string &in) {
             value.set(length++, ch & (mask >> i));
         }
     }
+    // https://stackoverflow.com/questions/2022179/c-quick-calculation-of-next-multiple-of-4
+    length = (length + 3) & ~0x03;
 }
 
 std::string BinBitStorage::to_string() const {
