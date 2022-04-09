@@ -16,6 +16,8 @@ void set_output_format(ProgramArgs &args, const std::string &output) {
         args.output_format = DataFormat::Hex;
     } else if (output == BASE64_STRING) {
         args.output_format = DataFormat::Base64;
+    }else if (output == BECH32M_STRING) {
+        args.output_format = DataFormat::Bech32m;
     } else {
         throw Bech32mException("Invalid parameter " + output + " passed to argument --output-format.");
     }
@@ -36,6 +38,8 @@ void set_input_format(ProgramArgs &args, const std::string &input) {
         args.input_format = DataFormat::Hex;
     } else if (input == BASE64_STRING) {
         args.input_format = DataFormat::Base64;
+    }else if (input == BECH32M_STRING) {
+        args.input_format = DataFormat::Bech32m;
     } else {
         throw Bech32mException("Invalid parameter " + input + " passed to argument --input-format.");
     }
@@ -142,15 +146,9 @@ void Parser::postprocess(const ProgramArgs& args) {
         if (args.output_format != DataFormat::Bech32m) {
             throw Bech32mException("Output format changed for encoding.");
         }
-        if (args.input_format == DataFormat::Bech32m) {
-            throw Bech32mException("Invalid input format set for encoding.");
-        }
     }
 
     if (args.mode == Mode::Decode) {
-        if (args.output_format == DataFormat::Bech32m) {
-            throw Bech32mException("No output format set for decoding.");
-        }
         if (args.input_format != DataFormat::Bech32m) {
             throw Bech32mException("Input format changed for decoding.");
         }
@@ -236,6 +234,7 @@ Parser get_default_parser() {
                                   .add_param_value(BIN_STRING)
                                   .add_param_value(HEX_STRING)
                                   .add_param_value(BASE64_STRING)
+                                  .add_param_value(BECH32M_STRING)
                                   .add_handler(set_input_format)
                                   .set_description("The format of input data. Encoding selected-format -> Bech32m."
                                                    "Mutually exclusive with --decode and --output-format."))
@@ -244,6 +243,7 @@ Parser get_default_parser() {
                                   .add_param_value(BIN_STRING)
                                   .add_param_value(HEX_STRING)
                                   .add_param_value(BASE64_STRING)
+                                  .add_param_value(BECH32M_STRING)
                                   .add_handler(set_output_format)
                                   .set_description("The format of output data. Decoding Bech32m -> selected-format"
                                                    "Mutually exclusive with --input-format and --hrp."))

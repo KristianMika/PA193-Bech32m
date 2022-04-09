@@ -3,6 +3,7 @@
 #include "bech32m.h"
 #include "bitstorage/bin_bit_storage.h"
 #include "bitstorage/hex_bit_storage.h"
+#include "bitstorage/bech32m_bit_storage.h"
 
 #include <cmath>
 #include <fstream>
@@ -88,7 +89,14 @@ std::string presentation_layer(const ProgramArgs &arguments, const std::string &
         case DataFormat::Bin:
             storage = BinBitStorage(data);
             break;
-        default:
+        case DataFormat::Bech32m:
+            std::vector<uint8_t> chars {};
+            for (char c : data) {
+                chars.push_back(BECH_SYMBOLS.find(c));
+            }
+            Bech32mVector input_pls = {};
+            input_pls.insert(input_pls.end(), chars.begin(), chars.end());
+            storage = Bech32mBitStorage(input_pls);
             break;
         }
 
