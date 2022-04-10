@@ -80,10 +80,10 @@ std::string presentation_layer(const ProgramArgs &arguments, const std::string &
         
         switch (arguments.input_format) {
         case DataFormat::Base64:
-            storage = Base64BitStorage(data);
+            storage = Base64BitStorage(data, arguments.trim_trailing_zeros);
             break;
         case DataFormat::Hex:
-            storage = HexBitStorage(data);
+            storage = HexBitStorage(data, arguments.trim_trailing_zeros);
             break;
         case DataFormat::Bin:
             storage = BinBitStorage(data);
