@@ -9,7 +9,7 @@ struct Bech32mException : public std::exception {
     explicit Bech32mException(const char *_cause) : cause(_cause) {}
     explicit Bech32mException(std::string _cause) : cause(std::move(_cause)) {}
 
-    virtual const char *what() const throw() { return cause.c_str(); }
+    const char *what() const noexcept override { return cause.c_str(); }
 };
 
 #endif // BECH32M_BECH32M_EXCEPTION_H
