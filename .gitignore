@@ -51,6 +51,8 @@ cmake-build-debug-visual-studio
 Makefile
 CMakeCache.txt
 
+bech32m_reference/package-lock.json
+
 CmakeFiles
 
 CMakeSettings.json

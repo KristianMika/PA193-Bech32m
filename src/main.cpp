@@ -28,7 +28,16 @@ int main(int argc, const char **argv) {
         return 0;
     }
 
-    read_write(arguments);
+    try {
+        read_write(arguments);
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
+    } catch (...) {
+        std::cerr << "Object that is not exception was thrown." << std::endl;
+        return EXIT_FAILURE; 
+    }
+
     return EXIT_SUCCESS;
 }
 
@@ -37,31 +46,52 @@ std::string presentation_layer(const ProgramArgs &arguments, const std::string &
     std::string hrp;
     std::string data;
     BitStorage storage;
-    const char INPUT_HRP_SEPARATOR = ':';
+    const char INPUT_HRP_SEPARATOR = arguments.mode == Mode::Encode ? ':' : '1';
 
     size_t separator = input.find(INPUT_HRP_SEPARATOR);
+    // separator is not present
     if (separator == std::string::npos) {
-        data = input;
+        if (arguments.allow_empty_hrp) {
+            data = input;
+        } else if (!arguments.hrp.empty()) {
+            data = input;
+            hrp = arguments.hrp;
+        } else {
+            throw Bech32mException("No hrp to be used.");
+        }
+    // separator is present but at the index 0
+    } else if (separator == 0) {
+        if (arguments.allow_empty_hrp) {
+            data = input.substr(separator + 1, input.size() - separator);
+        } else if (!arguments.hrp.empty()) {
+            data = input.substr(separator + 1, input.size() - separator);
+            hrp = arguments.hrp;
+        } else {
+            throw Bech32mException("No hrp to be used.");
+        }
+    // separator is present
     } else {
-        hrp = input.substr(0, separator);
+        // if default hrp is set, uses the default one, otherwise uses the original one
+        hrp = (!arguments.hrp.empty()) ? arguments.hrp : input.substr(0, separator);
         data = input.substr(separator + 1, input.size() - separator);
     }
 
-    switch (arguments.input_format) {
-    case DataFormat::Base64:
-        storage = Base64BitStorage(data);
-        break;
-    case DataFormat::Hex:
-        storage = HexBitStorage(data);
-        break;
-    case DataFormat::Bin:
-        storage = BinBitStorage(data);
-        break;
-    default:
-        break;
-    }
-
     if (arguments.mode == Mode::Encode) {
+        
+        switch (arguments.input_format) {
+        case DataFormat::Base64:
+            storage = Base64BitStorage(data);
+            break;
+        case DataFormat::Hex:
+            storage = HexBitStorage(data);
+            break;
+        case DataFormat::Bin:
+            storage = BinBitStorage(data);
+            break;
+        default:
+            break;
+        }
+
         return encode(hrp, storage);
     }
     try {
@@ -86,10 +116,10 @@ void read_write(const ProgramArgs &arguments) {
             if (arguments.output_format == DataFormat::Bin) {
                 output_file.open(arguments.outpu_file, std::ios::out | std::ios::app | std::ios::binary);
             } else {
-                output_file.open(arguments.outpu_file, std::ios::out | std::ios::app);
+                output_file.open(arguments.outpu_file, std::ios::out);
             }
         } catch (const std::ios_base::failure &e) {
-            throw Bech32mException("Something went wrong when handling the output file");
+            throw Bech32mException("Can not open output file");
         }
     }
 
@@ -105,7 +135,7 @@ void read_write(const ProgramArgs &arguments) {
                 input_file.open(arguments.input_file, std::ios::in);
             }
         } catch (const std::ios_base::failure &e) {
-            throw Bech32mException("Something went wrong when handling the output file");
+            throw Bech32mException("Can not open input file.");
         }
     }
 
