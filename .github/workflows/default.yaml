@@ -199,7 +199,7 @@ jobs:
           cp ../bin_testing/diff_fuzzing.py diff_fuzzing.py
           python3 diff_fuzzing.py ./${{ env.BINARY_NAME }} ./bech32_cpp_usage_encoding_example ./bech32_cpp_usage_decoding_example 999999
       - name: Push the fuzzing result
-          uses: actions/upload-artifact@v2
-          with:
-            name: fuzzing_results.txt
-            path: fuzzing_results.txt
+        uses: actions/upload-artifact@v2
+        with:
+          name: fuzzing_results.txt
+          path: fuzzing_results.txt
