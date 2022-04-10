@@ -164,7 +164,7 @@ jobs:
         run: sudo apt-get install python3
       - name: Swap code to be easily fuzzed
         working-directory: ref_cpp/
-        run: python3 ../bin_testing/setup.py libbech/examples/cpp_usage_encoding_example.cpp libbech/examples/cpp_usage_decoding_example.cpp
+        run: python3 ../bin_testing/setup.py examples/cpp_usage_encoding_example.cpp examples/cpp_usage_decoding_example.cpp
       - name: Make build directory for ref implementation
         run: mkdir ref_cpp/libbech/libbech/examples/build_ext/
       - name: Generate build files
