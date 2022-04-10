@@ -148,7 +148,7 @@ void test_parse() {
     ASSERT_EQUALS(arguments.input_type, Input::File);
     ASSERT_EQUALS(arguments.print_help, false);
     ASSERT_EQUALS(arguments.input_text, "");
-    ASSERT_EQUALS(arguments.outpu_file, "");
+    ASSERT_EQUALS(arguments.output_file, "");
     ASSERT_EQUALS(arguments.input_file, file_in);
     ASSERT_EQUALS(arguments.input_format, DataFormat::Hex);
     ASSERT_EQUALS(arguments.output_format, DataFormat::Bech32m);
@@ -165,7 +165,7 @@ void test_parse() {
     ASSERT_EQUALS(arguments.input_type, Input::Argument);
     ASSERT_EQUALS(arguments.print_help, false);
     ASSERT_EQUALS(arguments.input_text, text_input);
-    ASSERT_EQUALS(arguments.outpu_file, file_out);
+    ASSERT_EQUALS(arguments.output_file, file_out);
     ASSERT_EQUALS(arguments.input_file, "");
     ASSERT_EQUALS(arguments.input_format, DataFormat::Hex);
     ASSERT_EQUALS(arguments.output_format, DataFormat::Bech32m);
@@ -181,7 +181,7 @@ void test_parse() {
     ASSERT_EQUALS(arguments.input_type, Input::File);
     ASSERT_EQUALS(arguments.print_help, false);
     ASSERT_EQUALS(arguments.input_text, "");
-    ASSERT_EQUALS(arguments.outpu_file, "");
+    ASSERT_EQUALS(arguments.output_file, "");
     ASSERT_EQUALS(arguments.input_file, file_in);
     ASSERT_EQUALS(arguments.input_format, DataFormat::Bin);
     ASSERT_EQUALS(arguments.output_format, DataFormat::Bech32m);
@@ -197,7 +197,7 @@ void test_parse() {
     ASSERT_EQUALS(arguments.input_type, Input::Stdin);
     ASSERT_EQUALS(arguments.print_help, false);
     ASSERT_EQUALS(arguments.input_text, "");
-    ASSERT_EQUALS(arguments.outpu_file, "");
+    ASSERT_EQUALS(arguments.output_file, "");
     ASSERT_EQUALS(arguments.input_file, "");
     ASSERT_EQUALS(arguments.input_format, DataFormat::Bech32m);
     ASSERT_EQUALS(arguments.output_format, DataFormat::Hex);
@@ -212,7 +212,7 @@ void test_parse() {
     ASSERT_EQUALS(arguments.input_type, Input::Stdin);
     ASSERT_EQUALS(arguments.print_help, false);
     ASSERT_EQUALS(arguments.input_text, "");
-    ASSERT_EQUALS(arguments.outpu_file, "");
+    ASSERT_EQUALS(arguments.output_file, "");
     ASSERT_EQUALS(arguments.input_file, "");
     ASSERT_EQUALS(arguments.input_format, DataFormat::Bech32m);
     ASSERT_EQUALS(arguments.output_format, DataFormat::Bin);
@@ -228,7 +228,7 @@ void test_parse() {
     ASSERT_EQUALS(arguments.input_type, Input::Stdin);
     ASSERT_EQUALS(arguments.print_help, false);
     ASSERT_EQUALS(arguments.input_text, "");
-    ASSERT_EQUALS(arguments.outpu_file, file_out.c_str());
+    ASSERT_EQUALS(arguments.output_file, file_out.c_str());
     ASSERT_EQUALS(arguments.input_file, "");
     ASSERT_EQUALS(arguments.input_format, DataFormat::Base64);
     ASSERT_EQUALS(arguments.output_format, DataFormat::Bech32m);
@@ -249,7 +249,7 @@ void test_parse() {
     ASSERT_EQUALS(arguments.input_type, Input::Stdin);
     ASSERT_EQUALS(arguments.print_help, false);
     ASSERT_EQUALS(arguments.input_text, "");
-    ASSERT_EQUALS(arguments.outpu_file, file_out.c_str());
+    ASSERT_EQUALS(arguments.output_file, file_out.c_str());
     ASSERT_EQUALS(arguments.input_file, "");
     ASSERT_EQUALS(arguments.input_format, DataFormat::Base64);
     ASSERT_EQUALS(arguments.output_format, DataFormat::Bech32m);
@@ -265,7 +265,7 @@ void test_parse() {
     ASSERT_EQUALS(arguments.input_type, Input::File);
     ASSERT_EQUALS(arguments.print_help, false);
     ASSERT_EQUALS(arguments.input_text, "");
-    ASSERT_EQUALS(arguments.outpu_file, "");
+    ASSERT_EQUALS(arguments.output_file, "");
     ASSERT_EQUALS(arguments.input_file, file_in.c_str());
     ASSERT_EQUALS(arguments.input_format, DataFormat::Bech32m);
     ASSERT_EQUALS(arguments.output_format, DataFormat::Base64);
@@ -281,7 +281,7 @@ void test_parse() {
     ASSERT_EQUALS(arguments.input_type, Input::Argument);
     ASSERT_EQUALS(arguments.print_help, false);
     ASSERT_EQUALS(arguments.input_text, text_input);
-    ASSERT_EQUALS(arguments.outpu_file, "");
+    ASSERT_EQUALS(arguments.output_file, "");
     ASSERT_EQUALS(arguments.input_file, "");
     ASSERT_EQUALS(arguments.input_format, DataFormat::Bin);
     ASSERT_EQUALS(arguments.output_format, DataFormat::Bech32m);
@@ -298,7 +298,7 @@ void test_parse() {
     ASSERT_EQUALS(arguments.input_type, Input::Stdin);
     ASSERT_EQUALS(arguments.print_help, false);
     ASSERT_EQUALS(arguments.input_text, "");
-    ASSERT_EQUALS(arguments.outpu_file, file_out.c_str());
+    ASSERT_EQUALS(arguments.output_file, file_out.c_str());
     ASSERT_EQUALS(arguments.input_file, "");
     ASSERT_EQUALS(arguments.input_format, DataFormat::Bech32m);
     ASSERT_EQUALS(arguments.output_format, DataFormat::Hex);
@@ -313,7 +313,7 @@ void test_parse() {
     ASSERT_EQUALS(arguments.input_type, Input::Stdin);
     ASSERT_EQUALS(arguments.print_help, false);
     ASSERT_EQUALS(arguments.input_text, "");
-    ASSERT_EQUALS(arguments.outpu_file, "");
+    ASSERT_EQUALS(arguments.output_file, "");
     ASSERT_EQUALS(arguments.input_file, "");
     ASSERT_EQUALS(arguments.input_format, DataFormat::Bin);
     ASSERT_EQUALS(arguments.output_format, DataFormat::Bech32m);
@@ -329,7 +329,7 @@ void test_parse() {
     ASSERT_EQUALS(arguments.input_type, Input::Stdin);
     ASSERT_EQUALS(arguments.print_help, false);
     ASSERT_EQUALS(arguments.input_text, "");
-    ASSERT_EQUALS(arguments.outpu_file, "");
+    ASSERT_EQUALS(arguments.output_file, "");
     ASSERT_EQUALS(arguments.input_file, "");
     ASSERT_EQUALS(arguments.input_format, DataFormat::Base64);
     ASSERT_EQUALS(arguments.output_format, DataFormat::Bech32m);
@@ -344,7 +344,7 @@ void test_parse() {
     ASSERT_EQUALS(arguments.input_type, Input::File);
     ASSERT_EQUALS(arguments.print_help, false);
     ASSERT_EQUALS(arguments.input_text, "");
-    ASSERT_EQUALS(arguments.outpu_file, "");
+    ASSERT_EQUALS(arguments.output_file, "");
     ASSERT_EQUALS(arguments.input_file, file_in.c_str());
     ASSERT_EQUALS(arguments.input_format, DataFormat::Bech32m);
     ASSERT_EQUALS(arguments.output_format, DataFormat::Hex);

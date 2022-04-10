@@ -51,7 +51,7 @@ int getPaddingIndex(const std::string &str) {
     throw Bech32mException("Invalid Base64 format: " + str);
 }
 
-Base64BitStorage::Base64BitStorage(const std::string &base64) {
+Base64BitStorage::Base64BitStorage(const std::string &base64, bool _trim) {
     int padding_index = getPaddingIndex(base64);
     std::string trimmed_string(base64.begin(), base64.begin() + padding_index + 1);
 
@@ -68,6 +68,7 @@ Base64BitStorage::Base64BitStorage(const std::string &base64) {
         }
     }
     length = trimmed_string.size() * BASE64_CHAR_BIT_LENGTH;
+    trim = _trim;
 }
 char to_char(const Base64Char &val) { return BASE64_CHARS[val.to_ulong()]; }
 std::string Base64BitStorage::to_string() const {

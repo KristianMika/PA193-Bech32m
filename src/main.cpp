@@ -95,7 +95,7 @@ std::string presentation_layer(const ProgramArgs &arguments, const std::string &
         return encode(hrp, storage);
     }
     try {
-        return decode(input, arguments.output_format);
+        return decode(input, arguments.output_format, arguments.trim_trailing_zeros);
     } catch (const Bech32mException &e) {
         // std::cerr << "Decode error." << std::endl << e.what() << std::endl;
         // TODO: where do we want to log error messages?
@@ -114,9 +114,9 @@ void read_write(const ProgramArgs &arguments) {
     if (arguments.output_type == Output::File) {
         try {
             if (arguments.output_format == DataFormat::Bin) {
-                output_file.open(arguments.outpu_file, std::ios::out | std::ios::app | std::ios::binary);
+                output_file.open(arguments.output_file, std::ios::out | std::ios::app | std::ios::binary);
             } else {
-                output_file.open(arguments.outpu_file, std::ios::out);
+                output_file.open(arguments.output_file, std::ios::out);
             }
         } catch (const std::ios_base::failure &e) {
             throw Bech32mException("Can not open output file");
@@ -148,6 +148,8 @@ void read_write(const ProgramArgs &arguments) {
         int64_t max_byte_count = std::floor(BECH32M_MAX_BITSET_LENGTH / BYTE_BIT_COUNT);
         in.resize(max_byte_count);
         source.read(&in[0], max_byte_count);
+        std::streamsize bytes_read = source.gcount();
+        in.resize(bytes_read);
         if (source) {
             throw Bech32mException("More than max amount of bytes in the file.");
         }

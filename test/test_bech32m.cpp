@@ -84,22 +84,22 @@ void test_without_substitutions() {
 	const auto DATA3 = "222222222222";
 	const auto CODE3 = "haskellisthebest1yg3zyg3zyg0yf0ga";
 
-	ASSERT_EQUALS(decode(CODE3, DataFormat::Hex), DATA3)
+	ASSERT_EQUALS(decode(CODE3, DataFormat::Hex, true), DATA3)
 
 	const auto DATA4 = "42";
 	const auto CODE4 = "whatisthemeaninigoflife1gg3769yz";
 
-	ASSERT_EQUALS(decode(CODE4, DataFormat::Hex), DATA4)
+	ASSERT_EQUALS(decode(CODE4, DataFormat::Hex, true), DATA4)
 
 	const auto DATA5 = "00";
 	const auto CODE5 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1qq9cyytg";
 
-	ASSERT_EQUALS(decode(CODE5, DataFormat::Hex), DATA5)
+	ASSERT_EQUALS(decode(CODE5, DataFormat::Hex, true), DATA5)
 
 	const auto DATA6 = "00";
 	const auto CODE6 = "11qq56x0sh";
 
-	ASSERT_EQUALS(decode(CODE6, DataFormat::Hex), DATA6)
+	ASSERT_EQUALS(decode(CODE6, DataFormat::Hex, true), DATA6)
 
 	const auto DATA7 = "1234567890";
 	const auto CODE7 = "qwerty1zg69v7ysaucy29";
@@ -109,7 +109,7 @@ void test_without_substitutions() {
 	const auto DATA8 = "1234567890";
 	const auto CODE8 = "?werty1zg69v7ys9qza3r";
 
-	ASSERT_EQUALS(decode(CODE7, DataFormat::Hex), DATA8)
+	ASSERT_EQUALS(decode(CODE8, DataFormat::Hex), DATA8)
 }
 
 
@@ -133,31 +133,31 @@ void test_with_substitutions() {
 	const auto CODE3 =      "haskellisthebest1yg3zyg3zyg0yf0ga";
 	const auto CODE3SUBST = "haskellisthebest1zg3zyg3zyg0yf0ga";
 
-	ASSERT_EQUALS(decode(CODE3SUBST, DataFormat::Hex), DATA3)
+	ASSERT_EQUALS(decode(CODE3SUBST, DataFormat::Hex, true), DATA3)
 
 	const auto DATA4 = "42";
 	const auto CODE4 =      "whatisthemeaninigoflife1gg3769yz";
 	const auto CODE4SUBST = "whatisthemeaninigofliff1gg3769yz";
 
-	ASSERT_EQUALS(decode(CODE4SUBST, DataFormat::Hex), DATA4)
+	ASSERT_EQUALS(decode(CODE4SUBST, DataFormat::Hex, true), DATA4)
 
 	const auto DATA5 = "00";
 	const auto CODE5 =      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1qq9cyytg";
 	const auto CODE5SUBST = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1qq9cyytg";
 
-	ASSERT_EQUALS(decode(CODE5SUBST, DataFormat::Hex), DATA5)
+	ASSERT_EQUALS(decode(CODE5SUBST, DataFormat::Hex, true), DATA5)
 
 	const auto DATA6 = "00";
 	const auto CODE6 =      "11qq56x0sh";
 	const auto CODE6SUBST = "10qq56x0sh";
 
-	ASSERT_EQUALS(decode(CODE6SUBST, DataFormat::Hex), DATA6)
+	ASSERT_EQUALS(decode(CODE6SUBST, DataFormat::Hex, true), DATA6)
 
 	const auto DATA7 = "00";
 	const auto CODE7 =      "11qq56x0sh";
 	const auto CODE7SUBST = "01qq56x0sh";
 
-	ASSERT_EQUALS(decode(CODE7SUBST, DataFormat::Hex), DATA7)
+	ASSERT_EQUALS(decode(CODE7SUBST, DataFormat::Hex, true), DATA7)
 
 	const auto DATA8 = "1234567890";
 	const auto CODE8 =      "qwerty1zg69v7ysaucy29";

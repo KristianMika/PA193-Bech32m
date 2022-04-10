@@ -10,7 +10,7 @@
 class Bech32mBitStorage : public BitStorage {
   public:
     explicit Bech32mBitStorage(const std::string &bech32m);
-    explicit Bech32mBitStorage(const Bech32mVector &bech32m);
+    explicit Bech32mBitStorage(const Bech32mVector &bech32m, bool _trim = false);
 
     Bech32mBitStorage(const BitStorage &storage) : BitStorage(storage) {}
 
