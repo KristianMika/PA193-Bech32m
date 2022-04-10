@@ -167,27 +167,23 @@ jobs:
         run: python3 ../bin_testing/setup.py examples/cpp_usage_encoding_example.cpp examples/cpp_usage_decoding_example.cpp
       - name: Make build directory for ref implementation
         working-directory: ref_cpp/
-        run: mkdir examples/build_ext/
+        run: mkdir build_ext/
       - name: Generate build files ref
-        working-directory: ref_cpp/examples/build_ext/
+        working-directory: ref_cpp/build_ext/
         run: cmake ..
       - name: Compile binaries ref
-        working-directory: ref_cpp/examples/build_ext/
+        working-directory: ref_cpp/build_ext/
         run: make bech32_cpp_usage_decoding_example bech32_cpp_usage_encoding_example
-      - name: Make build directory
-        run: mkdir build/
-      - name: Generate build files
-        working-directory: build/
-        run: cmake -DCMAKE_BUILD_TYPE=Release ..
-      - name: Compile binaries
-        working-directory: build/
-        run: cmake --build .
       - name: Put everything into one folder
+        uses: actions/download-artifact@v2
+        with:
+          name: linux-binaries
+          path: bech32m_reference/
         run: |
-          ls -la ref_cpp/examples/build_ext/
+          ls -la ref_cpp/build_ext/examples/
           ls -la build/
-          cp -R ref_cpp/examples/build_ext/. bech32m_reference
-          cp build/src/${BINARY_NAME} bech32m_reference/${BINARY_NAME}
+          cp ref_cpp/build_ext/examples/bech32_cpp_usage_decoding_example bech32m_reference/bech32_cpp_usage_decoding_example
+          cp ref_cpp/build_ext/examples/bech32_cpp_usage_encoding_example bech32m_reference/bech32_cpp_usage_encoding_example
       - name: Setup node environment
         working-directory: bech32m_reference/
         run: |
