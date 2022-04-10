@@ -42,7 +42,6 @@ int main(int argc, const char **argv) {
 }
 
 std::string presentation_layer(const ProgramArgs &arguments, const std::string &input) {
-    std::string result;
     std::string hrp;
     std::string data;
     BitStorage storage;

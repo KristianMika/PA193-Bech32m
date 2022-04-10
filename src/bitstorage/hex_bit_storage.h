@@ -9,19 +9,16 @@ using HexChar = std::bitset<HEX_CHAR_BIT_COUNT>;
 class HexBitStorage : public BitStorage {
   public:
     explicit HexBitStorage(const std::string &hex_value, bool _trim = false);
+    explicit HexBitStorage(const BitStorage &storage) : BitStorage(storage) {}
     ~HexBitStorage() override = default;
-    HexBitStorage(const BitStorage &storage) : BitStorage(storage) {}
 
     std::string to_string() const;
     BitStorage::Iterator<HEX_CHAR_BIT_COUNT> begin() const { return Iterator<HEX_CHAR_BIT_COUNT>(value, 0); }
     BitStorage::Iterator<HEX_CHAR_BIT_COUNT> end() const {
         if (trim) {
-            //bitset_length - (bitset_length % char_length)
-            //bitset_length + padding
             return Iterator<HEX_CHAR_BIT_COUNT>(value, length - (length % HEX_CHAR_BIT_COUNT));
-        } else {
-            return Iterator<HEX_CHAR_BIT_COUNT>(value, compute_padding(HEX_CHAR_BIT_COUNT) + length);
-        }  
+        }
+        return Iterator<HEX_CHAR_BIT_COUNT>(value, compute_padding(HEX_CHAR_BIT_COUNT) + length);
     }
 };
 

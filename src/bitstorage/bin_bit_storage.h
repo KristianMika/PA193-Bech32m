@@ -7,8 +7,7 @@ class BinBitStorage : public BitStorage {
 
   public:
     explicit BinBitStorage(const std::string &);
-
-    BinBitStorage(const BitStorage &storage) : BitStorage(storage) {}
+    explicit BinBitStorage(const BitStorage &storage) : BitStorage(storage) {}
 
     std::string to_string() const;
     BitStorage::Iterator<BYTE_BIT_COUNT> begin() const { return Iterator<BYTE_BIT_COUNT>(value, 0); }

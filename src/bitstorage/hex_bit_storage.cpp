@@ -57,7 +57,7 @@ HexBitStorage::HexBitStorage(const std::string &hex_value, bool _trim) {
 
 static const std::string HEX_CHARS = "0123456789abcdef";
 
-char to_char(const HexChar val) { return HEX_CHARS[val.to_ulong()]; }
+char to_char(const HexChar& val) { return HEX_CHARS[val.to_ulong()]; }
 
 std::string HexBitStorage::to_string() const {
     std::string out;

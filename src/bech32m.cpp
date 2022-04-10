@@ -13,9 +13,8 @@ static const char BECH_32M_SEPARATOR = '1';
 
 uint32_t polymod(const Bech32mVector &input) {
     uint32_t checksum = 1;
-    uint8_t val;
     for (const auto &value : input) {
-        val = value.to_ulong();
+        uint8_t val = value.to_ulong();
         auto derived = (checksum >> 25);
         checksum = ((checksum & 0x1ffffff) << 5) ^ val;
         for (int i = 0; i < 5; ++i) {
@@ -88,11 +87,9 @@ bool bech32_verify_checksum(std::string const &hrp, const Bech32mVector &data) {
 
 Bech32mVector reverse_code(int begin, int end, const std::string &code) {
     Bech32mVector result;
-    size_t index;
-    char c;
     for (int i = begin; i < end; i++) {
-        c = static_cast<char>(std::tolower(code[i]));
-        index = BECH_SYMBOLS.find(c);
+        char c = static_cast<char>(std::tolower(code[i]));
+        size_t index = BECH_SYMBOLS.find(c);
         if (index == std::string::npos) {
             throw Bech32mException("Invalid character in the data part of the string to decode.");
         }

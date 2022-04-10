@@ -57,7 +57,7 @@ ErrorDetectionResult detect_error(const std::string &bech32m_enc_hex, size_t idx
                     // the substitution was in the hrp
                     return ErrorDetectionResult(DetectionResult::OneCharSubs, data);
                 }
-            } catch (Bech32mException _) {
+            } catch (const Bech32mException& _) {
                 // continue with the next character
             }
         }
