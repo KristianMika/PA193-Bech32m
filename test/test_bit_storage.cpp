@@ -82,7 +82,7 @@ void test_hex_iterator() {
     // 11111  01011 11101 01111 10100
     // 1111 1010 1111 1010 1111 1010 0
     const std::string to_encode = "lta05";
-    HexBitStorage storage = Bech32mBitStorage(to_encode);
+    HexBitStorage storage = HexBitStorage(Bech32mBitStorage(to_encode));
     int storage_length = static_cast<int>(to_encode.size()) * BECH32M_CHAR_BIT_COUNT;
     ASSERT_EQUALS(storage.size(), storage_length);
     ASSERT_EQUALS(storage.size(), storage_length);
