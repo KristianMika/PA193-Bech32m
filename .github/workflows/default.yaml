@@ -147,3 +147,60 @@ jobs:
         run: sudo apt-get install --assume-yes clang-tidy
       - name: Run clang-tidy
         run: clang-tidy -header-filter=.* {src,test}/*.cpp -- -std=c++17
+
+  Fuzz:
+    runs-on: ubuntu-latest
+    needs: [ Build-and-Test-Ubuntu ]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          repository: dcdpr/libbech32
+          ref: master
+          path: ref_cpp/
+      - name: Install node
+        run: sudo apt-get install nodejs npm
+      - name: Install python
+        run: sudo apt-get install python3
+      - name: Swap code to be easily fuzzed
+        working-directory: ref_cpp/
+        run: python3 ../bin_testing/setup.py examples/cpp_usage_encoding_example.cpp examples/cpp_usage_decoding_example.cpp
+      - name: Make build directory for ref implementation
+        working-directory: ref_cpp/
+        run: mkdir build_ext/
+      - name: Generate build files ref
+        working-directory: ref_cpp/build_ext/
+        run: cmake ..
+      - name: Compile binaries ref
+        working-directory: ref_cpp/build_ext/
+        run: make bech32_cpp_usage_decoding_example bech32_cpp_usage_encoding_example
+      - name: Put our bin into the folder
+        uses: actions/download-artifact@v2
+        with:
+          name: linux-binaries
+          path: bech32m_reference/
+      - name: Put reference bin into the folder
+        run: |
+          ls -la ref_cpp/build_ext/examples/
+          cp ref_cpp/build_ext/examples/bech32_cpp_usage_decoding_example bech32m_reference/bech32_cpp_usage_decoding_example
+          cp ref_cpp/build_ext/examples/bech32_cpp_usage_encoding_example bech32m_reference/bech32_cpp_usage_encoding_example
+      - name: Setup node environment
+        working-directory: bech32m_reference/
+        run: |
+          npm install
+      - name: Fuzz
+        working-directory: bech32m_reference/
+        timeout-minutes: 1
+        continue-on-error: true
+        run: |
+          cp ./src/${{ env.BINARY_NAME }} ./${{ env.BINARY_NAME }}
+          chmod +x ${{ env.BINARY_NAME }}
+          chmod +x bech32_cpp_usage_encoding_example
+          chmod +x bech32_cpp_usage_decoding_example
+          cp ../bin_testing/diff_fuzzing.py diff_fuzzing.py
+          python3 diff_fuzzing.py ./${{ env.BINARY_NAME }} ./bech32_cpp_usage_encoding_example ./bech32_cpp_usage_decoding_example 999999
+      - name: Push the fuzzing result
+        uses: actions/upload-artifact@v2
+        with:
+          name: fuzzing_results.txt
+          path: fuzzing_results.txt
