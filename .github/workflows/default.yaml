@@ -174,14 +174,14 @@ jobs:
       - name: Compile binaries ref
         working-directory: ref_cpp/build_ext/
         run: make bech32_cpp_usage_decoding_example bech32_cpp_usage_encoding_example
-      - name: Put everything into one folder
+      - name: Put our bin into the folder
         uses: actions/download-artifact@v2
         with:
           name: linux-binaries
           path: bech32m_reference/
+        - name: Put reference bin into the folder
         run: |
           ls -la ref_cpp/build_ext/examples/
-          ls -la build/
           cp ref_cpp/build_ext/examples/bech32_cpp_usage_decoding_example bech32m_reference/bech32_cpp_usage_decoding_example
           cp ref_cpp/build_ext/examples/bech32_cpp_usage_encoding_example bech32m_reference/bech32_cpp_usage_encoding_example
       - name: Setup node environment
