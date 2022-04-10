@@ -166,23 +166,22 @@ jobs:
         working-directory: ref_cpp/
         run: python3 ../bin_testing/setup.py examples/cpp_usage_encoding_example.cpp examples/cpp_usage_decoding_example.cpp
       - name: Make build directory for ref implementation
-        run: mkdir ref_cpp/libbech/libbech/examples/build_ext/
+        working-directory: ref_cpp/
+        run: mkdir examples/build_ext/
       - name: Generate build files
-        working-directory: ref_cpp/libbech/libbech/examples/build_ext/
+        working-directory: ref_cpp/examples/build_ext/
         run: cmake -DCMAKE_BUILD_TYPE=Release ..
       - name: Put everything into one folder
         run: |
-          mkdir combine/
-          cp ref_cpp/libbech/libbech/examples/build_ext/* combine/
-          cp build/src/${{ env.BINARY_NAME }} combine/
-      - name: Setup node
-        working-directory: combine/
+          cp ref_cpp/examples/build_ext/* bech32m_reference/
+          cp build/src/${{ env.BINARY_NAME }} bech32m_reference/
+      - name: Setup node environment
+        working-directory: bech32m_reference/
         run: |
-          npm init
-          npm install bech32-buffer
+          npm install
       - name: Fuzz
-        working-directory: combine/
+        working-directory: bech32m_reference/
         run: |
-          python3 bin_testing/diff_fuzzing.py ${{ env.BINARY_NAME }} cpp_usage_encoding_example cpp_usage_decoding_example 1
+          python3 ../bin_testing/diff_fuzzing.py ${{ env.BINARY_NAME }} cpp_usage_encoding_example cpp_usage_decoding_example 1
           
          
