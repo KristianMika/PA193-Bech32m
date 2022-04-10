@@ -138,10 +138,6 @@ void set_mode_decode(ProgramArgs& args, std::string) {
 }
 
 void set_trimming(ProgramArgs &args, std::string) { 
-    if (args.iformat_set) {
-        throw Bech32mException("Trimming zeros is not avaliable in encode mode.");
-    }
-
     args.trim_trailing_zeros = true;
 }
 
@@ -190,11 +186,6 @@ void Parser::postprocess(const ProgramArgs& args) {
     if (args.input_type == Input::Argument && args.input_text.empty()) {
         throw Bech32mException("Empty input text given as argument.");
     }
-
-    if (args.trim_trailing_zeros && args.mode == Mode::Encode) {
-        throw Bech32mException("Cutting trailing zeroes set for encoding mode.");
-    }
-
 }
 
 ProgramArgs Parser::parse(const int &argc, const char **argv) {

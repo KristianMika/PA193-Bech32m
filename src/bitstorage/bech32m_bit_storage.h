@@ -20,6 +20,9 @@ class Bech32mBitStorage : public BitStorage {
     // TODO: a possible duplicate
     BitStorage::Iterator<BECH32M_CHAR_BIT_COUNT> begin() const { return Iterator<BECH32M_CHAR_BIT_COUNT>(value, 0); }
     BitStorage::Iterator<BECH32M_CHAR_BIT_COUNT> end() const {
+        if (trim) {
+            return Iterator<BECH32M_CHAR_BIT_COUNT>(value, length - (length % BECH32M_CHAR_BIT_COUNT));
+        } 
         return Iterator<BECH32M_CHAR_BIT_COUNT>(value, compute_padding(BECH32M_CHAR_BIT_COUNT) + length);
     }
 };

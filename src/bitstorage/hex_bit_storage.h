@@ -15,7 +15,13 @@ class HexBitStorage : public BitStorage {
     std::string to_string() const;
     BitStorage::Iterator<HEX_CHAR_BIT_COUNT> begin() const { return Iterator<HEX_CHAR_BIT_COUNT>(value, 0); }
     BitStorage::Iterator<HEX_CHAR_BIT_COUNT> end() const {
-        return Iterator<HEX_CHAR_BIT_COUNT>(value, compute_padding(HEX_CHAR_BIT_COUNT) + length);
+        if (trim) {
+            //bitset_length - (bitset_length % char_length)
+            //bitset_length + padding
+            return Iterator<HEX_CHAR_BIT_COUNT>(value, length - (length % HEX_CHAR_BIT_COUNT));
+        } else {
+            return Iterator<HEX_CHAR_BIT_COUNT>(value, compute_padding(HEX_CHAR_BIT_COUNT) + length);
+        }  
     }
 };
 
