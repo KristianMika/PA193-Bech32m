@@ -147,3 +147,41 @@ jobs:
         run: sudo apt-get install --assume-yes clang-tidy
       - name: Run clang-tidy
         run: clang-tidy -header-filter=.* {src,test}/*.cpp -- -std=c++17
+
+  Fuzz:
+    runs-on: ubuntu-latest
+    needs: [ Build-and-Test-Ubuntu, Build-and-Test-Windows ]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          repository: dcdpr/libbech32
+          ref: master
+          path: ref_cpp/
+      - name: Install node
+        run: sudo apt-get install nodejs npm
+      - name: Install python
+        run: sudo apt-get install python3
+      - name: Swap code to be easily fuzzed
+        run: python3 ./bin_testing/setup.py ref_cpp/libbech/libbech/examples/cpp_usage_encoding_example.cpp ref_cpp/libbech/libbech/examples/cpp_usage_decoding_example.cpp
+      - name: Make build directory for ref implementation
+        run: mkdir ref_cpp/libbech/libbech/examples/build_ext/
+      - name: Generate build files
+        working-directory: ref_cpp/libbech/libbech/examples/build_ext/
+        run: cmake -DCMAKE_BUILD_TYPE=Release ..
+      - name: Put everything into one folder
+        run: |
+          mkdir combine/
+          cp ref_cpp/libbech/libbech/examples/build_ext/* combine/
+          cp build/src/${{ env.BINARY_NAME }} combine/
+      - name: Setup node
+        working-directory: combine/
+        run: |
+          npm init
+          npm install bech32-buffer
+      - name: Fuzz
+        working-directory: combine/
+        run: |
+          python3 bin_testing/diff_fuzzing.py ${{ env.BINARY_NAME }} cpp_usage_encoding_example cpp_usage_decoding_example 1
+          
+         
