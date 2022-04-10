@@ -191,10 +191,9 @@ jobs:
       - name: Fuzz
         working-directory: bech32m_reference/
         run: |
-          ls -la
-          chmod +x ${{ env.BINARY_NAME }}
+          chmod +x src/${{ env.BINARY_NAME }}
           chmod +x cpp_usage_encoding_example
           chmod +x cpp_usage_decoding_example
-          python3 ../bin_testing/diff_fuzzing.py ${{ env.BINARY_NAME }} cpp_usage_encoding_example cpp_usage_decoding_example 1
+          python3 ../bin_testing/diff_fuzzing.py src/${{ env.BINARY_NAME }} cpp_usage_encoding_example cpp_usage_decoding_example 1
           
          
