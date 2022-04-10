@@ -59,8 +59,9 @@ def hex_encode(hrp, data_hex):
 
 
 def base64_encode(hrp, data_base64):
-    proc = subprocess.Popen(f"{OUR_BINARY} --input-text {data_base64} --input-format base64 --hrp {hrp}".split(' '),
-                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = subprocess.Popen(
+        f"{OUR_BINARY} --input-text {data_base64} --input-format base64 --hrp {hrp} --trim".split(' '),
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     proc.wait()
     err = proc.stderr.read().decode(encoding='ASCII').strip()
     if err != '':
