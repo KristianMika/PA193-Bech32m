@@ -1,5 +1,6 @@
 import base64
 import binascii
+import datetime
 import os
 import subprocess
 import random
@@ -58,9 +59,10 @@ def hex_encode(hrp, data_hex):
     return proc.stdout.read().decode(encoding='ASCII').strip()
 
 
-def base64_encode(hrp, data_base64):
+def base64_encode(hrp, data_base64, do_trim=True):
     proc = subprocess.Popen(
-        f"{OUR_BINARY} --input-text {data_base64} --input-format base64 --hrp {hrp} --trim".split(' '),
+        f"{OUR_BINARY} --input-text {data_base64} --input-format base64 --hrp {hrp}{' --trim' if do_trim else ''}"
+            .split(' '),
         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     proc.wait()
     err = proc.stderr.read().decode(encoding='ASCII').strip()
@@ -151,6 +153,8 @@ def generate_hrp():
     chars = [chr(x) for x in range(33, 127)]
     length = random.randint(1, 81)
     ret = "".join(random.choice(chars) for _ in range(length)).lower()
+    if ret[0] == '-':
+        ret = ret[1:]
     return ret.replace("'", "").replace('"', '')
 
 
@@ -189,7 +193,8 @@ def process(hrp, hex_str, base64_str):
     success = True
     try:
         our_res = hex_encode(hrp, hex_str)
-        our_res_64 = base64_encode(hrp, base64_str)
+        our_res_64 = base64_encode(hrp, base64_str, do_trim=False)
+        our_res_64_trim = base64_encode(hrp, base64_str)
         our_res_bin = bin_encode(hrp, hex_str)
         node_res, node_enc_err = node_encode(hrp, hex_str)
         extract_our = extract_bech(our_res)
@@ -201,8 +206,10 @@ def process(hrp, hex_str, base64_str):
         hrp, dec_node = _node_dec[0].split(' ')
         node_dec_err = _node_dec[1]
 
+        at_least_one_equal = our_res_64 == our_res or our_res_64_trim == our_res
+
         if our_res_bin != our_res or \
-                our_res_64 != our_res or \
+                not at_least_one_equal or \
                 our_res != external_res or \
                 (our_res != node_res and not node_enc_err):
             success = False
@@ -257,6 +264,7 @@ if __name__ == '__main__':
     LIBBECH32ENC_BINARY = sys.argv[2]
     LIBBECH32DEC_BINARY = sys.argv[3]
     FUZZ_ITERATIONS = int(sys.argv[4])
+    FUZZ_SECONDS = int(sys.argv[5])
 
     _hrp = 'v)zeod9[qg.ns)+}r}'
     _hex_str = '857e'
@@ -265,11 +273,16 @@ if __name__ == '__main__':
     process('a', 'ff', to_base64('FF'))
 
     fail_count = 0
+    start_time = datetime.datetime.now()
     for _ in range(0, FUZZ_ITERATIONS):
         if not process(_hrp, _hex_str, _b64_str): fail_count += 1
         _hrp = generate_hrp()
         _hex_str = generate_hex(_hrp)
         _b64_str = to_base64(_hex_str.upper())
+        end_time = datetime.datetime.now()
+        if (end_time - start_time).seconds >= FUZZ_SECONDS:
+            print(f'Fuzzing stopped after {FUZZ_SECONDS} seconds')
+            break
 
     print("DONE")
     sys.exit(fail_count)
