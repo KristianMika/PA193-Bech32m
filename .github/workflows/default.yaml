@@ -170,16 +170,10 @@ jobs:
         run: mkdir examples/build_ext/
       - name: Generate build files ref
         working-directory: ref_cpp/examples/build_ext/
-        run: cmake -DCMAKE_BUILD_TYPE=Release ..
+        run: cmake ..
       - name: Compile binaries ref
         working-directory: ref_cpp/examples/build_ext/
-        run: cmake --build .
-      - name: Generate build files
-        working-directory: ref_cpp/examples/build_ext/
-        run: cmake -DCMAKE_BUILD_TYPE=Release ..
-      - name: Compile binaries
-        working-directory: ref_cpp/examples/build_ext/
-        run: cmake --build .
+        run: make bech32_cpp_usage_decoding_example bech32_cpp_usage_encoding_example
       - name: Make build directory
         run: mkdir build/
       - name: Generate build files
