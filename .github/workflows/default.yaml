@@ -196,5 +196,4 @@ jobs:
           chmod +x bech32_cpp_usage_encoding_example
           chmod +x bech32_cpp_usage_decoding_example
           cp ../bin_testing/diff_fuzzing.py diff_fuzzing.py
-          ls -la
-          python3 diff_fuzzing.py ./${{ env.BINARY_NAME }} ./bech32_cpp_usage_encoding_example ./bech32_cpp_usage_decoding_example 1
+          python3 diff_fuzzing.py ./${{ env.BINARY_NAME }} ./bech32_cpp_usage_encoding_example ./bech32_cpp_usage_decoding_example 200

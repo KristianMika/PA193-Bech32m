@@ -128,8 +128,9 @@ def external_decode(code):
 
 
 def hex_decode(code):
-    proc = subprocess.Popen(f"{OUR_BINARY} --decode --input-text {code} --output-format hex --allow-empty-hrp".split(' '),
-                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = subprocess.Popen(
+        f"{OUR_BINARY} --decode --input-text {code} --output-format hex --allow-empty-hrp --trim".split(' '),
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     proc.wait()
     err = proc.stderr.read().decode(encoding='ASCII').strip()
     if err != '':
