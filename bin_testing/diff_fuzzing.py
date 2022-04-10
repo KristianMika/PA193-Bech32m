@@ -17,7 +17,7 @@ NODE_REF = "node . "
 
 def node_encode(hrp, data_hex):
     str_in = NODE_REF + f"encode {hrp} {data_hex}"
-    proc = subprocess.Popen(str_in, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = subprocess.Popen(str_in.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     proc.wait()
     err = proc.stderr.read().decode(encoding='ASCII').strip()
     if err != '':
@@ -36,13 +36,13 @@ def external_encode(hrp, bech):
     indexes = get_indexes(bech)
     indexes_str = indexes_to_string(indexes)
     str_in = f"{LIBBECH32ENC_BINARY} {hrp} {indexes_str}"
-    proc = subprocess.Popen(str_in, stdout=subprocess.PIPE)
+    proc = subprocess.Popen(str_in.split(' '), stdout=subprocess.PIPE)
     proc.wait()
     return proc.stdout.read().decode(encoding='ASCII').strip()
 
 
 def hex_encode(hrp, data_hex):
-    proc = subprocess.Popen(f"{OUR_BINARY} --input-text {data_hex} --input-format hex --hrp {hrp}",
+    proc = subprocess.Popen(f"{OUR_BINARY} --input-text {data_hex} --input-format hex --hrp {hrp}".split(' '),
                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     proc.wait()
     err = proc.stderr.read().decode(encoding='ASCII').strip()
@@ -59,7 +59,7 @@ def hex_encode(hrp, data_hex):
 
 
 def base64_encode(hrp, data_base64):
-    proc = subprocess.Popen(f"{OUR_BINARY} --input-text {data_base64} --input-format base64 --hrp {hrp}",
+    proc = subprocess.Popen(f"{OUR_BINARY} --input-text {data_base64} --input-format base64 --hrp {hrp}".split(' '),
                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     proc.wait()
     err = proc.stderr.read().decode(encoding='ASCII').strip()
@@ -80,7 +80,7 @@ def bin_encode(hrp, data_hex):
         with open('b.bin', 'wb') as f:
             f.write(binascii.unhexlify(data_hex))
 
-        proc = subprocess.Popen(f"{OUR_BINARY} --input-file b.bin --input-format bin --hrp {hrp}",
+        proc = subprocess.Popen(f"{OUR_BINARY} --input-file b.bin --input-format bin --hrp {hrp}".split(' '),
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         proc.wait()
         err = proc.stderr.read().decode(encoding='ASCII').strip()
@@ -106,7 +106,7 @@ def bin_encode(hrp, data_hex):
 
 def node_decode(code):
     str_in = NODE_REF + f"decode {code}"
-    proc = subprocess.Popen(str_in, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = subprocess.Popen(str_in.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     proc.wait()
     err = proc.stderr.read().decode(encoding='ASCII').strip()
     if err != '':
@@ -122,13 +122,13 @@ def node_decode(code):
 
 def external_decode(code):
     str_in = f"{LIBBECH32DEC_BINARY} {code}"
-    proc = subprocess.Popen(str_in, stdout=subprocess.PIPE)
+    proc = subprocess.Popen(str_in.split(' '), stdout=subprocess.PIPE)
     proc.wait()
     return proc.stdout.read().decode(encoding='ASCII').strip()
 
 
 def hex_decode(code):
-    proc = subprocess.Popen(f"{OUR_BINARY} --decode --input-text {code} --output-format hex --allow-empty-hrp",
+    proc = subprocess.Popen(f"{OUR_BINARY} --decode --input-text {code} --output-format hex --allow-empty-hrp".split(' '),
                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     proc.wait()
     err = proc.stderr.read().decode(encoding='ASCII').strip()
