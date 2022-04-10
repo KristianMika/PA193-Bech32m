@@ -203,4 +203,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: fuzzing_results.txt
-          path: fuzzing_results.txt
+          path: bech32m_reference/fuzzing_results.txt
