@@ -173,8 +173,8 @@ jobs:
         run: cmake -DCMAKE_BUILD_TYPE=Release ..
       - name: Put everything into one folder
         run: |
-          cp ref_cpp/examples/build_ext/* bech32m_reference/
-          cp build/src/${{ env.BINARY_NAME }} bech32m_reference/
+          cp -R ref_cpp/examples/build_ext/. bech32m_reference
+          cp build/src/${{ env.BINARY_NAME }} bech32m_reference
       - name: Setup node environment
         working-directory: bech32m_reference/
         run: |
