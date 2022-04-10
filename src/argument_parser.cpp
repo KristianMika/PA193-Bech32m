@@ -286,8 +286,8 @@ Parser get_default_parser() {
                                    .add_handler(set_mode_decode))
             .add_argument(Argument()
                                    .set_name("--trim")
-                                   .set_description("Sets the trimming of the trailing zero in decode mode."
-                                                    "Avaliable only in decode mode.")
+                                   .set_description("Sets the trimming of the trailing zero in decode mode. Trimming additional bits"
+                                                    "instead of padding the input in encode mode.")
                                    .add_handler(set_trimming));
     // clang-format on
 }
