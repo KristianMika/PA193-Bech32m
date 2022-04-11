@@ -48,7 +48,9 @@ def hex_encode(hrp, data_hex):
     proc.wait()
     err = proc.stderr.read().decode(encoding='ASCII').strip()
     if err != '':
-        print("*******")
+        print("******* ENCODE ERROR *******")
+        print("HRP: " + hrp)
+        print("HEX: " + data_hex)
         print("OUR error:\n" + err)
         with open("fuzzing_results.txt", "a") as f:
             f.write("*******\n")
@@ -67,7 +69,9 @@ def base64_encode(hrp, data_base64, do_trim=True):
     proc.wait()
     err = proc.stderr.read().decode(encoding='ASCII').strip()
     if err != '':
-        print("*******")
+        print("******* ENCODE ERROR *******")
+        print("HRP: " + hrp)
+        print("B64: " + data_base64)
         print("OUR error:\n" + err)
         with open("fuzzing_results.txt", "a") as f:
             f.write("*******\n")
@@ -89,8 +93,9 @@ def bin_encode(hrp, data_hex):
         err = proc.stderr.read().decode(encoding='ASCII').strip()
 
         if err != '':
-            print("*******")
-            print("OUR error:\n" + err)
+            print("******* ENCODE ERROR *******")
+            print("HRP: " + hrp)
+            print("B64: " + data_hex + "(as binary)")
             with open("fuzzing_results.txt", "a") as f:
                 f.write("*******\n")
                 f.write(f"HRP: {hrp}\n")
@@ -137,7 +142,8 @@ def hex_decode(code):
     proc.wait()
     err = proc.stderr.read().decode(encoding='ASCII').strip()
     if err != '':
-        print("*******")
+        print("******* DECODE ERROR *******")
+        print("CODE: " + code)
         print("OUR error:\n" + err)
         with open("fuzzing_results.txt", "a") as f:
             f.write("*******\n")
@@ -153,8 +159,10 @@ def generate_hrp():
     chars = [chr(x) for x in range(33, 127)]
     length = random.randint(1, 81)
     ret = "".join(random.choice(chars) for _ in range(length)).lower()
-    if ret[0] == '-':
+    while ret[0] == '-' and len(ret) > 1:
         ret = ret[1:]
+    if ret[0] == '-':
+        ret = 'a'
     return ret.replace("'", "").replace('"', '')
 
 
@@ -262,6 +270,7 @@ def process(hrp, hex_str, base64_str):
 
 
 if __name__ == '__main__':
+
     OUR_BINARY = sys.argv[1]
     LIBBECH32ENC_BINARY = sys.argv[2]
     LIBBECH32DEC_BINARY = sys.argv[3]
