@@ -1,7 +1,5 @@
 #include "argument_parser.h"
 
-// ./program --encode --from_bin
-
 void set_output_format(ProgramArgs &args, const std::string &output) {
     if (args.oformat_set || args.iformat_set) {
         throw Bech32mException("Format for the input or output data has been already specified.");
@@ -92,7 +90,7 @@ void set_defualt_hrp(ProgramArgs& args, std::string hrp) {
     // validate hrp
 
     if (hrp.empty()) {
-        throw Bech32mException("Invalid parameter " + hrp + " passed to argument --hrp.");
+        throw Bech32mException("Empty parameter passed to argument --hrp.");
     }
     if (!args.hrp.empty()) {
         throw Bech32mException("Default hrp was already set.");

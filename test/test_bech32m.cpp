@@ -56,6 +56,7 @@ void test_invalid_bech32m() {
     ASSERT_THROWS(decode("an84characterslonghumanreadablepartthatcontainsthetheexcludedcharactersbioandnumber11d6pts4"),
                   Bech32mException);
     ASSERT_THROWS(decode("qyrz8wqd2c9m"), Bech32mException);
+    //commetned out, because empty hrp is handled in other layer
     //ASSERT_THROWS(decode("1qyrz8wqd2c9m"), Bech32mException);
     ASSERT_THROWS(decode("y1b0jsk6g"), Bech32mException);
     ASSERT_THROWS(decode("lt1igcx5c0"), Bech32mException);
@@ -63,6 +64,7 @@ void test_invalid_bech32m() {
     ASSERT_THROWS(decode("mm1crxm3i"), Bech32mException);
     ASSERT_THROWS(decode("au1s5cgom"), Bech32mException);
     ASSERT_THROWS(decode("M1VUXWEZ"), Bech32mException);
+    // commetned out, because empty hrp is handled in other layer
     //ASSERT_THROWS(decode("16plkw9"), Bech32mException);
     //ASSERT_THROWS(decode("1p2gdwpf"), Bech32mException);
 }
