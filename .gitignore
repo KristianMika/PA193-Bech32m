@@ -1,0 +1,58 @@
+# Source: https://github.com/github/gitignore/blob/main/C++.gitignore
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# build directory
+/build/
+
+# Visual Studio folders
+.vs
+out
+
+# CLion folders
+.idea
+cmake-build-debug-visual-studio
+
+# Windows junk
+*.ilk
+*.pdb
+*.cmake
+/src/Makefile
+Makefile
+CMakeCache.txt
+
+bech32m_reference/package-lock.json
+
+CmakeFiles
+
+CMakeSettings.json

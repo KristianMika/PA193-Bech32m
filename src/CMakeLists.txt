@@ -1,0 +1,3 @@
+add_library(Bech32m_lib bech32m.cpp bitstorage/hex_bit_storage.cpp bitstorage/base64_bit_storage.cpp bitstorage/bech32m_bit_storage.cpp argument_parser.cpp bech32m_error_detection.cpp bitstorage/bin_bit_storage.cpp)
+add_executable(bech32m main.cpp)
+target_link_libraries(bech32m Bech32m_lib)
