@@ -90,7 +90,7 @@ void set_defualt_hrp(ProgramArgs& args, std::string hrp) {
     // validate hrp
 
     if (hrp.empty()) {
-        throw Bech32mException("Invalid parameter " + hrp + " passed to argument --hrp.");
+        throw Bech32mException("Empty parameter passed to argument --hrp.");
     }
     if (!args.hrp.empty()) {
         throw Bech32mException("Default hrp was already set.");
