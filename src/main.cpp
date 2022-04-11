@@ -85,6 +85,8 @@ std::string presentation_layer(const ProgramArgs &arguments, const std::string &
             storage = HexBitStorage(data, arguments.trim_trailing_zeros);
             break;
         case DataFormat::Bin:
+            // corretion of the data in case the input string contained ':' symbol
+            data = input;
             storage = BinBitStorage(data);
             break;
         default:
@@ -96,7 +98,7 @@ std::string presentation_layer(const ProgramArgs &arguments, const std::string &
     try {
         return decode(input, arguments.output_format, arguments.trim_trailing_zeros);
     } catch (const Bech32mException &e) {
-        // rethrow the exception
+        // rethrow
         throw;
     }
 }
