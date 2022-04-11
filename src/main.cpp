@@ -96,9 +96,7 @@ std::string presentation_layer(const ProgramArgs &arguments, const std::string &
     try {
         return decode(input, arguments.output_format, arguments.trim_trailing_zeros);
     } catch (const Bech32mException &e) {
-        // std::cerr << "Decode error." << std::endl << e.what() << std::endl;
-        // TODO: where do we want to log error messages?
-        // rethrow for now
+        // rethrow the exception
         throw;
     }
 }

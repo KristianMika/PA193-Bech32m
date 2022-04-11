@@ -28,7 +28,6 @@ Bech32mBitStorage::Bech32mBitStorage(const Bech32mVector &bech32m, bool _trim) {
     trim = _trim;
 }
 
-// TODO: make some functions inline
 char to_char(const Bech32mChar &val) { return BECH_SYMBOLS[val.to_ulong()]; }
 
 std::string Bech32mBitStorage::to_string() const {

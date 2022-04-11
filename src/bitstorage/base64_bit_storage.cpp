@@ -76,10 +76,5 @@ std::string Base64BitStorage::to_string() const {
     for (const auto &val : *this) {
         out.push_back(to_char(val));
     }
-
-    if (trim && out[out.size() - 1] == 'A' && out.size() % BASE64_CHAR_BIT_LENGTH != 0) {
-        out.pop_back();
-    }
-
     return out;
 }

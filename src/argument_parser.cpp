@@ -1,7 +1,5 @@
 #include "argument_parser.h"
 
-// ./program --encode --from_bin
-
 void set_output_format(ProgramArgs &args, const std::string &output) {
     if (args.oformat_set || args.iformat_set) {
         throw Bech32mException("Format for the input or output data has been already specified.");
